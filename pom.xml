@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>nz.ac.waikato.cms.adams</groupId>
+    <artifactId>adams-pom</artifactId>
+    <version>18.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>adams-lts-pom</artifactId>
+  <version>18.3.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>adams-lts-pom</name>
+  <description>The project object model for all adams-lts modules (long term support).</description>
+  <url>https://adams.cms.waikato.ac.nz/</url>
+  <organization>
+    <name>University of Waikato, Hamilton, NZ</name>
+    <url>http://www.waikato.ac.nz/</url>
+  </organization>
+
+  <scm>
+    <connection>scm:git:https://github.com/waikato-datamining/adams-lts</connection>
+    <developerConnection>scm:git:https://github.com/waikato-datamining/adams-lts</developerConnection>
+    <url>https://github.com/waikato-datamining/adams-lts</url>
+    <tag>HEAD</tag>
+  </scm>
+
+
+  <properties>
+    <adams.version>18.3.0-SNAPSHOT</adams.version>
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+  </properties>
+
+  <modules>
+    <module>adams-weka-lts</module>
+  </modules>
+</project>
