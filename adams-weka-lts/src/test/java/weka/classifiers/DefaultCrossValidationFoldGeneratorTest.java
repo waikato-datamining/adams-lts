@@ -13,9 +13,9 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * CrossValidationFoldGeneratorTest.java
- * Copyright (C) 2016 University of Waikato, Hamilton, NZ
+/*
+ * DefaultCrossValidationFoldGeneratorTest.java
+ * Copyright (C) 2016-2018 University of Waikato, Hamilton, NZ
  */
 
 package weka.classifiers;
@@ -26,10 +26,9 @@ import junit.framework.TestSuite;
 import weka.core.Instances;
 
 /**
- * Tests weka.classifiers.CrossValidationFoldGenerator.
+ * Tests weka.classifiers.DefaultCrossValidationFoldGenerator.
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class DefaultCrossValidationFoldGeneratorTest
   extends AbstractSplitGeneratorTestCase {
