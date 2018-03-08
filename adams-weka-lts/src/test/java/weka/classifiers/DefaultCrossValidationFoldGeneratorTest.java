@@ -31,7 +31,7 @@ import weka.core.Instances;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class CrossValidationFoldGeneratorTest
+public class DefaultCrossValidationFoldGeneratorTest
   extends AbstractSplitGeneratorTestCase {
 
   /**
@@ -39,7 +39,7 @@ public class CrossValidationFoldGeneratorTest
    *
    * @param name 	the name of the test
    */
-  public CrossValidationFoldGeneratorTest(String name) {
+  public DefaultCrossValidationFoldGeneratorTest(String name) {
     super(name);
   }
 
@@ -71,7 +71,7 @@ public class CrossValidationFoldGeneratorTest
    * @return		the suite
    */
   public static Test suite() {
-    return new TestSuite(CrossValidationFoldGeneratorTest.class);
+    return new TestSuite(DefaultCrossValidationFoldGeneratorTest.class);
   }
 
   /**
