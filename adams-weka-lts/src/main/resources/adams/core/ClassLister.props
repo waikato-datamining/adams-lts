@@ -231,6 +231,10 @@ weka.classifiers.RandomSplitGenerator=\
 weka.classifiers.CrossValidationFoldGenerator=\
   weka.classifiers
 
+# the data preparation schemes for the SocketFacade classifier
+weka.classifiers.meta.socketfacade.AbstractDataPreparation=\
+  weka.classifiers.meta.socketfacade
+
 # The imputation algorithms
 weka.filters.unsupervised.attribute.missingvaluesimputation.Imputation=\
   weka.filters.unsupervised.attribute.missingvaluesimputation
