@@ -234,7 +234,9 @@ public class WekaSelectObjects
     Object	array;
     int		i;
     
+    registerWindow(m_Dialog, m_Dialog.getTitle());
     m_Dialog.setVisible(true);
+    deregisterWindow(m_Dialog);
     if (m_Dialog.getOption() != ApprovalDialog.APPROVE_OPTION)
       return null;
     

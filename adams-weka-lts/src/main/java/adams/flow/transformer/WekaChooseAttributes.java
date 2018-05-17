@@ -384,10 +384,12 @@ public class WekaChooseAttributes
     dialog = new ApprovalDialog(null, ModalityType.DOCUMENT_MODAL);
     dialog.setTitle("Choose attributes");
       dialog.getContentPane().add(panelAll, BorderLayout.CENTER);
+    registerWindow(dialog, dialog.getTitle());
     dialog.pack();
     dialog.setLocationRelativeTo(getActualParentComponent());
     dialog.setVisible(true);
-    
+    deregisterWindow(dialog);
+
     if (dialog.getOption() != ApprovalDialog.APPROVE_OPTION)
       return null;
     
