@@ -13,13 +13,14 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
+/*
  * DatasetCompatibilityPanel.java
- * Copyright (C) 2012 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2012-2018 University of Waikato, Hamilton, New Zealand
  */
 package adams.gui.tools;
 
 import adams.core.Utils;
+import adams.gui.chooser.WekaFileChooser;
 import adams.gui.core.BasePanel;
 import adams.gui.core.BaseScrollPane;
 import adams.gui.core.BaseTextArea;
@@ -46,59 +47,58 @@ import java.io.File;
 
 /**
  * Compares the headers of a number of datasets and outputs the results.
- * 
+ *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class DatasetCompatibilityPanel
-  extends BasePanel 
+  extends BasePanel
   implements MenuBarProvider, SendToActionSupporter {
 
   /** for serialization. */
   private static final long serialVersionUID = -5581002075106885237L;
 
   /** the filechooser for selecting the datasets. */
-  protected ConverterFileChooser m_FileChooser;
-  
+  protected WekaFileChooser m_FileChooser;
+
   /** the text area to output the results in. */
   protected BaseTextArea m_TextArea;
 
   /** the selected files. */
   protected File[] m_CurrentFiles;
-  
+
   /** the current loader. */
   protected AbstractFileLoader m_CurrentLoader;
-  
+
   /** the menu bar. */
   protected JMenuBar m_MenuBar;
 
   /** the reload menu item. */
   protected JMenuItem m_MenuItemReload;
-  
+
   /**
    * Initializes the members.
    */
   @Override
   protected void initialize() {
     super.initialize();
-    
-    m_FileChooser = new ConverterFileChooser(".");
+
+    m_FileChooser = new WekaFileChooser(".");
     m_FileChooser.setMultiSelectionEnabled(true);
     m_FileChooser.setFileMustExist(true);
-    
+
     m_CurrentFiles  = new File[0];
     m_CurrentLoader = null;
   }
-  
+
   /**
    * Initializes the widgets.
    */
   @Override
   protected void initGUI() {
     super.initGUI();
-    
+
     setLayout(new BorderLayout());
-    
+
     m_TextArea = new BaseTextArea();
     m_TextArea.setEditable(false);
     m_TextArea.setFont(Fonts.getMonospacedFont());
@@ -190,15 +190,15 @@ public class DatasetCompatibilityPanel
 
     m_MenuItemReload.setEnabled((m_CurrentFiles.length > 0) && (m_CurrentLoader != null));
   }
-  
+
   /**
    * Brings up dialog for selecting files.
    */
   public void open() {
     int		retVal;
-    
+
     retVal = m_FileChooser.showOpenDialog(this);
-    
+
     if (retVal != ConverterFileChooser.APPROVE_OPTION)
       return;
 
@@ -206,8 +206,8 @@ public class DatasetCompatibilityPanel
       GUIHelper.showErrorMessage(this, "You must choose at least two files!");
       return;
     }
-    
-    open(m_FileChooser.getSelectedFiles(), m_FileChooser.getLoader());
+
+    open(m_FileChooser.getSelectedFiles(), m_FileChooser.getReader());
   }
 
   /**
