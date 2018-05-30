@@ -15,7 +15,7 @@
 
 /*
  * WekaInstanceDumper.java
- * Copyright (C) 2009-2016 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2009-2018 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.flow.transformer;
@@ -25,6 +25,7 @@ import adams.core.QuickInfoHelper;
 import adams.core.Utils;
 import adams.core.io.FileUtils;
 import adams.core.io.PlaceholderFile;
+import adams.flow.core.FlushSupporter;
 import adams.flow.core.Token;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
@@ -59,79 +60,78 @@ import java.util.List;
  *
  <!-- options-start -->
  * Valid options are: <br><br>
- * 
+ *
  * <pre>-D &lt;int&gt; (property: debugLevel)
- * &nbsp;&nbsp;&nbsp;The greater the number the more additional info the scheme may output to 
+ * &nbsp;&nbsp;&nbsp;The greater the number the more additional info the scheme may output to
  * &nbsp;&nbsp;&nbsp;the console (0 = off).
  * &nbsp;&nbsp;&nbsp;default: 0
  * &nbsp;&nbsp;&nbsp;minimum: 0
  * </pre>
- * 
+ *
  * <pre>-name &lt;java.lang.String&gt; (property: name)
  * &nbsp;&nbsp;&nbsp;The name of the actor.
  * &nbsp;&nbsp;&nbsp;default: WekaInstanceDumper
  * </pre>
- * 
+ *
  * <pre>-annotation &lt;adams.core.base.BaseText&gt; (property: annotations)
  * &nbsp;&nbsp;&nbsp;The annotations to attach to this actor.
- * &nbsp;&nbsp;&nbsp;default: 
+ * &nbsp;&nbsp;&nbsp;default:
  * </pre>
- * 
+ *
  * <pre>-skip (property: skip)
- * &nbsp;&nbsp;&nbsp;If set to true, transformation is skipped and the input token is just forwarded 
+ * &nbsp;&nbsp;&nbsp;If set to true, transformation is skipped and the input token is just forwarded
  * &nbsp;&nbsp;&nbsp;as it is.
  * </pre>
- * 
+ *
  * <pre>-stop-flow-on-error (property: stopFlowOnError)
  * &nbsp;&nbsp;&nbsp;If set to true, the flow gets stopped in case this actor encounters an error;
  * &nbsp;&nbsp;&nbsp; useful for critical actors.
  * </pre>
- * 
+ *
  * <pre>-check (property: checkHeader)
- * &nbsp;&nbsp;&nbsp;Whether to check the headers - if the headers change, the Instance object 
+ * &nbsp;&nbsp;&nbsp;Whether to check the headers - if the headers change, the Instance object
  * &nbsp;&nbsp;&nbsp;gets dumped into a new file.
  * </pre>
- * 
+ *
  * <pre>-prefix &lt;adams.core.io.PlaceholderFile&gt; (property: outputPrefix)
  * &nbsp;&nbsp;&nbsp;The path and partial filename of the output file; automatically removes '
  * &nbsp;&nbsp;&nbsp;arff' and 'csv' extensions, as they get added automatically.
  * &nbsp;&nbsp;&nbsp;default: ${CWD}
  * </pre>
- * 
+ *
  * <pre>-format &lt;ARFF|CSV|TAB&gt; (property: outputFormat)
  * &nbsp;&nbsp;&nbsp;The format to output the data in.
  * &nbsp;&nbsp;&nbsp;default: ARFF
  * </pre>
- * 
+ *
  * <pre>-use-relation (property: useRelationNameAsFilename)
  * &nbsp;&nbsp;&nbsp;If set to true, then the relation name replaces the name of the output file;
  * &nbsp;&nbsp;&nbsp; eg if the output file is '&#47;some&#47;where&#47;file.arff' and the relation is 'anneal'
  * &nbsp;&nbsp;&nbsp; then the resulting file name will be '&#47;some&#47;where&#47;anneal.arff'.
  * </pre>
- * 
+ *
  * <pre>-keep-existing (property: keepExisting)
- * &nbsp;&nbsp;&nbsp;If enabled, any output file that exists when the actor is executed for the 
- * &nbsp;&nbsp;&nbsp;first time (or variables modify the actor) won't get replaced with the current 
- * &nbsp;&nbsp;&nbsp;header; useful when outputting data in multiple locations in the flow, but 
- * &nbsp;&nbsp;&nbsp;one needs to be cautious as to not stored mixed content (eg varying number 
+ * &nbsp;&nbsp;&nbsp;If enabled, any output file that exists when the actor is executed for the
+ * &nbsp;&nbsp;&nbsp;first time (or variables modify the actor) won't get replaced with the current
+ * &nbsp;&nbsp;&nbsp;header; useful when outputting data in multiple locations in the flow, but
+ * &nbsp;&nbsp;&nbsp;one needs to be cautious as to not stored mixed content (eg varying number
  * &nbsp;&nbsp;&nbsp;of attributes, etc).
  * </pre>
- * 
+ *
  * <pre>-buffer-size &lt;int&gt; (property: bufferSize)
- * &nbsp;&nbsp;&nbsp;The number of instances to buffer before writing to disk, in order to improve 
+ * &nbsp;&nbsp;&nbsp;The number of instances to buffer before writing to disk, in order to improve
  * &nbsp;&nbsp;&nbsp;I&#47;O performance.
  * &nbsp;&nbsp;&nbsp;default: 1
  * &nbsp;&nbsp;&nbsp;minimum: 1
  * </pre>
- * 
+ *
  <!-- options-end -->
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class WekaInstanceDumper
   extends AbstractTransformer
-  implements BufferSupporter {
+  implements BufferSupporter, FlushSupporter  {
 
   /** for serialization. */
   private static final long serialVersionUID = 5071747277597147724L;
@@ -184,10 +184,10 @@ public class WekaInstanceDumper
 
   /** the size of the buffer. */
   protected int m_BufferSize;
-  
+
   /** the buffer. */
   protected List<Instance> m_Buffer;
-  
+
   /**
    * Returns a string describing the object.
    *
@@ -240,10 +240,10 @@ public class WekaInstanceDumper
   @Override
   protected void initialize() {
     super.initialize();
-    
+
     m_Buffer = new ArrayList<Instance>();
   }
-  
+
   /**
    * Returns a quick info about the actor, which will be displayed in the GUI.
    *
@@ -270,7 +270,7 @@ public class WekaInstanceDumper
       else
 	result += m_OutputPrefix;
     }
-    
+
     value = QuickInfoHelper.toString(this, "bufferSize", (m_BufferSize > 1 ? m_BufferSize : null), ", buffering: ");
     if (value != null)
       result += value;
@@ -713,7 +713,7 @@ public class WekaInstanceDumper
 
   /**
    * Writes the content of the buffer to disk.
-   * 
+   *
    * @param append	whether to append
    * @return		error message is something went wrong, null otherwise
    */
@@ -730,7 +730,7 @@ public class WekaInstanceDumper
       result = "Parent directory does not exist: " + outputFile.getParentFile();
       return result;
     }
-    
+
     ok = true;
     if (!outputFile.exists() || !append)
       ok = FileUtils.writeToFile(outputFile.getAbsolutePath(), createHeader(m_Buffer.get(0).dataset()), false);
@@ -756,7 +756,7 @@ public class WekaInstanceDumper
 	FileUtils.closeQuietly(writer);
       }
     }
-    
+
     return result;
   }
 
@@ -766,8 +766,7 @@ public class WekaInstanceDumper
    * @return		null if everything is fine, otherwise error message
    */
   protected String updateVariables() {
-    if (m_Buffer.size() > 0)
-      writeToDisk(true);
+    performFlush();
     return super.updateVariables();
   }
 
@@ -842,11 +841,18 @@ public class WekaInstanceDumper
   @Override
   public void wrapUp() {
     // write any left over data to disk
-    if (m_Buffer.size() > 0)
-      writeToDisk(true);
-    
+    performFlush();
+
     super.wrapUp();
 
     m_Header = null;
+  }
+
+  /**
+   * Performs the flush.
+   */
+  public void performFlush() {
+    if (m_Buffer.size() > 0)
+      writeToDisk(true);
   }
 }
