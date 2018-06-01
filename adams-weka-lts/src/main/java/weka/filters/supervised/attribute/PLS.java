@@ -15,7 +15,7 @@
 
 /*
  * PLS.java
- * Copyright (C) 2016 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2016-2018 University of Waikato, Hamilton, New Zealand
  *
  */
 
@@ -220,6 +220,7 @@ public class PLS
    */
   @Override
   protected Instances determineOutputFormat(Instances inputFormat) throws Exception {
+    m_Algorithm.reset();
     return m_Algorithm.determineOutputFormat(inputFormat);
   }
 
