@@ -15,7 +15,7 @@
 
 /*
  * WekaAttributeSelection.java
- * Copyright (C) 2012-2016 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2012-2018 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.flow.transformer;
@@ -117,7 +117,6 @@ import java.util.Random;
  <!-- options-end -->
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class WekaAttributeSelection
   extends AbstractTransformer 
@@ -453,7 +452,7 @@ public class WekaAttributeSelection
 	  if (m_Search instanceof RankedOutputSearch) {
 	    ranked = eval.rankedAttributes();
 	    for (i = 0; i < ranked.length; i++)
-	      row.getCell((int) ranked[i][0]).setContent(ranked[i][0]);
+	      row.getCell((int) ranked[i][0]).setContent(ranked[i][1]);
 	  }
 	  else {
 	    selected = eval.selectedAttributes();
