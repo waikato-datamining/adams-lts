@@ -15,7 +15,7 @@
 
 /*
  * WekaAttributeSelectionContainer.java
- * Copyright (C) 2012 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2012-2018 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.flow.container;
@@ -36,7 +36,6 @@ import java.util.List;
  * In case of performing cross-validation: seed and fold count get stored as well.
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class WekaAttributeSelectionContainer
   extends AbstractContainer {
@@ -121,15 +120,11 @@ public class WekaAttributeSelectionContainer
     super();
 
     store(VALUE_TRAIN, train);
-    if (reduced != null)
-      store(VALUE_REDUCED, reduced);
-    if (transformed != null)
-      store(VALUE_TRANSFORMED, transformed);
+    store(VALUE_REDUCED, reduced);
+    store(VALUE_TRANSFORMED, transformed);
     store(VALUE_EVALUATION, eval);
-    if (statistics != null)
-      store(VALUE_STATISTICS, statistics);
-    if (range != null)
-      store(VALUE_SELECTEDATTRIBUTES, range);
+    store(VALUE_STATISTICS, statistics);
+    store(VALUE_SELECTEDATTRIBUTES, range);
     store(VALUE_SEED, seed);
     store(VALUE_FOLD_COUNT, foldCount);
   }
