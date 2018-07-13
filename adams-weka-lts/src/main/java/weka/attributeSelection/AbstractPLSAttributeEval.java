@@ -86,6 +86,9 @@ public abstract class AbstractPLSAttributeEval extends ASEvaluation
     newVector.addElement(new Option("\tSet the number of components (default: 20)",
       "N", 1, "-N <int>"));
 
+    newVector.addElement(new Option("\tUsing first component or combine a range of components (default: first component)",
+      "combine", 0, "-combine"));
+
     newVector.addElement(new Option("\tSet the range of components used (default: " + Range.ALL + ")",
       "range", 1, "-range <String>"));
 
@@ -118,12 +121,14 @@ public abstract class AbstractPLSAttributeEval extends ASEvaluation
       setNumComponents(20);
     }
 
+    if (Utils.getFlag("combine", options))
+      setLoadingsCalculations(LoadingsCalculations.COMBINE_COMPONENTS);
+    else
+      setLoadingsCalculations(LoadingsCalculations.USE_FIRST_COMPONENT);
+
     String componentRangeString = Utils.getOption("range", options);
     if (componentRangeString.length() != 0) {
       setComponentRange(new Range(componentRangeString));
-      setLoadingsCalculations(LoadingsCalculations.COMBINE_COMPONENTS);
-    } else {
-      setLoadingsCalculations(LoadingsCalculations.USE_FIRST_COMPONENT);
     }
   }
 
@@ -146,9 +151,10 @@ public abstract class AbstractPLSAttributeEval extends ASEvaluation
     result.add("-N");
     result.add("" + getNumComponents());
 
-    result.add("-range");
-    if (getLoadingsCalculations() == LoadingsCalculations.COMBINE_COMPONENTS)
+    if (getLoadingsCalculations() == LoadingsCalculations.COMBINE_COMPONENTS) {
+      result.add("-combine -range");
       result.add(getComponentRange().getRange());
+    }
 
     return result.toArray(new String[result.size()]);
   }
