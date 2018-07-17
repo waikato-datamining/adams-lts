@@ -82,7 +82,7 @@ public abstract class AbstractPLS
 
     m_OptionManager.add(
       "preprocessing-type", "preprocessingType",
-      PreprocessingType.CENTER);
+      getDefaultPreprocessingType());
 
     m_OptionManager.add(
       "replace-missing", "replaceMissing",
@@ -95,6 +95,15 @@ public abstract class AbstractPLS
     m_OptionManager.add(
       "prediction-type", "predictionType",
       PredictionType.NONE);
+  }
+
+  /**
+   * Returns the default preprocessing type.
+   *
+   * @return		the default
+   */
+  protected PreprocessingType getDefaultPreprocessingType() {
+    return PreprocessingType.CENTER;
   }
 
   /**
