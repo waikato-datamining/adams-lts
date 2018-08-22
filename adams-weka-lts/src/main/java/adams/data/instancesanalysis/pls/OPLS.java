@@ -24,9 +24,9 @@ import adams.core.TechnicalInformation;
 import adams.core.TechnicalInformation.Field;
 import adams.core.TechnicalInformation.Type;
 import adams.core.option.OptionUtils;
-import com.github.waikatodatamining.matrix.algorithm.AbstractPLS;
-import com.github.waikatodatamining.matrix.algorithm.PLS1;
-import com.github.waikatodatamining.matrix.algorithm.PreprocessingType;
+import com.github.waikatodatamining.matrix.algorithm.pls.AbstractPLS;
+import com.github.waikatodatamining.matrix.algorithm.pls.PLS1;
+import com.github.waikatodatamining.matrix.core.PreprocessingType;
 import weka.core.Instances;
 import weka.core.matrix.Matrix;
 
@@ -53,7 +53,7 @@ public class OPLS
   protected AbstractPLS m_Base;
 
   /** the actual algorithm. */
-  protected com.github.waikatodatamining.matrix.algorithm.OPLS m_OPLS;
+  protected com.github.waikatodatamining.matrix.algorithm.pls.OPLS m_OPLS;
 
   /**
    * Returns a string describing the object.
@@ -203,7 +203,7 @@ public class OPLS
     X = MatrixHelper.wekaToMatrixAlgo(MatrixHelper.getX(data));
     y = MatrixHelper.wekaToMatrixAlgo(MatrixHelper.getY(data));
     if (!isInitialized()) {
-      m_OPLS = new com.github.waikatodatamining.matrix.algorithm.OPLS();
+      m_OPLS = new com.github.waikatodatamining.matrix.algorithm.pls.OPLS();
       m_OPLS.setNumComponents(m_NumComponents);
       m_OPLS.setPreprocessingType(PreprocessingType.NONE);
       m_OPLS.setBasePLS((AbstractPLS) OptionUtils.shallowCopy(m_Base));
