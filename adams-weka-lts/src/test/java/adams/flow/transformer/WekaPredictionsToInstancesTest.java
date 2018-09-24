@@ -104,6 +104,7 @@ public class WekaPredictionsToInstancesTest
     cv.setClassifier(new CallableActorReference("cls"));
 
     WekaPredictionsToInstances p2i = new WekaPredictionsToInstances();
+    p2i.setUseOriginalIndices(true);
 
     WekaFileWriter fw = new WekaFileWriter();
     fw.setOutputFile(new TmpFile("dumpfile.arff"));
