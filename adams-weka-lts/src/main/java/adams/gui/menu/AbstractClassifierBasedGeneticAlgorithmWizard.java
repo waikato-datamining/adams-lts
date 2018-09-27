@@ -160,7 +160,7 @@ public abstract class AbstractClassifierBasedGeneticAlgorithmWizard
     FancyTickGenerator tick;
 
     result = new AxisPanelOptions();
-    result.setType(Type.ABSOLUTE);
+    result.setType(Type.DEFAULT);
     result.setLabel("iteration");
     result.setShowGridLines(true);
     result.setLengthTicks(4);
@@ -186,7 +186,7 @@ public abstract class AbstractClassifierBasedGeneticAlgorithmWizard
     FancyTickGenerator	tick;
 
     result = new AxisPanelOptions();
-    result.setType(Type.ABSOLUTE);
+    result.setType(Type.DEFAULT);
     result.setLabel("measure");
     result.setShowGridLines(true);
     result.setLengthTicks(4);
