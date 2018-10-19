@@ -48,7 +48,7 @@ import weka.classifiers.RandomSplitGenerator;
 import weka.classifiers.SplitGenerator;
 import weka.gui.experiment.ExperimenterDefaults;
 
-import javax.swing.JComboBox;
+import adams.gui.core.BaseComboBox;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -80,7 +80,7 @@ public class BasicAdamsSetupPanel
   protected NumberTextField m_TextRepetitions;
 
   /** the type of evaluation. */
-  protected JComboBox<String> m_ComboBoxEvaluation;
+  protected BaseComboBox<String> m_ComboBoxEvaluation;
   
   /** the evaluation parameter. */
   protected NumberTextField m_TextEvaluation;
@@ -135,7 +135,7 @@ public class BasicAdamsSetupPanel
     m_TextRepetitions.getDocument().addDocumentListener(new ModificationDocumentListener());
     m_PanelParameters.addParameter("Repetitions", m_TextRepetitions);
     
-    m_ComboBoxEvaluation = new JComboBox<>(new String[]{
+    m_ComboBoxEvaluation = new BaseComboBox<>(new String[]{
 	"Cross-validation",
 	"Train/test split (randomized)",
 	"Train/test split (order preserved)",

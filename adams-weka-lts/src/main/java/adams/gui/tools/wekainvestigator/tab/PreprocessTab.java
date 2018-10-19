@@ -54,7 +54,7 @@ import weka.filters.Filter;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import adams.gui.core.BaseTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
@@ -133,7 +133,7 @@ public class PreprocessTab
   protected AttributeVisualizationPanel m_PanelAttVisualization;
 
   /** the currently selected attributes. */
-  protected JTextField m_TextSelectedAttributes;
+  protected BaseTextField m_TextSelectedAttributes;
 
   /** the button for copying the selected attributes range. */
   protected JideButton m_ButtonSelectedAttributes;
@@ -260,7 +260,7 @@ public class PreprocessTab
 
     panelAtts = new JPanel(new BorderLayout());
     panel.add(panelAtts, BorderLayout.SOUTH);
-    m_TextSelectedAttributes = new JTextField(15);
+    m_TextSelectedAttributes = new BaseTextField(15);
     m_TextSelectedAttributes.setEditable(false);
     m_ButtonSelectedAttributes = new JideButton(GUIHelper.getIcon("copy.gif"));
     m_ButtonSelectedAttributes.setButtonStyle(JideSplitButton.TOOLBOX_STYLE);

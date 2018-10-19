@@ -60,7 +60,7 @@ import weka.core.converters.AbstractFileSaver;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
+import adams.gui.core.BaseComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -563,7 +563,7 @@ public class AttributeSelectionTab
   protected JPanel m_PanelEvaluation;
 
   /** the combobox with the available evaluations. */
-  protected JComboBox<AbstractAttributeSelectionEvaluation> m_ComboBoxEvaluations;
+  protected BaseComboBox<AbstractAttributeSelectionEvaluation> m_ComboBoxEvaluations;
 
   /** the model with the available evaluations. */
   protected DefaultComboBoxModel<AbstractAttributeSelectionEvaluation> m_ModelEvaluations;
@@ -728,7 +728,7 @@ public class AttributeSelectionTab
 	ConsolePanel.getSingleton().append(Level.SEVERE, "Failed to instantiate clusterer evaluation: " + c.getName(), e);
       }
     }
-    m_ComboBoxEvaluations = new JComboBox<>(m_ModelEvaluations);
+    m_ComboBoxEvaluations = new BaseComboBox<>(m_ModelEvaluations);
     m_ComboBoxEvaluations.addActionListener((ActionEvent e) -> {
       if (m_ComboBoxEvaluations.getSelectedIndex() == -1)
 	return;

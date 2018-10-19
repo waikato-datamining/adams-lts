@@ -30,7 +30,7 @@ import weka.experiment.ResultListener;
 
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import adams.gui.core.BaseTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.BorderLayout;
@@ -51,13 +51,13 @@ public class JdbcOutputPanel
   private static final long serialVersionUID = 3142999120128854278L;
 
   /** the JDBC URL. */
-  protected JTextField m_TextURL;
+  protected BaseTextField m_TextURL;
   
   /** the button for bringing up the dialog for the user credentials. */
   protected BaseButton m_ButtonCredentials;
   
   /** the user name. */
-  protected JTextField m_TextUser;
+  protected BaseTextField m_TextUser;
   
   /** the password. */
   protected JPasswordField m_TextPassword;
@@ -86,7 +86,7 @@ public class JdbcOutputPanel
       dbutils = null;
     }
     
-    m_TextURL = new JTextField(40);
+    m_TextURL = new BaseTextField(40);
     m_TextURL.setText((dbutils == null) ? "" : dbutils.getDatabaseURL());
     m_ButtonCredentials = new BaseButton("...");
     m_ButtonCredentials.addActionListener(new ActionListener() {
@@ -101,7 +101,7 @@ public class JdbcOutputPanel
     panel2.add(m_ButtonCredentials, BorderLayout.EAST);
     panel.addParameter("URL", panel2);
     
-    m_TextUser = new JTextField(20);
+    m_TextUser = new BaseTextField(20);
     m_TextUser.setText((dbutils == null) ? "" : dbutils.getUsername());
     m_TextPassword = new JPasswordField(20);
     m_TextPassword.setText((dbutils == null) ? "" : dbutils.getPassword());

@@ -47,9 +47,9 @@ import adams.gui.visualization.stats.scatterplot.action.ViewDataClickAction;
 import weka.core.Instances;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
+import adams.gui.core.BaseComboBox;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import adams.gui.core.BaseTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.BorderLayout;
@@ -100,10 +100,10 @@ public class PrincipalComponentsTab
   protected DefaultComboBoxModel<String> m_ModelDatasets;
 
   /** the datasets. */
-  protected JComboBox<String> m_ComboBoxDatasets;
+  protected BaseComboBox<String> m_ComboBoxDatasets;
 
   /** the attribute range. */
-  protected JTextField m_TextAttributeRange;
+  protected BaseTextField m_TextAttributeRange;
 
   /** the variance. */
   protected NumberTextField m_TextVariance;
@@ -171,10 +171,10 @@ public class PrincipalComponentsTab
     m_PanelParameters = new ParameterPanel();
     panelOptions.add(m_PanelParameters, BorderLayout.CENTER);
 
-    m_ComboBoxDatasets = new JComboBox<>(m_ModelDatasets);
+    m_ComboBoxDatasets = new BaseComboBox<>(m_ModelDatasets);
     m_PanelParameters.addParameter("Dataset", m_ComboBoxDatasets);
 
-    m_TextAttributeRange = new JTextField(20);
+    m_TextAttributeRange = new BaseTextField(20);
     m_TextAttributeRange.setText(Range.ALL);
     m_TextAttributeRange.getDocument().addDocumentListener(new DocumentListener() {
       @Override

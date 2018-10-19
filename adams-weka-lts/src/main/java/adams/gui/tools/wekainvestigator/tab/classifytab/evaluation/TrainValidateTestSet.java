@@ -38,7 +38,7 @@ import weka.core.Capabilities.Capability;
 import weka.core.Instances;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
+import adams.gui.core.BaseComboBox;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -69,13 +69,13 @@ public class TrainValidateTestSet
   protected ParameterPanel m_PanelParameters;
 
   /** the train set. */
-  protected JComboBox<String> m_ComboBoxTrain;
+  protected BaseComboBox<String> m_ComboBoxTrain;
 
   /** the validate set. */
-  protected JComboBox<String> m_ComboBoxValidate;
+  protected BaseComboBox<String> m_ComboBoxValidate;
 
   /** the test set. */
-  protected JComboBox<String> m_ComboBoxTest;
+  protected BaseComboBox<String> m_ComboBoxTest;
 
   /** the datasets model. */
   protected DefaultComboBoxModel<String> m_ModelDatasets;
@@ -114,17 +114,17 @@ public class TrainValidateTestSet
     m_ModelDatasets = new DefaultComboBoxModel<>();
 
     // Train
-    m_ComboBoxTrain = new JComboBox<>(m_ModelDatasets);
+    m_ComboBoxTrain = new BaseComboBox<>(m_ModelDatasets);
     m_ComboBoxTrain.addActionListener((ActionEvent e) -> update());
     m_PanelParameters.addParameter("Train", m_ComboBoxTrain);
 
     // Validate
-    m_ComboBoxValidate = new JComboBox<>(m_ModelDatasets);
+    m_ComboBoxValidate = new BaseComboBox<>(m_ModelDatasets);
     m_ComboBoxValidate.addActionListener((ActionEvent e) -> update());
     m_PanelParameters.addParameter("Validate", m_ComboBoxValidate);
 
     // Test
-    m_ComboBoxTest = new JComboBox<>(m_ModelDatasets);
+    m_ComboBoxTest = new BaseComboBox<>(m_ModelDatasets);
     m_ComboBoxTest.addActionListener((ActionEvent e) -> update());
     m_PanelParameters.addParameter("Test", m_ComboBoxTest);
 

@@ -26,7 +26,7 @@ import adams.gui.tools.wekainvestigator.data.DataContainer;
 import nz.ac.waikato.cms.locator.StringCompare;
 
 import javax.swing.DefaultCellEditor;
-import javax.swing.JComboBox;
+import adams.gui.core.BaseComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.table.TableCellEditor;
@@ -114,7 +114,7 @@ public class DataTable
     DataContainer 	cont;
     List<String>	atts;
     int			i;
-    JComboBox<String>	combobox;
+    BaseComboBox<String>	combobox;
     TableModel		model;
     DataTableModel	dmodel;
 
@@ -132,7 +132,7 @@ public class DataTable
       if (m_SortAttributes)
 	Collections.sort(atts, new StringCompare());
       atts.add(0, "");  // no class
-      combobox = new JComboBox<>(atts.toArray(new String[atts.size()]));
+      combobox = new BaseComboBox<>(atts.toArray(new String[atts.size()]));
       result   = new DefaultCellEditor(combobox);
     }
 

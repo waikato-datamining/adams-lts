@@ -60,7 +60,7 @@ import weka.classifiers.rules.ZeroR;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
+import adams.gui.core.BaseComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -542,7 +542,7 @@ public class ClassifyTab
   protected JPanel m_PanelEvaluation;
 
   /** the combobox with the available evaluations. */
-  protected JComboBox<AbstractClassifierEvaluation> m_ComboBoxEvaluations;
+  protected BaseComboBox<AbstractClassifierEvaluation> m_ComboBoxEvaluations;
 
   /** the model with the available evaluations. */
   protected DefaultComboBoxModel<AbstractClassifierEvaluation> m_ModelEvaluations;
@@ -689,7 +689,7 @@ public class ClassifyTab
         ConsolePanel.getSingleton().append(Level.SEVERE, "Failed to instantiate classifier evaluation: " + c.getName(), e);
       }
     }
-    m_ComboBoxEvaluations = new JComboBox<>(m_ModelEvaluations);
+    m_ComboBoxEvaluations = new BaseComboBox<>(m_ModelEvaluations);
     m_ComboBoxEvaluations.addActionListener((ActionEvent e) -> {
       if (m_ComboBoxEvaluations.getSelectedIndex() == -1)
         return;

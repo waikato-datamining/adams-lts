@@ -57,13 +57,13 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
+import adams.gui.core.BaseComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import adams.gui.core.BaseTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -390,13 +390,13 @@ public class InstanceComparePanel
     protected BaseButton m_ButtonDisplay;
 
     /** the edit field for the range. */
-    protected JTextField m_TextAttributeRange;
+    protected BaseTextField m_TextAttributeRange;
 
     /** the label for the range. */
     protected JLabel m_LabelAttributeRange;
 
     /** the combobox with the attribute names. */
-    protected JComboBox m_ComboBoxRowAttribute;
+    protected BaseComboBox m_ComboBoxRowAttribute;
 
     /** the underlying model for the comboxbox. */
     protected DefaultComboBoxModel m_ComboBoxRowAttributeModel;
@@ -464,7 +464,7 @@ public class InstanceComparePanel
       add(panel);
 
       // Range
-      m_TextAttributeRange = new JTextField(10);
+      m_TextAttributeRange = new BaseTextField(10);
       m_TextAttributeRange.setToolTipText(GUIHelper.processTipText(new Range().getExample(), 40));
       m_TextAttributeRange.getDocument().addDocumentListener(new DocumentListener() {
         public void removeUpdate(DocumentEvent e) {
@@ -489,7 +489,7 @@ public class InstanceComparePanel
       // Index attribute
       m_ComboBoxRowAttributeModel = new DefaultComboBoxModel();
       m_ComboBoxRowAttributeModel.addElement("-none-");
-      m_ComboBoxRowAttribute = new JComboBox(m_ComboBoxRowAttributeModel);
+      m_ComboBoxRowAttribute = new BaseComboBox(m_ComboBoxRowAttributeModel);
       m_ComboBoxRowAttribute.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           int index = m_ComboBoxRowAttribute.getSelectedIndex();

@@ -38,11 +38,11 @@ import weka.core.Instances;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
-import javax.swing.JComboBox;
+import adams.gui.core.BaseComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import adams.gui.core.BaseTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.BorderLayout;
@@ -97,19 +97,19 @@ public class LoadDatasetDialog
   protected SearchPanel m_SearchPanel;
 
   /** the class index. */
-  protected JComboBox m_ComboBoxClass;
+  protected BaseComboBox m_ComboBoxClass;
 
   /** the class index model. */
   protected DefaultComboBoxModel m_ComboBoxClassModel;
 
   /** the sorting index. */
-  protected JComboBox m_ComboBoxSorting;
+  protected BaseComboBox m_ComboBoxSorting;
 
   /** the soriting index model. */
   protected DefaultComboBoxModel m_ComboBoxSortingModel;
 
   /** the ID index. */
-  protected JComboBox m_ComboBoxID;
+  protected BaseComboBox m_ComboBoxID;
 
   /** the ID index model. */
   protected DefaultComboBoxModel m_ComboBoxIDModel;
@@ -121,7 +121,7 @@ public class LoadDatasetDialog
   protected DefaultListModel m_ListAdditionalAttributesModel;
 
   /** the text field for the attribute range. */
-  protected JTextField m_TextAttributeRange;
+  protected BaseTextField m_TextAttributeRange;
 
   /** the default range. */
   protected Range m_DefaultAttributeRange;
@@ -319,7 +319,7 @@ public class LoadDatasetDialog
     panelAttributes.add(panel, BorderLayout.NORTH);
 
     // ID
-    m_ComboBoxID = new JComboBox(m_ComboBoxIDModel);
+    m_ComboBoxID = new BaseComboBox(m_ComboBoxIDModel);
     m_ComboBoxID.setSelectedIndex(0);
     m_ComboBoxID.setToolTipText("The selected attribute gets used as ID for the instances, rather than the row index");
     label = new JLabel("ID");
@@ -329,7 +329,7 @@ public class LoadDatasetDialog
     panel.add(m_ComboBoxID);
 
     // class
-    m_ComboBoxClass = new JComboBox(m_ComboBoxClassModel);
+    m_ComboBoxClass = new BaseComboBox(m_ComboBoxClassModel);
     m_ComboBoxClass.setSelectedIndex(0);
     m_ComboBoxClass.setToolTipText("The selected attribute gets omitted from display and added to the report instead");
     label = new JLabel("Class");
@@ -339,7 +339,7 @@ public class LoadDatasetDialog
     panel.add(m_ComboBoxClass);
 
     // attribute range
-    m_TextAttributeRange = new JTextField(10);
+    m_TextAttributeRange = new BaseTextField(10);
     m_TextAttributeRange.setText(Range.ALL);
     m_TextAttributeRange.setToolTipText("For limiting the attributes being displayed");
     label = new JLabel("Attribute range");
@@ -364,7 +364,7 @@ public class LoadDatasetDialog
     panel.add(m_CheckBoxIncludeRelationalAttributes);
 
     // sorting
-    m_ComboBoxSorting = new JComboBox(m_ComboBoxSortingModel);
+    m_ComboBoxSorting = new BaseComboBox(m_ComboBoxSortingModel);
     m_ComboBoxSorting.setSelectedIndex(0);
     m_ComboBoxSorting.setToolTipText("The attribute to sort the data on (ascending)");
     label = new JLabel("Sorting");

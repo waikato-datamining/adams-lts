@@ -40,7 +40,7 @@ import weka.core.Capabilities;
 import weka.core.Instances;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
+import adams.gui.core.BaseComboBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -75,7 +75,7 @@ public class CrossValidation
   protected ParameterPanel m_PanelParameters;
 
   /** the datasets. */
-  protected JComboBox<String> m_ComboBoxDatasets;
+  protected BaseComboBox<String> m_ComboBoxDatasets;
 
   /** the datasets model. */
   protected DefaultComboBoxModel<String> m_ModelDatasets;
@@ -114,7 +114,7 @@ public class CrossValidation
 
     // dataset
     m_ModelDatasets    = new DefaultComboBoxModel<>();
-    m_ComboBoxDatasets = new JComboBox<>(m_ModelDatasets);
+    m_ComboBoxDatasets = new BaseComboBox<>(m_ModelDatasets);
     m_ComboBoxDatasets.addActionListener((ActionEvent e) -> update());
     m_PanelParameters.addParameter("Dataset", m_ComboBoxDatasets);
 
