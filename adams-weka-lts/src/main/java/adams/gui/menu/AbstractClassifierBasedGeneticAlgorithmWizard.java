@@ -34,12 +34,11 @@ import adams.event.GeneticFitnessChangeListener;
 import adams.flow.sink.sequenceplotter.SequencePlotPoint;
 import adams.flow.sink.sequenceplotter.SequencePlotSequence;
 import adams.flow.sink.sequenceplotter.SequencePlotterPanel;
-import adams.opt.genetic.AbstractClassifierBasedGeneticAlgorithm;
-import adams.opt.genetic.OutputPrefixType;
 import adams.gui.application.AbstractApplicationFrame;
 import adams.gui.application.AbstractBasicMenuItemDefinition;
 import adams.gui.application.ChildFrame;
 import adams.gui.application.UserMode;
+import adams.gui.core.BaseButton;
 import adams.gui.core.GUIHelper;
 import adams.gui.visualization.core.AxisPanelOptions;
 import adams.gui.visualization.core.axis.FancyTickGenerator;
@@ -56,10 +55,11 @@ import adams.gui.wizard.PropertySheetPanelPage;
 import adams.gui.wizard.StartPage;
 import adams.gui.wizard.WekaSelectMultipleDatasetsPage;
 import adams.gui.wizard.WizardPane;
+import adams.opt.genetic.AbstractClassifierBasedGeneticAlgorithm;
+import adams.opt.genetic.OutputPrefixType;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import java.awt.BorderLayout;
@@ -411,9 +411,9 @@ public abstract class AbstractClassifierBasedGeneticAlgorithmWizard
     JPanel			panelAll;
     JPanel			panelButtons;
     final PerformancePlot	plot;
-    final JButton		buttonPause;
-    final JButton		buttonResume;
-    final JButton		buttonStop;
+    final BaseButton		buttonPause;
+    final BaseButton		buttonResume;
+    final BaseButton		buttonStop;
     SwingWorker			worker;
 
     frame.dispose();
@@ -423,9 +423,9 @@ public abstract class AbstractClassifierBasedGeneticAlgorithmWizard
     plot = new PerformancePlot(getTitle(), genetic);
     panelAll.add(plot, BorderLayout.CENTER);
 
-    buttonPause  = new JButton(GUIHelper.getIcon("pause.gif"));
-    buttonResume = new JButton(GUIHelper.getIcon("resume.gif"));
-    buttonStop   = new JButton(GUIHelper.getIcon("stop_blue.gif"));
+    buttonPause  = new BaseButton(GUIHelper.getIcon("pause.gif"));
+    buttonResume = new BaseButton(GUIHelper.getIcon("resume.gif"));
+    buttonStop   = new BaseButton(GUIHelper.getIcon("stop_blue.gif"));
     buttonPause.setEnabled(true);
     buttonResume.setEnabled(false);
     buttonStop.setEnabled(true);

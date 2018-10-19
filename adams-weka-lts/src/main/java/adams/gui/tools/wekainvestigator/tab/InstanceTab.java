@@ -24,6 +24,8 @@ import adams.core.MessageCollection;
 import adams.core.Properties;
 import adams.core.Range;
 import adams.data.instance.Instance;
+import adams.gui.core.BaseButton;
+import adams.gui.core.BaseCheckBox;
 import adams.gui.core.BaseSplitPane;
 import adams.gui.core.ParameterPanel;
 import adams.gui.core.SearchPanel;
@@ -47,8 +49,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -118,10 +118,10 @@ public class InstanceTab
   protected JTextField m_TextAttributeRange;
 
   /** whether to use anti-aliasing. */
-  protected JCheckBox m_CheckBoxAntiAliasing;
+  protected BaseCheckBox m_CheckBoxAntiAliasing;
 
   /** whether to use markers. */
-  protected JCheckBox m_CheckBoxMarkers;
+  protected BaseCheckBox m_CheckBoxMarkers;
 
   /** the model with the IDs. */
   protected DefaultListModel<Comparable> m_ModelIDs;
@@ -133,7 +133,7 @@ public class InstanceTab
   protected SearchPanel m_PanelSearchID;
 
   /** the button for visualizing. */
-  protected JButton m_ButtonVisualize;
+  protected BaseButton m_ButtonVisualize;
 
   /** the plot. */
   protected InstancePanel m_PanelInstance;
@@ -206,11 +206,11 @@ public class InstanceTab
     });
     m_PanelParameters.addParameter("Range", m_TextAttributeRange);
 
-    m_CheckBoxAntiAliasing = new JCheckBox();
+    m_CheckBoxAntiAliasing = new BaseCheckBox();
     m_CheckBoxAntiAliasing.setSelected(props.getBoolean("Instance.AntiAliasing", true));
     m_PanelParameters.addParameter("Use anti-aliasing", m_CheckBoxAntiAliasing);
 
-    m_CheckBoxMarkers = new JCheckBox();
+    m_CheckBoxMarkers = new BaseCheckBox();
     m_CheckBoxMarkers.setSelected(props.getBoolean("Instance.Markers", true));
     m_PanelParameters.addParameter("Use makers", m_CheckBoxMarkers);
 
@@ -233,7 +233,7 @@ public class InstanceTab
     panelButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
     m_PanelLeft.add(panelButtons, BorderLayout.SOUTH);
 
-    m_ButtonVisualize = new JButton("Visualize");
+    m_ButtonVisualize = new BaseButton("Visualize");
     m_ButtonVisualize.setMnemonic('V');
     m_ButtonVisualize.addActionListener((ActionEvent e) -> visualize());
     panelButtons.add(m_ButtonVisualize);

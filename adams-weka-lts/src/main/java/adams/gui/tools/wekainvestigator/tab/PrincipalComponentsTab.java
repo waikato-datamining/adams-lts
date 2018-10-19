@@ -27,6 +27,8 @@ import adams.core.Range;
 import adams.core.base.BaseRegExp;
 import adams.data.instancesanalysis.PCA;
 import adams.data.weka.WekaAttributeRange;
+import adams.gui.core.BaseButton;
+import adams.gui.core.BaseCheckBox;
 import adams.gui.core.BaseSplitPane;
 import adams.gui.core.BaseTabbedPane;
 import adams.gui.core.NumberTextField;
@@ -45,8 +47,6 @@ import adams.gui.visualization.stats.scatterplot.action.ViewDataClickAction;
 import weka.core.Instances;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -115,13 +115,13 @@ public class PrincipalComponentsTab
   protected NumberTextField m_TextMaxAttributeNames;
 
   /** whether to skip nominal attributes. */
-  protected JCheckBox m_CheckBoxSkipNominal;
+  protected BaseCheckBox m_CheckBoxSkipNominal;
 
   /** the button to start PCA. */
-  protected JButton m_ButtonStart;
+  protected BaseButton m_ButtonStart;
 
   /** the button to stop PCA. */
-  protected JButton m_ButtonStop;
+  protected BaseButton m_ButtonStop;
 
   /** the tabbed pane for the plots. */
   protected BaseTabbedPane m_TabbedPanePlots;
@@ -204,7 +204,7 @@ public class PrincipalComponentsTab
     m_TextMaxAttributeNames.setValue(props.getInteger("PrincipalComponents.MaxAttributeNames", 5));
     m_PanelParameters.addParameter("Max attribute names", m_TextMaxAttributeNames);
 
-    m_CheckBoxSkipNominal = new JCheckBox();
+    m_CheckBoxSkipNominal = new BaseCheckBox();
     m_CheckBoxSkipNominal.setSelected(props.getBoolean("PrincipalComponents.SkipNominal", false));
     m_PanelParameters.addParameter("Skip nominal attributes", m_CheckBoxSkipNominal);
 
@@ -212,11 +212,11 @@ public class PrincipalComponentsTab
     panelButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
     panelOptions.add(panelButtons, BorderLayout.SOUTH);
 
-    m_ButtonStart = new JButton("Start");
+    m_ButtonStart = new BaseButton("Start");
     m_ButtonStart.addActionListener((ActionEvent e) -> startExecution());
     panelButtons.add(m_ButtonStart);
 
-    m_ButtonStop = new JButton("Stop");
+    m_ButtonStop = new BaseButton("Stop");
     m_ButtonStop.addActionListener((ActionEvent e) -> stopExecution());
     panelButtons.add(m_ButtonStop);
 

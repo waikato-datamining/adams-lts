@@ -28,6 +28,8 @@ import adams.core.io.PlaceholderFile;
 import adams.core.logging.LoggingLevel;
 import adams.core.option.OptionUtils;
 import adams.gui.chooser.FileChooserPanel;
+import adams.gui.core.BaseButton;
+import adams.gui.core.BaseCheckBox;
 import adams.gui.core.ConsolePanel;
 import adams.gui.core.GUIHelper;
 import adams.gui.event.WekaInvestigatorDataEvent;
@@ -51,8 +53,6 @@ import weka.filters.AllFilter;
 import weka.filters.Filter;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -100,25 +100,25 @@ public class PreprocessTab
   protected JPanel m_PanelMain;
 
   /** the checkbox to replace the datasets. */
-  protected JCheckBox m_CheckBoxReplace;
+  protected BaseCheckBox m_CheckBoxReplace;
 
   /** the checkbox for batch-filtering. */
-  protected JCheckBox m_CheckBoxBatchFilter;
+  protected BaseCheckBox m_CheckBoxBatchFilter;
 
   /** the whether to keep the relation name. */
-  protected JCheckBox m_CheckBoxKeepName;
+  protected BaseCheckBox m_CheckBoxKeepName;
 
   /** the whether to serialize the filter to a file. */
-  protected JCheckBox m_CheckBoxSerialize;
+  protected BaseCheckBox m_CheckBoxSerialize;
 
   /** the file to serialize the trained filter to. */
   protected FileChooserPanel m_FileSerialize;
 
   /** the button for starting the filtering. */
-  protected JButton m_ButtonStart;
+  protected BaseButton m_ButtonStart;
 
   /** the button for stop the filtering. */
-  protected JButton m_ButtonStop;
+  protected BaseButton m_ButtonStop;
 
   /** the instances summary panel. */
   protected InstancesSummaryPanel m_PanelInstSummary;
@@ -215,29 +215,29 @@ public class PreprocessTab
     panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     m_PanelTop.add(panel, BorderLayout.SOUTH);
 
-    m_ButtonStart = new JButton("Start");
+    m_ButtonStart = new BaseButton("Start");
     m_ButtonStart.setEnabled(false);
     m_ButtonStart.addActionListener((ActionEvent e) -> startExecution());
     panel.add(m_ButtonStart);
 
-    m_ButtonStop  = new JButton("Stop");
+    m_ButtonStop  = new BaseButton("Stop");
     m_ButtonStop.setEnabled(false);
     m_ButtonStart.addActionListener((ActionEvent e) -> stopExecution());
     panel.add(m_ButtonStop);
 
-    m_CheckBoxReplace = new JCheckBox("Replace datasets");
+    m_CheckBoxReplace = new BaseCheckBox("Replace datasets");
     m_CheckBoxReplace.setSelected(props.getBoolean("Preprocess.ReplaceDatasets", true));
     panel.add(m_CheckBoxReplace);
 
-    m_CheckBoxKeepName = new JCheckBox("Keep name");
+    m_CheckBoxKeepName = new BaseCheckBox("Keep name");
     m_CheckBoxKeepName.setSelected(props.getBoolean("Preprocess.KeepName", true));
     panel.add(m_CheckBoxKeepName);
 
-    m_CheckBoxBatchFilter = new JCheckBox("Batch filter");
+    m_CheckBoxBatchFilter = new BaseCheckBox("Batch filter");
     m_CheckBoxBatchFilter.setSelected(props.getBoolean("Preprocess.BatchFilter", false));
     panel.add(m_CheckBoxBatchFilter);
 
-    m_CheckBoxSerialize = new JCheckBox("Serialize");
+    m_CheckBoxSerialize = new BaseCheckBox("Serialize");
     m_CheckBoxSerialize.setSelected(props.getBoolean("Preprocess.Serialize", false));
     panel.add(m_CheckBoxSerialize);
 
@@ -561,7 +561,7 @@ public class PreprocessTab
    *
    * @return		the checkbox
    */
-  public JCheckBox getCheckBoxReplace() {
+  public BaseCheckBox getCheckBoxReplace() {
     return m_CheckBoxReplace;
   }
 
@@ -570,7 +570,7 @@ public class PreprocessTab
    *
    * @return		the checkbox
    */
-  public JCheckBox getCheckBoxBatchFilter() {
+  public BaseCheckBox getCheckBoxBatchFilter() {
     return m_CheckBoxBatchFilter;
   }
 
@@ -579,7 +579,7 @@ public class PreprocessTab
    *
    * @return		the checkbox
    */
-  public JCheckBox getCheckBoxKeepName() {
+  public BaseCheckBox getCheckBoxKeepName() {
     return m_CheckBoxKeepName;
   }
 

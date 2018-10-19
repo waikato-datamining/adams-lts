@@ -20,14 +20,14 @@
 package adams.gui.tools.wekamultiexperimenter.setup.weka;
 
 import adams.core.Constants;
+import adams.gui.core.BaseButton;
+import adams.gui.core.BaseCheckBox;
 import adams.gui.core.ParameterPanel;
 import adams.gui.dialog.ApprovalDialog;
 import weka.experiment.DatabaseResultListener;
 import weka.experiment.DatabaseUtils;
 import weka.experiment.ResultListener;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -54,7 +54,7 @@ public class JdbcOutputPanel
   protected JTextField m_TextURL;
   
   /** the button for bringing up the dialog for the user credentials. */
-  protected JButton m_ButtonCredentials;
+  protected BaseButton m_ButtonCredentials;
   
   /** the user name. */
   protected JTextField m_TextUser;
@@ -63,7 +63,7 @@ public class JdbcOutputPanel
   protected JPasswordField m_TextPassword;
   
   /** whether to show the password. */
-  protected JCheckBox m_CheckBoxShowPassword;
+  protected BaseCheckBox m_CheckBoxShowPassword;
   
   /**
    * Initializes the widgets.
@@ -88,7 +88,7 @@ public class JdbcOutputPanel
     
     m_TextURL = new JTextField(40);
     m_TextURL.setText((dbutils == null) ? "" : dbutils.getDatabaseURL());
-    m_ButtonCredentials = new JButton("...");
+    m_ButtonCredentials = new BaseButton("...");
     m_ButtonCredentials.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -106,7 +106,7 @@ public class JdbcOutputPanel
     m_TextPassword = new JPasswordField(20);
     m_TextPassword.setText((dbutils == null) ? "" : dbutils.getPassword());
     m_TextPassword.setEchoChar(Constants.PASSWORD_CHAR);
-    m_CheckBoxShowPassword = new JCheckBox();
+    m_CheckBoxShowPassword = new BaseCheckBox();
     m_CheckBoxShowPassword.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent e) {
