@@ -36,8 +36,10 @@ import adams.data.spreadsheet.SpreadSheet;
 import adams.data.weka.WekaAttributeRange;
 import adams.flow.sink.sequenceplotter.SequencePlotterPanel;
 import adams.gui.core.BaseButton;
+import adams.gui.core.BaseComboBox;
 import adams.gui.core.BaseSplitPane;
 import adams.gui.core.BaseTabbedPane;
+import adams.gui.core.BaseTextField;
 import adams.gui.core.ParameterPanel;
 import adams.gui.event.WekaInvestigatorDataEvent;
 import adams.gui.goe.GenericObjectEditorPanel;
@@ -58,9 +60,7 @@ import adams.gui.visualization.stats.scatterplot.action.ViewDataClickAction;
 import weka.core.Instances;
 
 import javax.swing.DefaultComboBoxModel;
-import adams.gui.core.BaseComboBox;
 import javax.swing.JPanel;
-import adams.gui.core.BaseTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.BorderLayout;
@@ -88,8 +88,6 @@ public class PartialLeastSquaresTab
   public static final String KEY_RANGE = "range";
 
   public static final String KEY_ALGORITHM = "algorithm";
-
-  public static final String KEY_COMPONENTS = "components";
 
   /** the split pane. */
   protected BaseSplitPane m_SplitPane;
