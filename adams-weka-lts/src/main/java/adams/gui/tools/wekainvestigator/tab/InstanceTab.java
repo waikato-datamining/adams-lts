@@ -26,7 +26,9 @@ import adams.core.Range;
 import adams.data.instance.Instance;
 import adams.gui.core.BaseButton;
 import adams.gui.core.BaseCheckBox;
+import adams.gui.core.BaseComboBox;
 import adams.gui.core.BaseSplitPane;
+import adams.gui.core.BaseTextField;
 import adams.gui.core.ParameterPanel;
 import adams.gui.core.SearchPanel;
 import adams.gui.core.SearchPanel.LayoutType;
@@ -49,10 +51,8 @@ import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
-import adams.gui.core.BaseComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import adams.gui.core.BaseTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.BorderLayout;
@@ -578,19 +578,24 @@ public class InstanceTab
   /**
    * Returns the objects for serialization.
    *
+   * @param options 	what to serialize
    * @return		the mapping of the objects to serialize
    */
-  protected Map<String,Object> doSerialize() {
+  protected Map<String,Object> doSerialize(Set<SerializationOption> options) {
     Map<String,Object>	result;
 
-    result = super.doSerialize();
-    result.put(KEY_LEFTPANELWIDTH, m_SplitPane.getDividerLocation());
-    result.put(KEY_DATASET, m_ComboBoxDatasets.getSelectedIndex());
-    result.put(KEY_ID, m_ComboBoxID.getSelectedIndex());
-    result.put(KEY_RANGE, m_TextAttributeRange.getText());
-    result.put(KEY_ANTIALIASING, m_CheckBoxAntiAliasing.isSelected());
-    result.put(KEY_MARKERS, m_CheckBoxMarkers.isSelected());
-    result.put(KEY_IDS, m_ListIDs.getSelectedIndices());
+    result = super.doSerialize(options);
+    if (options.contains(SerializationOption.GUI)) {
+      result.put(KEY_LEFTPANELWIDTH, m_SplitPane.getDividerLocation());
+      result.put(KEY_DATASET, m_ComboBoxDatasets.getSelectedIndex());
+      result.put(KEY_ID, m_ComboBoxID.getSelectedIndex());
+      result.put(KEY_IDS, m_ListIDs.getSelectedIndices());
+    }
+    if (options.contains(SerializationOption.PARAMETERS)) {
+      result.put(KEY_RANGE, m_TextAttributeRange.getText());
+      result.put(KEY_ANTIALIASING, m_CheckBoxAntiAliasing.isSelected());
+      result.put(KEY_MARKERS, m_CheckBoxMarkers.isSelected());
+    }
 
     return result;
   }

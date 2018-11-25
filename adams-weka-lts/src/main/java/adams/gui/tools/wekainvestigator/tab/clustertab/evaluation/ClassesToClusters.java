@@ -23,9 +23,11 @@ package adams.gui.tools.wekainvestigator.tab.clustertab.evaluation;
 import adams.core.MessageCollection;
 import adams.core.option.OptionUtils;
 import adams.data.spreadsheet.MetaData;
+import adams.gui.core.BaseComboBox;
 import adams.gui.core.ParameterPanel;
 import adams.gui.tools.wekainvestigator.data.DataContainer;
 import adams.gui.tools.wekainvestigator.evaluation.DatasetHelper;
+import adams.gui.tools.wekainvestigator.tab.AbstractInvestigatorTab.SerializationOption;
 import adams.gui.tools.wekainvestigator.tab.clustertab.ResultItem;
 import weka.clusterers.ClusterEvaluation;
 import weka.clusterers.Clusterer;
@@ -36,11 +38,11 @@ import weka.core.Instances;
 import weka.core.Utils;
 
 import javax.swing.DefaultComboBoxModel;
-import adams.gui.core.BaseComboBox;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Tries to map the clusters of the built clusterer to the class labels in
@@ -444,12 +446,13 @@ public class ClassesToClusters
   /**
    * Returns the objects for serialization.
    *
+   * @param options 	what to serialize
    * @return		the mapping of the objects to serialize
    */
-  public Map<String,Object> serialize() {
+  public Map<String,Object> serialize(Set<SerializationOption> options) {
     Map<String,Object>	result;
 
-    result = super.serialize();
+    result = super.serialize(options);
 
     return result;
   }

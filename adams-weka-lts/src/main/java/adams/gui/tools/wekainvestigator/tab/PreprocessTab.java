@@ -30,6 +30,7 @@ import adams.core.option.OptionUtils;
 import adams.gui.chooser.FileChooserPanel;
 import adams.gui.core.BaseButton;
 import adams.gui.core.BaseCheckBox;
+import adams.gui.core.BaseTextField;
 import adams.gui.core.ConsolePanel;
 import adams.gui.core.GUIHelper;
 import adams.gui.event.WekaInvestigatorDataEvent;
@@ -54,7 +55,6 @@ import weka.filters.Filter;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import adams.gui.core.BaseTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
@@ -66,6 +66,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Preprocessing tab.
@@ -586,18 +587,21 @@ public class PreprocessTab
   /**
    * Returns the objects for serialization.
    *
+   * @param options 	what to serialize
    * @return		the mapping of the objects to serialize
    */
-  protected Map<String,Object> doSerialize() {
+  protected Map<String,Object> doSerialize(Set<SerializationOption> options) {
     Map<String,Object>	result;
 
-    result = super.doSerialize();
-    result.put(KEY_FILTER, OptionUtils.getCommandLine(m_PanelGOE.getCurrent()));
-    result.put(KEY_BATCHFILTER, m_CheckBoxBatchFilter.isSelected());
-    result.put(KEY_KEEPNAME, m_CheckBoxKeepName.isSelected());
-    result.put(KEY_REPLACE, m_CheckBoxReplace.isSelected());
-    result.put(KEY_SERIALIZE, m_CheckBoxSerialize.isSelected());
-    result.put(KEY_SERIALIZE_FILE, m_FileSerialize.getCurrent().getAbsolutePath());
+    result = super.doSerialize(options);
+    if (options.contains(SerializationOption.PARAMETERS)) {
+      result.put(KEY_FILTER, OptionUtils.getCommandLine(m_PanelGOE.getCurrent()));
+      result.put(KEY_BATCHFILTER, m_CheckBoxBatchFilter.isSelected());
+      result.put(KEY_KEEPNAME, m_CheckBoxKeepName.isSelected());
+      result.put(KEY_REPLACE, m_CheckBoxReplace.isSelected());
+      result.put(KEY_SERIALIZE, m_CheckBoxSerialize.isSelected());
+      result.put(KEY_SERIALIZE_FILE, m_FileSerialize.getCurrent().getAbsolutePath());
+    }
 
     return result;
   }
