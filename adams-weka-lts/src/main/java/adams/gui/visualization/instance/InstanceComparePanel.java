@@ -13,9 +13,9 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
+/*
  * InstanceComparator.java
- * Copyright (C) 2010-2013 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2010-2018 University of Waikato, Hamilton, New Zealand
  */
 package adams.gui.visualization.instance;
 
@@ -35,12 +35,14 @@ import adams.env.Environment;
 import adams.env.InstanceCompareDefinition;
 import adams.gui.chooser.DatasetFileChooserPanel;
 import adams.gui.core.BaseButton;
+import adams.gui.core.BaseComboBox;
 import adams.gui.core.BaseDialog;
 import adams.gui.core.BaseList;
 import adams.gui.core.BasePanel;
 import adams.gui.core.BaseScrollPane;
 import adams.gui.core.BaseStatusBar;
 import adams.gui.core.BaseTable;
+import adams.gui.core.BaseTextField;
 import adams.gui.core.GUIHelper;
 import adams.gui.core.MenuBarProvider;
 import adams.gui.core.RecentFilesHandler;
@@ -57,13 +59,11 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBoxMenuItem;
-import adams.gui.core.BaseComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import adams.gui.core.BaseTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -1264,8 +1264,8 @@ public class InstanceComparePanel
 
       // extend report
       reportDiff = instDiff.getReport();
-      values1    = inst1.toInstance().toDoubleArray();
-      values2    = inst2.toInstance().toDoubleArray();
+      values1    = inst1.toDoubleArray();
+      values2    = inst2.toDoubleArray();
       // 1. correlation coefficient
       field = new Field("Correlation coefficient", DataType.NUMERIC);
       reportDiff.addField(field);
