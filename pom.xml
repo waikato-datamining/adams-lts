@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>adams-lts-pom</artifactId>
-  <version>18.12.0</version>
+  <version>18.12.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>adams-lts-pom</name>
@@ -25,7 +25,7 @@
     <connection>scm:git:https://github.com/waikato-datamining/adams-lts</connection>
     <developerConnection>scm:git:https://github.com/waikato-datamining/adams-lts</developerConnection>
     <url>https://github.com/waikato-datamining/adams-lts</url>
-    <tag>adams-lts-pom-18.12.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
 
