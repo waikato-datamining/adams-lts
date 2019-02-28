@@ -9,11 +9,11 @@
     <version>19.2.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>adams-cntk-weka-lts</artifactId>
+  <artifactId>adams-python-weka-lts</artifactId>
   <packaging>jar</packaging>
 
-  <name>adams-cntk-weka-lts</name>
-  <description>Module for using CNTK within Weka (long term support).</description>
+  <name>adams-python-weka-lts</name>
+  <description>Module for using Python from within Weka (long term support).</description>
   <url>https://adams.cms.waikato.ac.nz/</url>
   <organization>
     <name>University of Waikato, Hamilton, NZ</name>
@@ -72,41 +72,27 @@
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-weka-lts</artifactId>
-      <version>${project.version}</version>
+      <version>${adams.version}</version>
     </dependency>
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-weka-lts</artifactId>
-      <version>${project.version}</version>
+      <version>${adams.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
     </dependency>
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-python-weka-lts</artifactId>
+      <artifactId>adams-python</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-python-weka-lts</artifactId>
+      <artifactId>adams-python</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
-      <type>test-jar</type>
-    </dependency>
-
-    <dependency>
-      <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-cntk</artifactId>
-      <version>${adams.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-cntk</artifactId>
-      <version>${adams.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
     </dependency>

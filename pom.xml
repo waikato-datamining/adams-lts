@@ -38,5 +38,6 @@
   <modules>
     <module>adams-weka-lts</module>
     <module>adams-cntk-weka-lts</module>
+    <module>adams-python-weka-lts</module>
   </modules>
 </project>
