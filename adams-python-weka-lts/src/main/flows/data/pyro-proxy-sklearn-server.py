@@ -1,10 +1,10 @@
 # Based on:
 # https://pythonhosted.org/Pyro4/intro.html#with-a-name-server
-import json
 import Pyro4
+import json
 import numpy as np
-from sklearn.linear_model import LinearRegression
 import traceback
+from sklearn.linear_model import LinearRegression
 
 models = {}
 
@@ -25,7 +25,7 @@ class ScikitLearnProxy(object):
             print("[train] y", y)
 
             reg = LinearRegression().fit(X, y)
-            models(name, reg)
+            models[name] = reg
             print("[train] models", models)
 
             return "OK"
@@ -45,9 +45,9 @@ class ScikitLearnProxy(object):
             x = np.array([input["x"]])
             print("[predict] x", x)
 
-            pred = models[name].predict(x)
+            pred = models[name].predict(x).tolist()
             print("[predict] pred", pred)
-            result = {"Prediction", pred[0]}
+            result = {"Prediction": pred}
         except:
             error = traceback.format_exc()
             result = {"Error": error}
