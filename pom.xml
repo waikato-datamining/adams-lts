@@ -36,8 +36,9 @@
   </properties>
 
   <modules>
-    <module>adams-weka-lts</module>
     <module>adams-cntk-weka-lts</module>
     <module>adams-python-weka-lts</module>
+    <module>adams-weka-lts</module>
+    <module>adams-weka-nd4j-lts</module>
   </modules>
 </project>
