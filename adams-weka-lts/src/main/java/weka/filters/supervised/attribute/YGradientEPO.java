@@ -237,17 +237,6 @@ public class YGradientEPO
   }
 
   /**
-   * Returns whether to allow the determineOutputFormat(Instances) method access
-   * to the full dataset rather than just the header.
-   *
-   * @return whether determineOutputFormat has access to the full input dataset
-   */
-  @Override
-  public boolean allowAccessToFullInputFormat() {
-    return true;
-  }
-
-  /**
    * Determines the output format based on the input format and returns this. In
    * case the output format cannot be returned immediately, i.e.,
    * immediateOutputFormat() returns false, then this method will be called from
@@ -264,25 +253,13 @@ public class YGradientEPO
     Instances						result;
     ArrayList<Attribute>				atts;
     int							i;
-    String						msg;
-    com.github.waikatodatamining.matrix.core.Matrix 	X;
-    com.github.waikatodatamining.matrix.core.Matrix 	y;
-    com.github.waikatodatamining.matrix.core.Matrix 	X_new;
-
-    X = adams.data.instancesanalysis.pls.MatrixHelper.wekaToMatrixAlgo(MatrixHelper.getX(inputFormat));
-    y = adams.data.instancesanalysis.pls.MatrixHelper.wekaToMatrixAlgo(MatrixHelper.getY(inputFormat));
-
-    m_Algorithm = new com.github.waikatodatamining.matrix.algorithm.glsw.YGradientEPO();
-    m_Algorithm.setN(m_N);
-    m_Algorithm.setAlpha(m_Alpha);
-    msg = m_Algorithm.initialize(X, y);
-    if (msg != null)
-      throw new Exception(msg);
-    X_new = m_Algorithm.transform(X);
 
     atts = new ArrayList<>();
-    for (i = 0; i < X_new.numColumns(); i++)
-      atts.add(new Attribute(getClass().getSimpleName() + "_" + (i+1)));
+    for (i = 0; i < inputFormat.numAttributes(); i++) {
+      if (i == inputFormat.classIndex())
+        continue;
+      atts.add((Attribute) inputFormat.attribute(i).copy());
+    }
     atts.add((Attribute) inputFormat.classAttribute().copy());
     result = new Instances(inputFormat.relationName(), atts, 0);
     result.setClassIndex(result.numAttributes() - 1);
@@ -322,9 +299,20 @@ public class YGradientEPO
     com.github.waikatodatamining.matrix.core.Matrix 	X;
     com.github.waikatodatamining.matrix.core.Matrix 	y;
     com.github.waikatodatamining.matrix.core.Matrix 	X_new;
+    String						msg;
 
     X = adams.data.instancesanalysis.pls.MatrixHelper.wekaToMatrixAlgo(MatrixHelper.getX(instances));
     y = adams.data.instancesanalysis.pls.MatrixHelper.wekaToMatrixAlgo(MatrixHelper.getY(instances));
+
+    if (!isFirstBatchDone()) {
+      m_Algorithm = new com.github.waikatodatamining.matrix.algorithm.glsw.YGradientEPO();
+      m_Algorithm.setN(m_N);
+      m_Algorithm.setAlpha(m_Alpha);
+      msg = m_Algorithm.initialize(X, y);
+      if (msg != null)
+	throw new Exception(msg);
+    }
+
     X_new = m_Algorithm.transform(X);
 
     return adams.data.instancesanalysis.pls.MatrixHelper.toInstances(getOutputFormat(), adams.data.instancesanalysis.pls.MatrixHelper.matrixAlgoToWeka(X_new), adams.data.instancesanalysis.pls.MatrixHelper.matrixAlgoToWeka(y));
