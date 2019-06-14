@@ -32,6 +32,7 @@ import adams.flow.standalone.PyroNameServer;
 import net.razorvine.pyro.Config;
 import net.razorvine.pyro.NameServerProxy;
 import weka.classifiers.simple.AbstractSimpleClassifier;
+import weka.core.BatchPredictor;
 import weka.core.Capabilities;
 import weka.core.Capabilities.Capability;
 import weka.core.Instance;
@@ -45,7 +46,7 @@ import weka.core.PyroProxyObject;
  */
 public class PyroProxy
   extends AbstractSimpleClassifier
-  implements PyroProxyObject, FlowContextHandler {
+  implements PyroProxyObject, FlowContextHandler, BatchPredictor {
 
   private static final long serialVersionUID = -4578812400878994526L;
 
@@ -540,7 +541,12 @@ public class PyroProxy
     if (isLoggingEnabled())
       getLogger().info("duration/distributionForInstance: " + ((double) (end - start) / 1000.0));
 
-    return m_Communication.parsePrediction(this, prediction);
+    try {
+      return m_Communication.parsePrediction(this, prediction);
+    }
+    catch (Exception e) {
+      throw new Exception("Failed to process prediction:\n" + prediction, e);
+    }
   }
 
   /**
@@ -566,7 +572,12 @@ public class PyroProxy
     if (isLoggingEnabled())
       getLogger().info("duration/distributionForInstance: " + ((double) (end - start) / 1000.0));
 
-    return m_Communication.parsePredictions(this, predictions);
+    try {
+      return m_Communication.parsePredictions(this, predictions);
+    }
+    catch (Exception e) {
+      throw new Exception("Failed to process predictions:\n" + predictions, e);
+    }
   }
 
   /**
