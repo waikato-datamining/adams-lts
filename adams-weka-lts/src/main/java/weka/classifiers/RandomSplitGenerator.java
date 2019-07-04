@@ -15,9 +15,12 @@
 
 /*
  * RandomSplitGenerator.java
- * Copyright (C) 2012-2018 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2012-2019 University of Waikato, Hamilton, New Zealand
  */
 package weka.classifiers;
+
+import adams.flow.container.WekaTrainTestSetContainer;
+import weka.core.Instances;
 
 /**
  * Interface for generators of random splits of datasets.
@@ -25,13 +28,14 @@ package weka.classifiers;
  * @author  fracpete (fracpete at waikato dot ac dot nz)
  */
 public interface RandomSplitGenerator
-  extends SplitGenerator {
+  extends SplitGenerator, adams.ml.splitgenerator.RandomSplitGenerator<Instances, WekaTrainTestSetContainer> {
 
   /**
    * Sets the split percentage.
    *
    * @param value	the percentage (0-1)
    */
+  @Override
   public void setPercentage(double value);
 
   /**
@@ -39,6 +43,7 @@ public interface RandomSplitGenerator
    *
    * @return		the percentage (0-1)
    */
+  @Override
   public double getPercentage();
 
   /**
@@ -46,6 +51,7 @@ public interface RandomSplitGenerator
    *
    * @param value	true if to preserve order
    */
+  @Override
   public void setPreserveOrder(boolean value);
 
   /**
@@ -53,5 +59,6 @@ public interface RandomSplitGenerator
    *
    * @return		true if to preserve order
    */
+  @Override
   public boolean getPreserveOrder();
 }

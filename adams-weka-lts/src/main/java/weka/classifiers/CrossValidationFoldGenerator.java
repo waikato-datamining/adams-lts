@@ -15,9 +15,13 @@
 
 /*
  * CrossValidationFoldGenerator.java
- * Copyright (C) 2018 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2018-2019 University of Waikato, Hamilton, New Zealand
  */
 package weka.classifiers;
+
+import adams.flow.container.WekaTrainTestSetContainer;
+import adams.ml.splitgenerator.StratifiableSplitGenerator;
+import weka.core.Instances;
 
 /**
  * Interface for generating cross-validation folds.
@@ -28,7 +32,9 @@ package weka.classifiers;
  * @author  fracpete (fracpete at waikato dot ac dot nz)
  */
 public interface CrossValidationFoldGenerator
-  extends SplitGenerator {
+  extends SplitGenerator,
+  adams.ml.splitgenerator.CrossValidationFoldGenerator<Instances,WekaTrainTestSetContainer>,
+  StratifiableSplitGenerator<Instances,WekaTrainTestSetContainer> {
 
   /** the placeholder for the (original) relation name. */
   public final static String PLACEHOLDER_ORIGINAL = "@";
@@ -44,6 +50,7 @@ public interface CrossValidationFoldGenerator
    *
    * @param value	the number of folds, less than 2 for LOO
    */
+  @Override
   public void setNumFolds(int value);
 
   /**
@@ -51,6 +58,7 @@ public interface CrossValidationFoldGenerator
    * 
    * @return		the number of folds
    */
+  @Override
   public int getNumFolds();
 
   /**
@@ -58,6 +66,7 @@ public interface CrossValidationFoldGenerator
    *
    * @return		the actual number of folds
    */
+  @Override
   public int getActualNumFolds();
 
   /**
@@ -65,6 +74,7 @@ public interface CrossValidationFoldGenerator
    *
    * @param value	true if to randomize the data
    */
+  @Override
   public void setRandomize(boolean value);
 
   /**
@@ -72,6 +82,7 @@ public interface CrossValidationFoldGenerator
    *
    * @return		true if to randomize the data
    */
+  @Override
   public boolean getRandomize();
 
   /**
@@ -79,6 +90,7 @@ public interface CrossValidationFoldGenerator
    *
    * @param value	whether to stratify the data (nominal class)
    */
+  @Override
   public void setStratify(boolean value);
 
   /**
@@ -86,6 +98,7 @@ public interface CrossValidationFoldGenerator
    * 
    * @return		true if to stratify
    */
+  @Override
   public boolean getStratify();
 
   /**
@@ -107,5 +120,6 @@ public interface CrossValidationFoldGenerator
    *
    * @return		the indices
    */
+  @Override
   public int[] crossValidationIndices();
 }

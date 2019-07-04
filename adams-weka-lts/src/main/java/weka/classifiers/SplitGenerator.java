@@ -15,18 +15,14 @@
 
 /*
  * SplitGenerator.java
- * Copyright (C) 2018 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2018-2019 University of Waikato, Hamilton, New Zealand
  */
 package weka.classifiers;
 
-import adams.core.Randomizable;
-import adams.core.option.OptionHandler;
 import adams.data.weka.InstancesViewSupporter;
 import adams.flow.container.WekaTrainTestSetContainer;
 import weka.core.Instances;
 
-import java.io.Serializable;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
@@ -35,13 +31,14 @@ import java.util.NoSuchElementException;
  * @author  fracpete (fracpete at waikato dot ac dot nz)
  */
 public interface SplitGenerator
-  extends Serializable, OptionHandler, Iterator<WekaTrainTestSetContainer>, InstancesViewSupporter, Randomizable {
+  extends adams.ml.splitgenerator.SplitGenerator<Instances, WekaTrainTestSetContainer>, InstancesViewSupporter {
 
   /**
    * Sets the original data.
    *
    * @param value	the data
    */
+  @Override
   public void setData(Instances value);
 
   /**
@@ -49,11 +46,13 @@ public interface SplitGenerator
    *
    * @return		the data
    */
+  @Override
   public Instances getData();
 
   /**
    * Initializes the iterator (gets implicitly called, when calling next()).
    */
+  @Override
   public void initializeIterator() ;
 
   /**
