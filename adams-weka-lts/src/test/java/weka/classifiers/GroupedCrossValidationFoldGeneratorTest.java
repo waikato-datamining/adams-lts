@@ -14,23 +14,25 @@
  */
 
 /*
- * DefaultRandomSplitGeneratorTest.java
- * Copyright (C) 2016-018 University of Waikato, Hamilton, NZ
+ * GroupedCrossValidationFoldGeneratorTest.java
+ * Copyright (C) 2019 University of Waikato, Hamilton, NZ
  */
 
 package weka.classifiers;
 
+import adams.core.base.BaseRegExp;
+import adams.data.weka.WekaAttributeIndex;
 import adams.env.Environment;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import weka.core.Instances;
 
 /**
- * Tests weka.classifiers.DefaultRandomSplitGenerator.
+ * Tests weka.classifiers.GroupedCrossValidationFoldGenerator.
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
  */
-public class DefaultRandomSplitGeneratorTest
+public class GroupedCrossValidationFoldGeneratorTest
   extends AbstractSplitGeneratorTestCase {
 
   /**
@@ -38,7 +40,7 @@ public class DefaultRandomSplitGeneratorTest
    *
    * @param name 	the name of the test
    */
-  public DefaultRandomSplitGeneratorTest(String name) {
+  public GroupedCrossValidationFoldGeneratorTest(String name) {
     super(name);
   }
 
@@ -49,17 +51,17 @@ public class DefaultRandomSplitGeneratorTest
    */
   @Override
   protected AbstractSplitGenerator[] getRegressionSetups() {
-    DefaultRandomSplitGenerator[]	result;
-    Instances				anneal;
-    Instances				bodyfat;
+    GroupedCrossValidationFoldGenerator[]	result;
+    Instances			anneal;
+    Instances			bodyfat;
 
-    anneal  = load("anneal.arff");
-    bodyfat = load("bodyfat.arff");
+    anneal  = load("anneal_with_group.arff");
+    bodyfat = load("bodyfat_with_group.arff");
 
-    result    = new DefaultRandomSplitGenerator[3];
-    result[0] = new DefaultRandomSplitGenerator(anneal, 42, 0.66);
-    result[1] = new DefaultRandomSplitGenerator(bodyfat, 0.33);
-    result[2] = new DefaultRandomSplitGenerator(bodyfat, 42, 0.33, true);
+    result    = new GroupedCrossValidationFoldGenerator[3];
+    result[0] = new GroupedCrossValidationFoldGenerator(anneal, 10, 42, true, true, new WekaAttributeIndex("1"), new BaseRegExp("(.*)"), "$1");
+    result[1] = new GroupedCrossValidationFoldGenerator(bodyfat, 3, 42, false, true, new WekaAttributeIndex("1"), new BaseRegExp("(.*)"), "$1");
+    result[2] = new GroupedCrossValidationFoldGenerator(bodyfat, 3, 42, false, false, new WekaAttributeIndex("1"), new BaseRegExp("(.*)"), "$1");
 
     return result;
   }
@@ -70,7 +72,7 @@ public class DefaultRandomSplitGeneratorTest
    * @return		the suite
    */
   public static Test suite() {
-    return new TestSuite(DefaultRandomSplitGeneratorTest.class);
+    return new TestSuite(GroupedCrossValidationFoldGeneratorTest.class);
   }
 
   /**
