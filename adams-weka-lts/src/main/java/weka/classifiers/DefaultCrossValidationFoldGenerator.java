@@ -22,10 +22,10 @@ package weka.classifiers;
 import adams.data.binning.Binnable;
 import adams.data.binning.BinnableInstances;
 import adams.flow.container.WekaTrainTestSetContainer;
-import adams.ml.splitgenerator.generic.crossvalidation.CrossValidationGenerator;
-import adams.ml.splitgenerator.generic.crossvalidation.FoldPair;
-import adams.ml.splitgenerator.generic.randomization.DefaultRandomization;
-import adams.ml.splitgenerator.generic.stratification.DefaultStratification;
+import adams.data.splitgenerator.generic.crossvalidation.CrossValidationGenerator;
+import adams.data.splitgenerator.generic.crossvalidation.FoldPair;
+import adams.data.splitgenerator.generic.randomization.DefaultRandomization;
+import adams.data.splitgenerator.generic.stratification.DefaultStratification;
 import gnu.trove.list.array.TIntArrayList;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -390,7 +390,7 @@ public class DefaultCrossValidationFoldGenerator
       m_Generator.setRandomization(rand);
     }
     else {
-      adams.ml.splitgenerator.generic.randomization.PassThrough rand = new adams.ml.splitgenerator.generic.randomization.PassThrough();
+      adams.data.splitgenerator.generic.randomization.PassThrough rand = new adams.data.splitgenerator.generic.randomization.PassThrough();
       rand.setLoggingLevel(m_LoggingLevel);
       m_Generator.setRandomization(rand);
     }
@@ -400,7 +400,7 @@ public class DefaultCrossValidationFoldGenerator
       m_Generator.setStratification(strat);
     }
     else {
-      adams.ml.splitgenerator.generic.stratification.PassThrough strat = new adams.ml.splitgenerator.generic.stratification.PassThrough();
+      adams.data.splitgenerator.generic.stratification.PassThrough strat = new adams.data.splitgenerator.generic.stratification.PassThrough();
       strat.setLoggingLevel(m_LoggingLevel);
       m_Generator.setStratification(strat);
     }

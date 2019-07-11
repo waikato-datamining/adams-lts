@@ -20,7 +20,7 @@
 package weka.classifiers;
 
 import adams.flow.container.WekaTrainTestSetContainer;
-import adams.ml.splitgenerator.StratifiableSplitGenerator;
+import adams.data.splitgenerator.StratifiableSplitGenerator;
 import weka.core.Instances;
 
 /**
@@ -33,7 +33,7 @@ import weka.core.Instances;
  */
 public interface CrossValidationFoldGenerator
   extends SplitGenerator,
-  adams.ml.splitgenerator.CrossValidationFoldGenerator<Instances,WekaTrainTestSetContainer>,
+  adams.data.splitgenerator.CrossValidationFoldGenerator<Instances,WekaTrainTestSetContainer>,
   StratifiableSplitGenerator<Instances,WekaTrainTestSetContainer> {
 
   /** the placeholder for the (original) relation name. */
