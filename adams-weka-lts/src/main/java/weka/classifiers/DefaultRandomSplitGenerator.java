@@ -21,12 +21,12 @@ package weka.classifiers;
 
 import adams.data.binning.Binnable;
 import adams.data.binning.BinnableInstances;
-import adams.flow.container.WekaTrainTestSetContainer;
 import adams.data.splitgenerator.generic.randomization.DefaultRandomization;
 import adams.data.splitgenerator.generic.randomization.PassThrough;
 import adams.data.splitgenerator.generic.randomsplit.RandomSplitGenerator;
 import adams.data.splitgenerator.generic.randomsplit.SplitPair;
 import adams.data.splitgenerator.generic.splitter.DefaultSplitter;
+import adams.flow.container.WekaTrainTestSetContainer;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.InstancesView;
@@ -251,7 +251,7 @@ public class DefaultRandomSplitGenerator
   @Override
   protected WekaTrainTestSetContainer createNext() {
     WekaTrainTestSetContainer		result;
-    List<Binnable<Instance>> 		binnedData;
+    List<Binnable<Instance>> 		binnableInst;
     SplitPair<Binnable<Instance>> 	splitPair;
     Instances				trainSet;
     Instances				testSet;
@@ -261,12 +261,12 @@ public class DefaultRandomSplitGenerator
     m_Generated = true;
 
     try {
-      binnedData = BinnableInstances.toBinnableUsingIndex(m_Data);
+      binnableInst = BinnableInstances.toBinnableUsingIndex(m_Data);
     }
     catch (Exception e) {
       throw new IllegalStateException("Failed to create binnable Instances!", e);
     }
-    splitPair = m_Generator.generate(binnedData);
+    splitPair = m_Generator.generate(binnableInst);
 
     trainRows = splitPair.getTrain().getOriginalIndices().toArray();
     testRows  = splitPair.getTest().getOriginalIndices().toArray();

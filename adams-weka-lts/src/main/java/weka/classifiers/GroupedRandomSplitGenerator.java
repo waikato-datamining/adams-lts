@@ -27,14 +27,14 @@ import adams.data.binning.BinnableInstances.StringAttributeGroupExtractor;
 import adams.data.binning.operation.Grouping;
 import adams.data.binning.operation.Wrapping;
 import adams.data.binning.operation.Wrapping.IndexedBinValueExtractor;
-import adams.data.weka.WekaAttributeIndex;
-import adams.flow.container.WekaTrainTestSetContainer;
 import adams.data.splitgenerator.generic.core.Subset;
 import adams.data.splitgenerator.generic.randomization.DefaultRandomization;
 import adams.data.splitgenerator.generic.randomization.PassThrough;
 import adams.data.splitgenerator.generic.randomsplit.RandomSplitGenerator;
 import adams.data.splitgenerator.generic.randomsplit.SplitPair;
 import adams.data.splitgenerator.generic.splitter.DefaultSplitter;
+import adams.data.weka.WekaAttributeIndex;
+import adams.flow.container.WekaTrainTestSetContainer;
 import com.github.fracpete.javautils.struct.Struct2;
 import gnu.trove.list.TIntList;
 import weka.core.Instance;
@@ -348,10 +348,10 @@ public class GroupedRandomSplitGenerator
   @Override
   protected WekaTrainTestSetContainer createNext() {
     WekaTrainTestSetContainer			result;
-    List<Binnable<Instance>> 			binnedData;
-    List<BinnableGroup<Instance>> 		groupedData;
+    List<Binnable<Instance>> 			binnableInst;
+    List<BinnableGroup<Instance>> 		groupedInst;
     SplitPair<Binnable<BinnableGroup<Instance>>> splitGroups;
-    List<Binnable<BinnableGroup<Instance>>> 	binnedGroups;
+    List<Binnable<BinnableGroup<Instance>>> 	binnableGroups;
     Instances					trainSet;
     Instances					testSet;
     int[]					trainRows;
@@ -363,15 +363,15 @@ public class GroupedRandomSplitGenerator
 
     try {
       m_Index.setData(m_Data);
-      binnedData   = BinnableInstances.toBinnableUsingIndex(m_Data);
-      binnedData   = Wrapping.addTmpIndex(binnedData);  // adding the original index
-      groupedData  = Grouping.groupAsList(binnedData, new StringAttributeGroupExtractor(m_Index.getIntIndex(), m_RegExp.getValue(), m_Group));
-      binnedGroups = Wrapping.wrap(groupedData, new IndexedBinValueExtractor<>());  // wrap for split generator
+      binnableInst   = BinnableInstances.toBinnableUsingIndex(m_Data);
+      binnableInst   = Wrapping.addTmpIndex(binnableInst);  // adding the original index
+      groupedInst    = Grouping.groupAsList(binnableInst, new StringAttributeGroupExtractor(m_Index.getIntIndex(), m_RegExp.getValue(), m_Group));
+      binnableGroups = Wrapping.wrap(groupedInst, new IndexedBinValueExtractor<>());  // wrap for split generator
     }
     catch (Exception e) {
       throw new IllegalStateException("Failed to create binnable Instances!", e);
     }
-    splitGroups = m_Generator.generate(binnedGroups);
+    splitGroups = m_Generator.generate(binnableGroups);
     subsetTrain = Subset.extractIndicesAndBinnable(splitGroups.getTrain());
     subsetTest  = Subset.extractIndicesAndBinnable(splitGroups.getTest());
     trainRows   = subsetTrain.value1.toArray();
