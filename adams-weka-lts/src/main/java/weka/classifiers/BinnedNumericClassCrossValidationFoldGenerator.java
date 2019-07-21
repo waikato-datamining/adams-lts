@@ -22,7 +22,8 @@ package weka.classifiers;
 import adams.data.binning.Bin;
 import adams.data.binning.Binnable;
 import adams.data.binning.BinnableInstances;
-import adams.data.binning.algorithm.AbstractBinningAlgorithm;
+import adams.data.binning.algorithm.BinningAlgorithm;
+import adams.data.binning.algorithm.BinningAlgorithmUser;
 import adams.data.binning.algorithm.ManualBinning;
 import adams.data.binning.operation.Bins;
 import adams.data.binning.operation.Stratify;
@@ -53,7 +54,7 @@ import java.util.NoSuchElementException;
  */
 public class BinnedNumericClassCrossValidationFoldGenerator
   extends AbstractSplitGenerator
-  implements CrossValidationFoldGenerator {
+  implements CrossValidationFoldGenerator, BinningAlgorithmUser {
 
   /** for serialization. */
   private static final long serialVersionUID = -8387205583429213079L;
@@ -74,7 +75,7 @@ public class BinnedNumericClassCrossValidationFoldGenerator
   protected boolean m_Randomize;
 
   /** the binning algorithm. */
-  protected AbstractBinningAlgorithm m_Algorithm;
+  protected BinningAlgorithm m_Algorithm;
 
   /** the temporary pairs. */
   protected transient List<FoldPair<Binnable<Instance>>> m_FoldPairs;
@@ -313,7 +314,8 @@ public class BinnedNumericClassCrossValidationFoldGenerator
    *
    * @param value 	the algorithm
    */
-  public void setAlgorithm(AbstractBinningAlgorithm value) {
+  @Override
+  public void setAlgorithm(BinningAlgorithm value) {
     m_Algorithm = value;
     reset();
   }
@@ -323,7 +325,8 @@ public class BinnedNumericClassCrossValidationFoldGenerator
    *
    * @return 		the algorithm
    */
-  public AbstractBinningAlgorithm getAlgorithm() {
+  @Override
+  public BinningAlgorithm getAlgorithm() {
     return m_Algorithm;
   }
 
@@ -333,6 +336,7 @@ public class BinnedNumericClassCrossValidationFoldGenerator
    * @return 		tip text for this property suitable for
    * 			displaying in the GUI or for listing the options.
    */
+  @Override
   public String algorithmTipText() {
     return "The binning algorithm to apply to the data.";
   }
