@@ -45,7 +45,7 @@ import java.util.List;
  */
 public class BinnedNumericClassRandomSplitGenerator
   extends AbstractSplitGenerator
-  implements weka.classifiers.RandomSplitGenerator, BinningAlgorithmUser {
+  implements RandomSplitGenerator, BinningAlgorithmUser {
 
   /** for serialization. */
   private static final long serialVersionUID = -4813006743965500489L;
