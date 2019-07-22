@@ -45,7 +45,7 @@ import java.util.List;
  */
 public class BinnedNumericClassRandomSplitGenerator
   extends AbstractSplitGenerator
-  implements RandomSplitGenerator, BinningAlgorithmUser {
+  implements weka.classifiers.RandomSplitGenerator, BinningAlgorithmUser {
 
   /** for serialization. */
   private static final long serialVersionUID = -4813006743965500489L;
@@ -311,7 +311,7 @@ public class BinnedNumericClassRandomSplitGenerator
     m_Generated = true;
 
     try {
-      binnableInst = BinnableInstances.toBinnableUsingIndex(m_Data);
+      binnableInst = BinnableInstances.toBinnableUsingClass(m_Data);
     }
     catch (Exception e) {
       throw new IllegalStateException("Failed to create binnable Instances!", e);
