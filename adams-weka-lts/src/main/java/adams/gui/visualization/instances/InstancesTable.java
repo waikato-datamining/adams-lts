@@ -280,7 +280,9 @@ public class InstancesTable
     BasePopupMenu		menu;
     JMenuItem			menuitem;
     final int			row;
-    final int			actRow;
+    final int[]			rows;
+    final int           	actRow;
+    final int[]         	actRows;
     final int			col;
     final int			actCol;
     final InstancesTableModel	instModel;
@@ -288,6 +290,10 @@ public class InstancesTable
     menu      = new BasePopupMenu();
     row       = rowAtPoint(e.getPoint());
     actRow    = getActualRow(row);
+    rows      = getSelectedRows();
+    actRows   = new int[rows.length];
+    for (int i = 0; i < rows.length; i++)
+      actRows[i] = getActualRow(rows[i]);
     col       = tableHeader.columnAtPoint(e.getPoint());
     actCol    = col - 1;
     instModel = (InstancesTableModel) getUnsortedModel();
@@ -303,7 +309,7 @@ public class InstancesTable
     menuitem = new JMenuItem("Rename...", GUIHelper.getEmptyIcon());
     menuitem.addActionListener((ActionEvent ae) -> {
       String newName = GUIHelper.showInputDialog(
-	InstancesTable.this, "Please enter new name", getInstances().attribute(col - 1).name());
+	adams.gui.visualization.instances.InstancesTable.this, "Please enter new name", getInstances().attribute(col - 1).name());
       if (newName != null) {
 	instModel.renameAttributeAt(col, newName);
 	setOptimalColumnWidth();
@@ -314,7 +320,7 @@ public class InstancesTable
 
     menuitem = new JMenuItem("Delete", GUIHelper.getIcon("delete.gif"));
     menuitem.addActionListener((ActionEvent ae) -> {
-      int retVal = GUIHelper.showConfirmMessage(InstancesTable.this, "Delete attribute '" + getInstances().attribute(col - 1).name() + "'?");
+      int retVal = GUIHelper.showConfirmMessage(adams.gui.visualization.instances.InstancesTable.this, "Delete attribute '" + getInstances().attribute(col - 1).name() + "'?");
       if (retVal == ApprovalDialog.APPROVE_OPTION) {
 	instModel.deleteAttributeAt(col);
 	setOptimalColumnWidth();
@@ -372,7 +378,7 @@ public class InstancesTable
     menuitem.addActionListener((ActionEvent ae) -> removeAllColumnFilters());
     menu.add(menuitem);
 
-    InstancesTablePopupMenuItemHelper.addToPopupMenu(this, menu, false, actRow, row, actCol);
+    InstancesTablePopupMenuItemHelper.addToPopupMenu(this, menu, false, actRow, row, actRows, rows, actCol);
 
     if (m_HeaderPopupMenuCustomizer != null)
       m_HeaderPopupMenuCustomizer.customizePopupMenu(e, menu);
@@ -407,6 +413,7 @@ public class InstancesTable
     final int			col;
     final int			actCol;
     final int[]			selRows;
+    final int[]			actRows;
     final InstancesTableModel	instModel;
     final Range 		range;
 
@@ -416,6 +423,9 @@ public class InstancesTable
     row       = rowAtPoint(e.getPoint());
     actRow    = getActualRow(row);
     selRows   = getSelectedRows();
+    actRows   = new int[selRows.length];
+    for (int i = 0; i < selRows.length; i++)
+      actRows[i] = getActualRow(selRows[i]);
     instModel = (InstancesTableModel) getUnsortedModel();
     range = new Range();
     range.setMax(getRowCount());
@@ -464,12 +474,9 @@ public class InstancesTable
       if (selRows.length > 1)
 	msg += "s";
       msg += " " + range.getRange() + "?";
-      int retVal = GUIHelper.showConfirmMessage(InstancesTable.this, msg);
+      int retVal = GUIHelper.showConfirmMessage(adams.gui.visualization.instances.InstancesTable.this, msg);
       if (retVal != ApprovalDialog.APPROVE_OPTION)
 	return;
-      int[] actRows = new int[selRows.length];
-      for (int i = 0; i < selRows.length; i++)
-	actRows[i] = getActualRow(selRows[i]);
       instModel.deleteInstances(actRows);
       notifyChangeListeners();
     });
@@ -493,7 +500,7 @@ public class InstancesTable
     menuitem.addActionListener((ActionEvent ae) -> saveAs(TableRowRange.VISIBLE));
     submenu.add(menuitem);
 
-    InstancesTablePopupMenuItemHelper.addToPopupMenu(this, menu, true, actRow, row, actCol);
+    InstancesTablePopupMenuItemHelper.addToPopupMenu(this, menu, true, actRow, row, actRows, selRows, actCol);
 
     if (m_CellPopupMenuCustomizer != null)
       m_CellPopupMenuCustomizer.customizePopupMenu(e, menu);
@@ -551,7 +558,7 @@ public class InstancesTable
     int[]		selRows;
     int			i;
 
-    retVal = m_FileChooser.showSaveDialog(InstancesTable.this);
+    retVal = m_FileChooser.showSaveDialog(adams.gui.visualization.instances.InstancesTable.this);
     if (retVal != WekaFileChooser.APPROVE_OPTION)
       return;
 
@@ -587,7 +594,7 @@ public class InstancesTable
     }
     catch (Exception ex) {
       GUIHelper.showErrorMessage(
-	InstancesTable.this, "Failed to save data (" + range + ") to: " + file, ex);
+	adams.gui.visualization.instances.InstancesTable.this, "Failed to save data (" + range + ") to: " + file, ex);
     }
   }
 
