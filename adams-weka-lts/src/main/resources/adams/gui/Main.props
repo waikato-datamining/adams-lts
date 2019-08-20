@@ -10,3 +10,5 @@
 #   Blacklisted-adams.gui.menu.FunkyItem=true
 
 Blacklisted-adams.gui.menu.PackageManager=true
+Blacklisted-adams.gui.menu.SqlViewer=true
+Blacklisted-adams.gui.menu.ArffViewer=true
