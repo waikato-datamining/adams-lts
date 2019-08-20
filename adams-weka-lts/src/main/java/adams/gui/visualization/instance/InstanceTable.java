@@ -51,8 +51,8 @@ public class InstanceTable
    *
    * @return		true
    */
-  protected boolean initialUseOptimalColumnWidths() {
-    return true;
+  protected ColumnWidthApproach initialUseOptimalColumnWidths() {
+    return ColumnWidthApproach.ADAPTIVE;
   }
 
   /**
