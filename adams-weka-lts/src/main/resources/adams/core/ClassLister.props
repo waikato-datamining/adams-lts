@@ -127,6 +127,10 @@ adams.gui.tools.wekainvestigator.tab.classifytab.history.AbstractHistoryPopupMen
 adams.gui.tools.wekainvestigator.tab.classifytab.output.AbstractOutputGenerator=\
   adams.gui.tools.wekainvestigator.tab.classifytab.output
 
+# the popup menu items for the per-fold pane
+adams.gui.tools.wekainvestigator.tab.classifytab.output.perfold.AbstractPerFoldPopupMenuItem=\
+  adams.gui.tools.wekainvestigator.tab.classifytab.output.perfold
+
 # the clusterer evaluations
 adams.gui.tools.wekainvestigator.tab.clustertab.evaluation.AbstractClustererEvaluation=\
   adams.gui.tools.wekainvestigator.tab.clustertab.evaluation
