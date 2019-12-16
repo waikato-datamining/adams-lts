@@ -1,8 +1,8 @@
 # Project: adams
-# Date: 2019-11-26 11:27:36
+# Date: 2019-12-17 12:39:19
 # User: fracpete
 # Charset: UTF-8
-# Modules: adams-core,adams-json,adams-math,adams-ml,adams-spreadsheet,adams-visualstats,adams-weka
+# Modules: adams-core,adams-json,adams-math,adams-ml,adams-spreadsheet,adams-visualstats,adams-weka-lts
 #
 adams.flow.control.Flow -annotation "Generates a AbstainAverage ensemble from pre-built classifiers rather than training the AbstainAverage meta-classifier itself." -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
  adams.flow.source.Start
