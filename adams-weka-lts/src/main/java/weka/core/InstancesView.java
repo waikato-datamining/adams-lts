@@ -60,6 +60,17 @@ public class InstancesView
   }
 
   /**
+   * Initializes the dataset.
+   *
+   * @param dataset	the underlying dataset
+   * @param fromRow	the first row
+   * @param toRow 	the last row (excluded)
+   */
+  public InstancesView(Instances dataset, int fromRow, int toRow) {
+    this(dataset, adams.core.Utils.fillIndices(fromRow, toRow));
+  }
+
+  /**
    * Create a copy of the structure. If the data has string or relational
    * attributes, theses are replaced by empty copies. Other attributes are left
    * unmodified, but the underlying list structure holding references to the attributes
