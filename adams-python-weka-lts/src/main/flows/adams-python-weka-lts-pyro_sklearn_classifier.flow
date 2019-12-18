@@ -1,8 +1,8 @@
 # Project: adams
-# Date: 2019-06-14 16:10:17
+# Date: 2019-12-18 13:53:58
 # User: fracpete
 # Charset: UTF-8
-# Modules: adams-core,adams-ml,adams-python,adams-python-weka,adams-spreadsheet,adams-visualstats,adams-weka
+# Modules: adams-core,adams-json,adams-math,adams-ml,adams-python,adams-python-weka-lts,adams-spreadsheet,adams-visualstats,adams-weka-lts
 #
 adams.flow.control.Flow -annotation "Builds a Pyro4 model and uses it to make predictions.\\n\\nNotes:\\nRequires \\\"adams-python-weka-pyro_namserver_and_sklearn_proxyserver.flow\\\" running." -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
  adams.flow.standalone.SetVariable -name host -var-name host -var-value localhost
