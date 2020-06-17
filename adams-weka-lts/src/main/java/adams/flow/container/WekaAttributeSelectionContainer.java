@@ -15,7 +15,7 @@
 
 /*
  * WekaAttributeSelectionContainer.java
- * Copyright (C) 2012-2018 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2012-2020 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.flow.container;
@@ -36,6 +36,7 @@ import java.util.List;
  * In case of performing cross-validation: seed and fold count get stored as well.
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
+ * @version $Revision$
  */
 public class WekaAttributeSelectionContainer
   extends AbstractContainer {
@@ -51,6 +52,15 @@ public class WekaAttributeSelectionContainer
 
   /** the identifier for the transformed data. */
   public final static String VALUE_TRANSFORMED = "Transformed";
+
+  /** the identifier for the test data. */
+  public final static String VALUE_TEST = "Test";
+
+  /** the identifier for the reduced data. */
+  public final static String VALUE_TEST_REDUCED = "Test reduced";
+
+  /** the identifier for the transformed data. */
+  public final static String VALUE_TEST_TRANSFORMED = "Test transformed";
 
   /** the identifier for the evaluation object. */
   public final static String VALUE_EVALUATION = "Evaluation";
@@ -138,6 +148,9 @@ public class WekaAttributeSelectionContainer
     addHelp(VALUE_TRAIN, "training set", Instances.class);
     addHelp(VALUE_REDUCED, "reduced dataset", Instances.class);
     addHelp(VALUE_TRANSFORMED, "transformed dataset (if " + Utils.classToString(AttributeTransformer.class) + ")", Instances.class);
+    addHelp(VALUE_TEST, "test set", Instances.class);
+    addHelp(VALUE_TEST_REDUCED, "reduced test dataset", Instances.class);
+    addHelp(VALUE_TEST_TRANSFORMED, "transformed test dataset (if " + Utils.classToString(AttributeTransformer.class) + ")", Instances.class);
     addHelp(VALUE_EVALUATION, "attribute selection evaluation object", AttributeSelection.class);
     addHelp(VALUE_STATISTICS, "spreadsheet with the statistics", SpreadSheet.class);
     addHelp(VALUE_SELECTEDATTRIBUTES, "range string of selected attributes (1-based indices)", String.class);
@@ -154,11 +167,14 @@ public class WekaAttributeSelectionContainer
   public Iterator<String> names() {
     List<String>	result;
 
-    result = new ArrayList<String>();
+    result = new ArrayList<>();
 
     result.add(VALUE_TRAIN);
     result.add(VALUE_REDUCED);
     result.add(VALUE_TRANSFORMED);
+    result.add(VALUE_TEST);
+    result.add(VALUE_TEST_REDUCED);
+    result.add(VALUE_TEST_TRANSFORMED);
     result.add(VALUE_EVALUATION);
     result.add(VALUE_STATISTICS);
     result.add(VALUE_SELECTEDATTRIBUTES);

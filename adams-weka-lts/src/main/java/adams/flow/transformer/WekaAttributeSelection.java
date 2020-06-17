@@ -40,7 +40,7 @@ import java.util.Random;
 /**
  <!-- globalinfo-start -->
  * Performs attribute selection on the incoming data.<br>
- * In case of input in form of a class adams.flow.container.WekaTrainTestSetContainer object, the training set stored in the container is being used.<br>
+ * In case of input in form of a class adams.flow.container.WekaTrainTestSetContainer object, the train and test sets stored in the container are being used.<br>
  * NB: In case of cross-validation no reduced or transformed data can get generated!
  * <br><br>
  <!-- globalinfo-end -->
@@ -54,8 +54,8 @@ import java.util.Random;
  * &nbsp;&nbsp;&nbsp;adams.flow.container.WekaAttributeSelectionContainer<br>
  * <br><br>
  * Container information:<br>
- * - adams.flow.container.WekaTrainTestSetContainer: Train, Test, Seed, FoldNumber, FoldCount<br>
- * - adams.flow.container.WekaAttributeSelectionContainer: Train, Reduced, Transformed, Evaluation, Statistics, Selected attributes, Seed, FoldCount
+ * - adams.flow.container.WekaTrainTestSetContainer: Train, Test, Seed, FoldNumber, FoldCount, Train original indices, Test original indices<br>
+ * - adams.flow.container.WekaAttributeSelectionContainer: Train, Reduced, Transformed, Test, Test reduced, Test transformed, Evaluation, Statistics, Selected attributes, Seed, FoldCount
  * <br><br>
  <!-- flow-summary-end -->
  *
@@ -64,62 +64,65 @@ import java.util.Random;
  * &nbsp;&nbsp;&nbsp;The logging level for outputting errors and debugging output.
  * &nbsp;&nbsp;&nbsp;default: WARNING
  * </pre>
- * 
+ *
  * <pre>-name &lt;java.lang.String&gt; (property: name)
  * &nbsp;&nbsp;&nbsp;The name of the actor.
  * &nbsp;&nbsp;&nbsp;default: WekaAttributeSelection
  * </pre>
- * 
+ *
  * <pre>-annotation &lt;adams.core.base.BaseAnnotation&gt; (property: annotations)
  * &nbsp;&nbsp;&nbsp;The annotations to attach to this actor.
- * &nbsp;&nbsp;&nbsp;default: 
+ * &nbsp;&nbsp;&nbsp;default:
  * </pre>
- * 
+ *
  * <pre>-skip &lt;boolean&gt; (property: skip)
- * &nbsp;&nbsp;&nbsp;If set to true, transformation is skipped and the input token is just forwarded 
+ * &nbsp;&nbsp;&nbsp;If set to true, transformation is skipped and the input token is just forwarded
  * &nbsp;&nbsp;&nbsp;as it is.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-stop-flow-on-error &lt;boolean&gt; (property: stopFlowOnError)
- * &nbsp;&nbsp;&nbsp;If set to true, the flow gets stopped in case this actor encounters an error;
- * &nbsp;&nbsp;&nbsp; useful for critical actors.
+ * &nbsp;&nbsp;&nbsp;If set to true, the flow execution at this level gets stopped in case this
+ * &nbsp;&nbsp;&nbsp;actor encounters an error; the error gets propagated; useful for critical
+ * &nbsp;&nbsp;&nbsp;actors.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-silent &lt;boolean&gt; (property: silent)
- * &nbsp;&nbsp;&nbsp;If enabled, then no errors are output in the console.
+ * &nbsp;&nbsp;&nbsp;If enabled, then no errors are output in the console; Note: the enclosing
+ * &nbsp;&nbsp;&nbsp;actor handler must have this enabled as well.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-evaluator &lt;weka.attributeSelection.ASEvaluation&gt; (property: evaluator)
  * &nbsp;&nbsp;&nbsp;The evaluation method to use.
  * &nbsp;&nbsp;&nbsp;default: weka.attributeSelection.CfsSubsetEval -P 1 -E 1
  * </pre>
- * 
+ *
  * <pre>-search &lt;weka.attributeSelection.ASSearch&gt; (property: search)
  * &nbsp;&nbsp;&nbsp;The search method to use.
  * &nbsp;&nbsp;&nbsp;default: weka.attributeSelection.BestFirst -D 1 -N 5
  * </pre>
- * 
+ *
  * <pre>-seed &lt;long&gt; (property: seed)
  * &nbsp;&nbsp;&nbsp;The seed value for cross-validation (used for randomization).
  * &nbsp;&nbsp;&nbsp;default: 1
  * </pre>
- * 
+ *
  * <pre>-folds &lt;int&gt; (property: folds)
- * &nbsp;&nbsp;&nbsp;The number of folds to use in the cross-validation; no cross-validation 
+ * &nbsp;&nbsp;&nbsp;The number of folds to use in the cross-validation; no cross-validation
  * &nbsp;&nbsp;&nbsp;is performed if folds &lt; 2.
  * &nbsp;&nbsp;&nbsp;default: 10
  * &nbsp;&nbsp;&nbsp;minimum: -1
  * </pre>
- * 
+ *
  <!-- options-end -->
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
+ * @version $Revision$
  */
 public class WekaAttributeSelection
-  extends AbstractTransformer 
+  extends AbstractTransformer
   implements Randomizable {
 
   /** for serialization. */
@@ -130,13 +133,13 @@ public class WekaAttributeSelection
 
   /** the search method. */
   protected weka.attributeSelection.ASSearch m_Search;
-  
+
   /** the number of folds. */
   protected int m_Folds;
 
   /** the seed value. */
   protected long m_Seed;
-  
+
   /**
    * Returns a string describing the object.
    *
@@ -147,7 +150,7 @@ public class WekaAttributeSelection
     return
       "Performs attribute selection on the incoming data.\n"
         + "In case of input in form of a " + WekaTrainTestSetContainer.class + " object, "
-        + "the training set stored in the container is being used.\n"
+        + "the train and test sets stored in the container are being used.\n"
         + "NB: In case of cross-validation no reduced or transformed data can get generated!";
   }
 
@@ -318,7 +321,7 @@ public class WekaAttributeSelection
       result += ", folds: " + (variable == null ? m_Folds : variable);
       result += QuickInfoHelper.toString(this, "seed", m_Seed, ", seed: ");
     }
-    
+
     return result;
   }
 
@@ -353,10 +356,13 @@ public class WekaAttributeSelection
     Instances				data;
     Instances				reduced;
     Instances				transformed;
+    Instances				reducedTest;
+    Instances				transformedTest;
     AttributeSelection			eval;
     boolean 				crossValidate;
     int					fold;
     Instances 				train;
+    Instances 				dataTest;
     WekaAttributeSelectionContainer	cont;
     SpreadSheet				stats;
     int					i;
@@ -370,10 +376,14 @@ public class WekaAttributeSelection
     result = null;
 
     try {
-      if (m_InputToken.getPayload() instanceof Instances)
+      if (m_InputToken.getPayload() instanceof Instances) {
 	data = (Instances) m_InputToken.getPayload();
-      else
-	data = (Instances) ((WekaTrainTestSetContainer) m_InputToken.getPayload()).getValue(WekaTrainTestSetContainer.VALUE_TRAIN);
+	dataTest = null;
+      }
+      else {
+	data = ((WekaTrainTestSetContainer) m_InputToken.getPayload()).getValue(WekaTrainTestSetContainer.VALUE_TRAIN, Instances.class);
+	dataTest = ((WekaTrainTestSetContainer) m_InputToken.getPayload()).getValue(WekaTrainTestSetContainer.VALUE_TEST, Instances.class);
+      }
 
       if (result == null) {
 	crossValidate = (m_Folds >= 2);
@@ -385,7 +395,7 @@ public class WekaAttributeSelection
 	eval.setFolds(m_Folds);
 	eval.setSeed((int) m_Seed);
 	eval.setXval(crossValidate);
-	
+
 	// select attributes
 	if (crossValidate) {
 	  Random random = new Random(m_Seed);
@@ -409,22 +419,29 @@ public class WekaAttributeSelection
 	else {
           eval.SelectAttributes(data);
 	}
-	
+
 	// generate reduced/transformed dataset
-	reduced     = null;
-	transformed = null;
+	reduced         = null;
+	reducedTest     = null;
+	transformed     = null;
+	transformedTest = null;
 	if (!crossValidate) {
 	  reduced = eval.reduceDimensionality(data);
 	  if (m_Evaluator instanceof AttributeTransformer)
 	    transformed = ((AttributeTransformer) m_Evaluator).transformedData(data);
+	  if (dataTest != null) {
+	    reducedTest = eval.reduceDimensionality(dataTest);
+	    if (m_Evaluator instanceof AttributeTransformer)
+	      transformedTest = ((AttributeTransformer) m_Evaluator).transformedData(dataTest);
+	  }
 	}
-	
+
 	// generated stats
 	stats = null;
 	if (!crossValidate) {
 	  stats = new DefaultSpreadSheet();
 	  row   = stats.getHeaderRow();
-	  
+
 	  useReduced = false;
 	  if (m_Search instanceof RankedOutputSearch) {
 	    i = reduced.numAttributes();
@@ -433,7 +450,7 @@ public class WekaAttributeSelection
 	    ranked = eval.rankedAttributes();
 	    useReduced = (ranked.length == i);
 	  }
-	  
+
 	  if (useReduced) {
 	    for (i = 0; i < reduced.numAttributes(); i++)
 	      row.addCell("" + i).setContent(reduced.attribute(i).name());
@@ -448,7 +465,7 @@ public class WekaAttributeSelection
 	    for (i = 0; i < data.numAttributes(); i++)
 	      row.addCell(i).setContent(0.0);
 	  }
-	  
+
 	  if (m_Search instanceof RankedOutputSearch) {
 	    ranked = eval.rankedAttributes();
 	    for (i = 0; i < ranked.length; i++)
@@ -460,7 +477,7 @@ public class WekaAttributeSelection
 	      row.getCell(selected[i]).setContent(1.0);
 	  }
 	}
-	
+
 	// selected attributes
 	rangeStr = null;
 	if (!crossValidate) {
@@ -470,10 +487,17 @@ public class WekaAttributeSelection
 	}
 
 	// setup container
-	if (crossValidate)
+	if (crossValidate) {
 	  cont = new WekaAttributeSelectionContainer(data, reduced, transformed, eval, m_Seed, m_Folds);
-	else
+	}
+	else {
 	  cont = new WekaAttributeSelectionContainer(data, reduced, transformed, eval, stats, rangeStr);
+	  if (dataTest != null) {
+	    cont.setValue(WekaAttributeSelectionContainer.VALUE_TEST, dataTest);
+	    cont.setValue(WekaAttributeSelectionContainer.VALUE_TEST_REDUCED, reducedTest);
+	    cont.setValue(WekaAttributeSelectionContainer.VALUE_TEST_TRANSFORMED, transformedTest);
+	  }
+	}
 	m_OutputToken = new Token(cont);
       }
     }
