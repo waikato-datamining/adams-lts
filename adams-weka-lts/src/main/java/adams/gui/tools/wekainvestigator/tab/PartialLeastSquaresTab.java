@@ -15,7 +15,7 @@
 
 /*
  * PartialLeastSquaresTab.java
- * Copyright (C) 2016-2018 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2016-2020 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekainvestigator.tab;
@@ -469,7 +469,7 @@ public class PartialLeastSquaresTab
       protected void doRun() {
 	try {
 	  DataContainer datacont = getData().get(m_ComboBoxDatasets.getSelectedIndex());
-	  Instances data = datacont.getData();
+	  Instances data = new Instances(datacont.getData());
 	  PLS pls = new PLS();
           pls.setAttributeRange(new WekaAttributeRange(m_TextAttributeRange.getText()));
 	  pls.setAlgorithm((AbstractPLS) m_PanelGOE.getCurrent());
