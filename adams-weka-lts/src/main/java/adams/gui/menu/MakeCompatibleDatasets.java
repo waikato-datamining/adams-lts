@@ -15,7 +15,7 @@
 
 /*
  * MakeCompatibleDatasets.java
- * Copyright (C) 2015-2016 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2015-2020 University of Waikato, Hamilton, New Zealand
  *
  */
 
@@ -231,6 +231,7 @@ public class MakeCompatibleDatasets
         doGenerate(frame, props);
       }
     });
+    wizard.update();
   }
 
   /**

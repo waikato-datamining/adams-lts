@@ -135,6 +135,8 @@ public class AppendDatasetsPanel
       }
       doAppend(input, output);
     });
+
+    m_Wizard.update();
   }
 
   /**

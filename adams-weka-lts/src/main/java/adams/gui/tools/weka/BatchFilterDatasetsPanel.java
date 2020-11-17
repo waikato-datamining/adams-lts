@@ -175,6 +175,8 @@ public class BatchFilterDatasetsPanel
         batchFilter(files, filter, classIndex, keep, outdir);
       }
     });
+
+    m_Wizard.update();
   }
 
   /**
