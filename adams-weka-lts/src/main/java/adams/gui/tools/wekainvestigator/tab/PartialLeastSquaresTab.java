@@ -308,7 +308,7 @@ public class PartialLeastSquaresTab
    * @return		the icon name, null if not available
    */
   public String getTabIcon() {
-    return "scatterplot.gif";
+    return "pls.png";
   }
 
   /**
