@@ -14,29 +14,26 @@
  */
 
 /*
- * CheckedToDate.java
- * Copyright (C) 2020 University of Waikato, Hamilton, NZ
+ * Remove.java
+ * Copyright (C) 2016-2020 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekainvestigator.tab.preprocesstab.attributeselaction;
 
-import adams.data.weka.WekaAttributeRange;
-import adams.gui.core.GUIHelper;
 import adams.gui.event.WekaInvestigatorDataEvent;
 import adams.gui.tools.wekainvestigator.data.DataContainer;
 import weka.core.Instances;
 import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.StringToDate;
 
 import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 
 /**
- * Converts the checked string attributes to date ones.
+ * Removes the selected attributes.
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
  */
-public class CheckedToDate
+public class Remove
   extends AbstractSelectedAttributesAction {
 
   private static final long serialVersionUID = -217537095007987947L;
@@ -44,10 +41,10 @@ public class CheckedToDate
   /**
    * Instantiates the action.
    */
-  public CheckedToDate() {
+  public Remove() {
     super();
-    setName("Checked to date");
-    setIcon("to_date.png");
+    setName("Remove");
+    setIcon("delete.gif");
     setAsynchronous(true);
   }
 
@@ -59,11 +56,8 @@ public class CheckedToDate
   @Override
   protected void doActionPerformed(ActionEvent e) {
     int[]		indices;
-    StringBuilder	indicesStr;
-    int			i;
     int			index;
-    DataContainer 	cont;
-    String		format;
+    DataContainer cont;
     Runnable		run;
 
     if (getSelectedRows().length != 1)
@@ -74,31 +68,16 @@ public class CheckedToDate
     indices = getOwner().getAttributeSelectionPanel().getSelectedAttributes();
     if (indices.length == 0)
       return;
-    indicesStr = new StringBuilder();
-    for (i = 0; i < indices.length; i++) {
-      if (i > 0)
-        indicesStr.append(",");
-      if (!cont.getData().attribute(indices[i]).isString()) {
-	logError("Attribute at #" + (indices[i]+1) + " is not of type string!", getName());
-	return;
-      }
-      indicesStr.append("" + (indices[i] + 1));
-    }
-
-    format = GUIHelper.showInputDialog(getOwner().getParent(), "Please enter parse format:", StringToDate.DEFAULT_FORMAT);
-    if (format == null)
-      return;
 
     run = () -> {
-      showStatus("Converting checked attributes to date...");
+      showStatus("Removing selected attributes...");
       boolean keep = getOwner().getCheckBoxKeepName().isSelected();
       String oldName = cont.getData().relationName();
-      StringToDate stringtodate = new StringToDate();
-      stringtodate.setRange(new WekaAttributeRange(indicesStr.toString()));
-      stringtodate.setFormat(format);
+      weka.filters.unsupervised.attribute.Remove remove = new weka.filters.unsupervised.attribute.Remove();
+      remove.setAttributeIndicesArray(indices);
       try {
-	stringtodate.setInputFormat(cont.getData());
-	Instances filtered = Filter.useFilter(cont.getData(), stringtodate);
+	remove.setInputFormat(cont.getData());
+	Instances filtered = Filter.useFilter(cont.getData(), remove);
 	if (keep)
 	  filtered.setRelationName(oldName);
 	cont.setData(filtered);
@@ -109,7 +88,7 @@ public class CheckedToDate
 	});
       }
       catch (Throwable ex) {
-	logError("Failed to convert checked attributes to date!", ex, getName());
+	logError("Failed to remove selected attributes!", ex, getName());
       }
       m_Owner.executionFinished();
       showStatus("");

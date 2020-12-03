@@ -14,27 +14,29 @@
  */
 
 /*
- * CheckedToString.java
+ * ConvertToDate.java
  * Copyright (C) 2020 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekainvestigator.tab.preprocesstab.attributeselaction;
 
 import adams.data.weka.WekaAttributeRange;
+import adams.gui.core.GUIHelper;
 import adams.gui.event.WekaInvestigatorDataEvent;
 import adams.gui.tools.wekainvestigator.data.DataContainer;
 import weka.core.Instances;
 import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.StringToDate;
 
 import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 
 /**
- * Converts the checked attributes to string ones.
+ * Converts the selected string attributes to date ones.
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
  */
-public class CheckedToString
+public class ConvertToDate
   extends AbstractSelectedAttributesAction {
 
   private static final long serialVersionUID = -217537095007987947L;
@@ -42,10 +44,10 @@ public class CheckedToString
   /**
    * Instantiates the action.
    */
-  public CheckedToString() {
+  public ConvertToDate() {
     super();
-    setName("Checked to string");
-    setIcon("to_string.png");
+    setName("Convert to date");
+    setIcon("to_date.png");
     setAsynchronous(true);
   }
 
@@ -61,6 +63,7 @@ public class CheckedToString
     int			i;
     int			index;
     DataContainer 	cont;
+    String		format;
     Runnable		run;
 
     if (getSelectedRows().length != 1)
@@ -75,18 +78,27 @@ public class CheckedToString
     for (i = 0; i < indices.length; i++) {
       if (i > 0)
         indicesStr.append(",");
+      if (!cont.getData().attribute(indices[i]).isString()) {
+	logError("Attribute at #" + (indices[i]+1) + " is not of type string!", getName());
+	return;
+      }
       indicesStr.append("" + (indices[i] + 1));
     }
 
+    format = GUIHelper.showInputDialog(getOwner().getParent(), "Please enter parse format:", StringToDate.DEFAULT_FORMAT);
+    if (format == null)
+      return;
+
     run = () -> {
-      showStatus("Converting checked attributes to string...");
+      showStatus("Converting checked attributes to date...");
       boolean keep = getOwner().getCheckBoxKeepName().isSelected();
       String oldName = cont.getData().relationName();
-      weka.filters.unsupervised.attribute.AnyToString anytostring = new weka.filters.unsupervised.attribute.AnyToString();
-      anytostring.setRange(new WekaAttributeRange(indicesStr.toString()));
+      StringToDate stringtodate = new StringToDate();
+      stringtodate.setRange(new WekaAttributeRange(indicesStr.toString()));
+      stringtodate.setFormat(format);
       try {
-	anytostring.setInputFormat(cont.getData());
-	Instances filtered = Filter.useFilter(cont.getData(), anytostring);
+	stringtodate.setInputFormat(cont.getData());
+	Instances filtered = Filter.useFilter(cont.getData(), stringtodate);
 	if (keep)
 	  filtered.setRelationName(oldName);
 	cont.setData(filtered);
@@ -97,7 +109,7 @@ public class CheckedToString
 	});
       }
       catch (Throwable ex) {
-	logError("Failed to convert checked attributes to string!", ex, getName());
+	logError("Failed to convert checked attributes to date!", ex, getName());
       }
       m_Owner.executionFinished();
       showStatus("");
