@@ -176,8 +176,6 @@ public class PLSWeighted
     String	tmpStr;
     String[]	tmpOptions;
 
-    super.setOptions(options);
-
     tmpStr     = Utils.getOption("algorithm", options);
     tmpOptions = Utils.splitOptions(tmpStr);
     if (tmpOptions.length != 0) {
@@ -188,6 +186,8 @@ public class PLSWeighted
     else {
       setAlgorithm(getDefaultAlgorithm());
     }
+
+    super.setOptions(options);
   }
 
   /**
