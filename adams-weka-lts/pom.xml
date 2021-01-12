@@ -304,6 +304,32 @@
     </dependency>
 
     <dependency>
+      <groupId>com.github.fracpete</groupId>
+      <artifactId>matlab-weka-package</artifactId>
+      <version>2021.1.13</version>
+      <type>jar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>nz.ac.waikato.cms.weka</groupId>
+          <artifactId>weka-dev</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.fracpete</groupId>
+      <artifactId>common-csv-weka-package</artifactId>
+      <version>2021.1.3</version>
+      <type>jar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>nz.ac.waikato.cms.weka</groupId>
+          <artifactId>weka-dev</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>matrix-algorithms</artifactId>
       <version>${matrix-algorithms.version}</version>
