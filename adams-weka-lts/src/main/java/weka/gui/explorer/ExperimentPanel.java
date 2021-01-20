@@ -21,10 +21,13 @@
 
 package weka.gui.explorer;
 
+import adams.core.ObjectCopyHelper;
 import adams.core.io.TempUtils;
 import adams.core.logging.LoggingHelper;
-import adams.core.option.OptionUtils;
 import adams.gui.core.BaseButton;
+import adams.gui.core.BaseComboBox;
+import adams.gui.core.BaseTextArea;
+import adams.gui.core.BaseTextField;
 import adams.gui.core.Fonts;
 import adams.gui.core.GUIHelper;
 import weka.classifiers.Classifier;
@@ -64,15 +67,12 @@ import weka.gui.explorer.Explorer.LogHandler;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
-import adams.gui.core.BaseComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import adams.gui.core.BaseTextArea;
-import adams.gui.core.BaseTextField;
 import javax.swing.JViewport;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -666,7 +666,7 @@ public class ExperimentPanel
 
 	  // classifier
 	  try {
-	    exp.setPropertyArray(new Classifier[]{(Classifier) OptionUtils.shallowCopy(m_ClassifierEditor.getValue())});
+	    exp.setPropertyArray(new Classifier[]{(Classifier) ObjectCopyHelper.copyObject(m_ClassifierEditor.getValue())});
 	  }
 	  catch (Exception ex) {
 	    m_Log.logMessage("Problem creating copy of classifier: " + ex.getMessage());
