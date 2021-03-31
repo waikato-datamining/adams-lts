@@ -56,7 +56,7 @@ public class Revert
     boolean result;
 
     result = cont.isModified();
-    
+
     if (!result && (cont instanceof MonitoringDataContainer))
       result = ((MonitoringDataContainer) cont).hasSourceChanged();
 
