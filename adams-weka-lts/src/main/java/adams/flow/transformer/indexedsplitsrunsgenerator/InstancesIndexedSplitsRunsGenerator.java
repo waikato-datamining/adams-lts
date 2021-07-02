@@ -28,4 +28,15 @@ package adams.flow.transformer.indexedsplitsrunsgenerator;
 public interface InstancesIndexedSplitsRunsGenerator
   extends IndexedSplitsRunsGenerator {
 
+  public static final String DATASET_NUMATTRIBUTES = "dataset.num_attributes";
+
+  public static final String DATASET_NUMINSTANCES = "dataset.num_instances";
+
+  public static final String DATASET_NAME = "dataset.name";
+
+  public static final String PREFIX_DATASET_ATTRIBUTE = "dataset.attribute.";
+
+  public static final String SUFFIX_NAME = ".name";
+
+  public static final String SUFFIX_TYPE = ".type";
 }
