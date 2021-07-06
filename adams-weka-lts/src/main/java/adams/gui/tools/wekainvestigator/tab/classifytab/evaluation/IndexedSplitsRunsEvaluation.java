@@ -120,7 +120,8 @@ public class IndexedSplitsRunsEvaluation
    */
   @Override
   protected void initGUI() {
-    Properties		props;
+    Properties				props;
+    AbstractIndexedSplitsRunsReader	reader;
 
     super.initGUI();
 
@@ -143,17 +144,25 @@ public class IndexedSplitsRunsEvaluation
     m_PanelParameters.addParameter("Splits file", m_PanelFile);
 
     // reader
-    m_PanelReader = new GenericObjectEditorPanel(AbstractIndexedSplitsRunsReader.class, new JsonIndexedSplitsRunsReader(), true);
+    try {
+      reader = (AbstractIndexedSplitsRunsReader) OptionUtils.forCommandLine(
+        AbstractIndexedSplitsRunsReader.class,
+	props.getProperty("Classify.IndexedSplitsRunsReader", new JsonIndexedSplitsRunsReader().toCommandLine()));
+    }
+    catch (Exception e) {
+      reader = new JsonIndexedSplitsRunsReader();
+    }
+    m_PanelReader = new GenericObjectEditorPanel(AbstractIndexedSplitsRunsReader.class, reader, true);
     m_PanelReader.addChangeListener((ChangeEvent e) -> update());
     m_PanelParameters.addParameter("Reader", m_PanelReader);
 
     // train split name
-    m_TextTrainSplitName = new BaseTextField("train");
+    m_TextTrainSplitName = new BaseTextField(props.getProperty("Classify.IndexedSplitsRunsTrainSplitName", "train"));
     m_TextTrainSplitName.setToolTipText("The name of the split to be used for training");
     m_PanelParameters.addParameter("Train split", m_TextTrainSplitName);
 
     // test split name
-    m_TextTestSplitName = new BaseTextField("test");
+    m_TextTestSplitName = new BaseTextField(props.getProperty("Classify.IndexedSplitsRunsTestSplitName", "test"));
     m_TextTestSplitName.setToolTipText("The name of the split to be used for testing");
     m_PanelParameters.addParameter("Test split", m_TextTestSplitName);
 
