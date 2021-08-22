@@ -22,8 +22,8 @@
   </organization>
 
   <scm>
-    <connection>scm:git:https://github.com/waikato-datamining/adams-lts</connection>
-    <developerConnection>scm:git:https://github.com/waikato-datamining/adams-lts</developerConnection>
+    <connection>scm:git:ssh://git@github.com/waikato-datamining/adams-lts</connection>
+    <developerConnection>scm:git:ssh://git@github.com/waikato-datamining/adams-lts</developerConnection>
     <url>https://github.com/waikato-datamining/adams-lts</url>
     <tag>HEAD</tag>
   </scm>
