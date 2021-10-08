@@ -430,6 +430,7 @@ public class CrossValidation
     getOwner().logMessage("Building final model on '" + dataCont.getID() + "/" + data.relationName() + "' using " + OptionUtils.getCommandLine(classifier));
     finalModel.generate(this, data, item);
 
+    m_CrossValidation.cleanUp();
     m_CrossValidation = null;
   }
 

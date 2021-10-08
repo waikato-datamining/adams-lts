@@ -15,7 +15,7 @@
 
 /*
  * CrossValidationExperiment.java
- * Copyright (C) 2016-2018 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2016-2021 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekamultiexperimenter.experiment;
@@ -116,6 +116,18 @@ public class CrossValidationExperiment
       super.stopExecution();
       if (m_CrossValidation != null)
 	m_CrossValidation.stopExecution();
+    }
+
+    /**
+     * Cleans up data structures, frees up memory.
+     * Removes dependencies and job parameters.
+     */
+    public void cleanUp() {
+      if (m_CrossValidation != null) {
+        m_CrossValidation.cleanUp();
+        m_CrossValidation = null;
+      }
+      super.cleanUp();
     }
   }
 

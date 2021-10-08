@@ -580,6 +580,11 @@ public class WekaCrossValidationEvaluator
       }
     }
 
+    if (m_CrossValidation != null) {
+      m_CrossValidation.cleanUp();
+      m_CrossValidation = null;
+    }
+
     return result;
   }
 
@@ -588,8 +593,11 @@ public class WekaCrossValidationEvaluator
    */
   @Override
   public void stopExecution() {
-    if (m_CrossValidation != null)
+    if (m_CrossValidation != null) {
       m_CrossValidation.stopExecution();
+      m_CrossValidation.cleanUp();
+      m_CrossValidation = null;
+    }
     super.stopExecution();
   }
 }
