@@ -38,6 +38,5 @@
   <modules>
     <module>adams-python-weka-lts</module>
     <module>adams-weka-lts</module>
-    <module>adams-weka-nd4j-lts</module>
   </modules>
 </project>
