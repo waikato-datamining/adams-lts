@@ -29,7 +29,6 @@ import weka.core.converters.ConverterUtils.DataSource;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.logging.Level;
 
 /**
  * File-based dataset.
@@ -130,21 +129,23 @@ public class FileContainer
   /**
    * Reloads the data.
    *
-   * @return		true if successfully reloaded
+   * @return		null if successfully reloaded, otherwise error message
    */
   @Override
-  protected boolean doReload() {
+  protected String doReload() {
     DataSource 	source;
+
+    if (!m_Source.getAbsoluteFile().exists())
+      return "File does not exist: " + m_Source.getAbsoluteFile();
 
     try {
       m_Loader.setFile(m_Source.getAbsoluteFile());
       source = new DataSource(m_Loader);
       m_Data = source.getDataSet();
-      return true;
+      return null;
     }
     catch (Exception e) {
-      getLogger().log(Level.SEVERE, "Failed to reload: " + m_Source, e);
-      return false;
+      return handleException("Failed to reload: " + m_Source, e);
     }
   }
 
