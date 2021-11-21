@@ -50,7 +50,7 @@ import java.awt.GridBagLayout;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  */
 public class AttributeSummaryPanel
-  extends JPanel {
+    extends JPanel {
 
   /** for serialization */
   static final long serialVersionUID = -5434987925737735880L;
@@ -59,7 +59,7 @@ public class AttributeSummaryPanel
    * Panel with labels displaying some basic info.
    */
   public static class AttributeInfoPanel
-    extends JPanel {
+      extends JPanel {
 
     private static final long serialVersionUID = -1404314409077539072L;
 
@@ -247,7 +247,7 @@ public class AttributeSummaryPanel
    * Displays other stats in a table.
    */
   public static class StatisticsTable
-    extends BaseTable {
+      extends BaseTable {
 
     /** for serialization */
     private static final long serialVersionUID = 7165142874670048578L;
@@ -258,6 +258,7 @@ public class AttributeSummaryPanel
     @Override
     protected void initGUI() {
       super.initGUI();
+      setAutoResizeMode(BaseTable.AUTO_RESIZE_OFF);
       setShowSimpleHeaderPopupMenu(false);
       setShowSimpleCellPopupMenu(true);
       getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -326,10 +327,20 @@ public class AttributeSummaryPanel
 	}
 	setModel(new DefaultTableModel(data, colNames));
       }
+      else if (att.isString()) {
+	Object[] colNames = {"No.", "String value"};
+	Object[][] data = new Object[att.numValues()][2];
+	for (int i = 0; i < att.numValues(); i++) {
+	  data[i][0] = i + 1;
+	  data[i][1] = att.value(i);
+	}
+	setModel(new DefaultTableModel(data, colNames));
+      }
       else {
 	setModel(new DefaultTableModel());
       }
       getColumnModel().setColumnMargin(4);
+      setOptimalColumnWidth();
     }
   }
 
@@ -475,7 +486,7 @@ public class AttributeSummaryPanel
       jf.setVisible(true);
       if (args.length == 1) {
 	java.io.Reader r = new java.io.BufferedReader(new java.io.FileReader(
-	  args[0]));
+	    args[0]));
 	Instances inst = new Instances(r);
 	p.setInstances(inst);
 	p.setAttribute(0);
