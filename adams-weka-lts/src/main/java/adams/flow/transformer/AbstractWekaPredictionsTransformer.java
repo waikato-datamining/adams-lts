@@ -15,13 +15,13 @@
 
 /*
  * AbstractWekaPredictionsTransformer.java
- * Copyright (C) 2009-2017 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2009-2021 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.flow.transformer;
 
 import adams.core.QuickInfoHelper;
-import adams.core.Range;
+import adams.data.weka.WekaAttributeRange;
 import adams.flow.container.WekaEvaluationContainer;
 import weka.classifiers.Evaluation;
 import weka.core.Instances;
@@ -37,10 +37,9 @@ import java.util.logging.Level;
  * Evaluation object into a different format.
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public abstract class AbstractWekaPredictionsTransformer
-  extends AbstractTransformer {
+    extends AbstractTransformer {
 
   /** for serialization. */
   private static final long serialVersionUID = 8682062846689759416L;
@@ -67,7 +66,7 @@ public abstract class AbstractWekaPredictionsTransformer
   protected boolean m_UseOriginalIndices;
 
   /** the additional attributes from the test data to add to the output. */
-  protected Range m_TestAttributes;
+  protected WekaAttributeRange m_TestAttributes;
 
   /** the optional prefix to disambiguate the measure attributes from the original ones. */
   protected String m_MeasuresPrefix;
@@ -80,40 +79,40 @@ public abstract class AbstractWekaPredictionsTransformer
     super.defineOptions();
 
     m_OptionManager.add(
-	    "add-index", "addLabelIndex",
-	    false);
+        "add-index", "addLabelIndex",
+        false);
 
     m_OptionManager.add(
-	    "error", "showError",
-	    false);
+        "error", "showError",
+        false);
 
     m_OptionManager.add(
-	    "absolute-error", "useAbsoluteError",
-	    true);
+        "absolute-error", "useAbsoluteError",
+        true);
 
     m_OptionManager.add(
-	    "probability", "showProbability",
-	    false);
+        "probability", "showProbability",
+        false);
 
     m_OptionManager.add(
-	    "distribution", "showDistribution",
-	    false);
+        "distribution", "showDistribution",
+        false);
 
     m_OptionManager.add(
-	    "weight", "showWeight",
-	    false);
+        "weight", "showWeight",
+        false);
 
     m_OptionManager.add(
-	    "use-original-indices", "useOriginalIndices",
-	    false);
+        "use-original-indices", "useOriginalIndices",
+        false);
 
     m_OptionManager.add(
-	    "test-attributes", "testAttributes",
-	    new Range(""));
+        "test-attributes", "testAttributes",
+        new WekaAttributeRange(""));
 
     m_OptionManager.add(
-	    "measures-prefix", "measuresPrefix",
-	    "");
+        "measures-prefix", "measuresPrefix",
+        "");
   }
 
   /**
@@ -254,7 +253,7 @@ public abstract class AbstractWekaPredictionsTransformer
   public String showProbabilityTipText() {
     return
         "If set to true, then the probability of the prediction will be "
-      + "displayed as well (only for nominal class attributes).";
+            + "displayed as well (only for nominal class attributes).";
   }
 
   /**
@@ -285,7 +284,7 @@ public abstract class AbstractWekaPredictionsTransformer
   public String showDistributionTipText() {
     return
         "If set to true, then the class distribution will be displayed as "
-      + "well (only for nominal class attributes).";
+            + "well (only for nominal class attributes).";
   }
 
   /**
@@ -348,8 +347,8 @@ public abstract class AbstractWekaPredictionsTransformer
   public String useOriginalIndicesTipText() {
     return
         "If set to true, the input token is a " + WekaEvaluationContainer.class.getName()
-          + " and it contains the original indices ('" + WekaEvaluationContainer.VALUE_ORIGINALINDICES + "')"
-          + " then the output will get aligned with the original data.";
+            + " and it contains the original indices ('" + WekaEvaluationContainer.VALUE_ORIGINALINDICES + "')"
+            + " then the output will get aligned with the original data.";
   }
 
   /**
@@ -357,7 +356,7 @@ public abstract class AbstractWekaPredictionsTransformer
    *
    * @param value	the range
    */
-  public void setTestAttributes(Range value) {
+  public void setTestAttributes(WekaAttributeRange value) {
     m_TestAttributes = value;
     reset();
   }
@@ -367,7 +366,7 @@ public abstract class AbstractWekaPredictionsTransformer
    *
    * @return		the range
    */
-  public Range getTestAttributes() {
+  public WekaAttributeRange getTestAttributes() {
     return m_TestAttributes;
   }
 
@@ -430,7 +429,7 @@ public abstract class AbstractWekaPredictionsTransformer
     Remove	remove;
 
     try {
-      m_TestAttributes.setMax(data.numAttributes());
+      m_TestAttributes.setData(data);
       indices = m_TestAttributes.getIntIndices();
       remove = new Remove();
       remove.setAttributeIndicesArray(indices);
@@ -440,7 +439,7 @@ public abstract class AbstractWekaPredictionsTransformer
       return Filter.useFilter(data, remove);
     }
     catch (Exception e) {
-      getLogger().log(Level.SEVERE, "Failed to filter test data using range: " + m_TestAttributes, e);
+      getLogger().log(Level.SEVERE, "Failed to filter test data using range: " + m_TestAttributes.getRange(), e);
       return null;
     }
   }
