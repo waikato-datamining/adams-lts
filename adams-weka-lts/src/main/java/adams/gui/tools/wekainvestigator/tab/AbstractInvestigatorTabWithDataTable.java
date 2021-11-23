@@ -108,6 +108,7 @@ public abstract class AbstractInvestigatorTabWithDataTable
 
     m_SplitPane = new BaseSplitPane(BaseSplitPane.VERTICAL_SPLIT);
     m_SplitPane.setOneTouchExpandable(true);
+    m_SplitPane.setUISettingsParameters(getClass(), "VerticalDivider");
     m_ContentPanel.add(m_SplitPane, BorderLayout.CENTER);
 
     m_Model = new DataTableModel(new ArrayList<>(), hasReadOnlyTable());
