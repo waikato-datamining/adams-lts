@@ -67,6 +67,7 @@ public class WekaInvestigatorPreferencesPanel
     addPropertyType("General.TestingUpdateInterval", PropertyType.INTEGER);
     addPropertyType("General.SortAttributeNames", PropertyType.BOOLEAN);
     addPropertyType("General.ResultHistoryToolTips", PropertyType.BOOLEAN);
+    addPropertyType("Preprocess.MaxAttributesToVisualize", PropertyType.INTEGER);
 
     // general
     addPropertyType("Data.MaxColWidth", PropertyType.INTEGER);
