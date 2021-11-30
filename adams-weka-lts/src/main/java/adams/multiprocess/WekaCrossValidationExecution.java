@@ -14,7 +14,7 @@
  */
 
 /*
- * WekaCrossValidation.java
+ * WekaCrossValidationExecution.java
  * Copyright (C) 2016-2021 University of Waikato, Hamilton, NZ
  */
 
@@ -43,8 +43,8 @@ import weka.core.Instances;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  */
 public class WekaCrossValidationExecution
-  extends CustomLoggingLevelObject
-  implements Stoppable, InstancesViewSupporter, ThreadLimiter, FlowContextHandler, CleanUpHandler {
+    extends CustomLoggingLevelObject
+    implements Stoppable, InstancesViewSupporter, ThreadLimiter, FlowContextHandler, CleanUpHandler {
 
   private static final long serialVersionUID = 2021758441076652982L;
 
@@ -89,7 +89,7 @@ public class WekaCrossValidationExecution
 
   /** the jobrunner template. */
   protected transient JobRunner m_JobRunner;
-  
+
   /** the runner in use. */
   protected transient JobRunner m_ActualJobRunner;
 
@@ -432,12 +432,11 @@ public class WekaCrossValidationExecution
     m_OutputBuffer = new StringBuffer();
     if (m_Output != null) {
       try {
-	m_Output = (AbstractOutput) OptionUtils.forAnyCommandLine(
-	  AbstractOutput.class, OptionUtils.getCommandLine(m_Output));
-	m_Output.setBuffer(m_OutputBuffer);
+        m_Output = ObjectCopyHelper.copyObject(m_Output);
+        m_Output.setBuffer(m_OutputBuffer);
       }
       catch (Exception e) {
-	throw new IllegalStateException("Failed to create copy of output!", e);
+        throw new IllegalStateException("Failed to create copy of output!", e);
       }
     }
   }
@@ -518,9 +517,9 @@ public class WekaCrossValidationExecution
     try {
       // evaluate classifier
       if (m_Classifier == null)
-	throw new IllegalStateException("Classifier '" + getClassifier() + "' not found!");
+        throw new IllegalStateException("Classifier '" + getClassifier() + "' not found!");
       if (isLoggingEnabled())
-	getLogger().info(OptionUtils.getCommandLine(m_Classifier));
+        getLogger().info(OptionUtils.getCommandLine(m_Classifier));
 
       m_ActualNumThreads = Performance.determineNumThreads(m_NumThreads);
 
@@ -533,100 +532,100 @@ public class WekaCrossValidationExecution
       generator.initializeIterator();
       folds = generator.getActualNumFolds();
       if ((m_ActualNumThreads == 1) && !m_SeparateFolds) {
-	initOutputBuffer();
-	if (m_Output != null) {
-	  m_Output.setHeader(m_Data);
-	  m_Output.printHeader();
-	}
-	eval       = new Evaluation(m_Data);
-	eval.setDiscardPredictions(m_DiscardPredictions);
-	current    = 0;
-	while (generator.hasNext()) {
+        initOutputBuffer();
+        if (m_Output != null) {
+          m_Output.setHeader(m_Data);
+          m_Output.printHeader();
+        }
+        eval       = new Evaluation(m_Data);
+        eval.setDiscardPredictions(m_DiscardPredictions);
+        current    = 0;
+        while (generator.hasNext()) {
           if (isStopped())
             break;
-	  if (m_StatusMessageHandler != null)
-	    m_StatusMessageHandler.showStatus("Fold " + current + "/" + folds + ": '" + m_Data.relationName() + "' using " + OptionUtils.getCommandLine(m_Classifier));
-	  cont  = generator.next();
-	  train = (Instances) cont.getValue(WekaTrainTestSetContainer.VALUE_TRAIN);
-	  test  = (Instances) cont.getValue(WekaTrainTestSetContainer.VALUE_TEST);
-	  cls   = ObjectCopyHelper.copyObject(m_Classifier);
-	  if (cls instanceof FlowContextHandler)
-	    ((FlowContextHandler) cls).setFlowContext(m_FlowContext);
-	  cls.buildClassifier(train);
-	  eval.setPriors(train);
-	  eval.evaluateModel(cls, test, m_Output);
-	  current++;
-	}
+          if (m_StatusMessageHandler != null)
+            m_StatusMessageHandler.showStatus("Fold " + current + "/" + folds + ": '" + m_Data.relationName() + "' using " + OptionUtils.getCommandLine(m_Classifier));
+          cont  = generator.next();
+          train = (Instances) cont.getValue(WekaTrainTestSetContainer.VALUE_TRAIN);
+          test  = (Instances) cont.getValue(WekaTrainTestSetContainer.VALUE_TEST);
+          cls   = ObjectCopyHelper.copyObject(m_Classifier);
+          if (cls instanceof FlowContextHandler)
+            ((FlowContextHandler) cls).setFlowContext(m_FlowContext);
+          cls.buildClassifier(train);
+          eval.setPriors(train);
+          eval.evaluateModel(cls, test, m_Output);
+          current++;
+        }
         if (m_Output != null)
           m_Output.printFooter();
-	if (!isStopped())
-	  m_Evaluation = eval;
+        if (!isStopped())
+          m_Evaluation = eval;
       }
       else {
         if (m_DiscardPredictions)
           throw new IllegalStateException(
-            "Cannot discard predictions in parallel mode, as they are used for aggregating the statistics!");
+              "Cannot discard predictions in parallel mode, as they are used for aggregating the statistics!");
         setNumThreads = true;
-	if (m_JobRunnerSetup != null) {
-	  m_ActualJobRunner = m_JobRunnerSetup.newInstance();
-	  setNumThreads     = false;
-	}
-	else if (m_JobRunner != null) {
-	  m_ActualJobRunner = ObjectCopyHelper.copyObject(m_JobRunner);
-	  setNumThreads     = false;
-	}
-	else {
-	  m_ActualJobRunner = new LocalJobRunner<WekaCrossValidationJob>();
-	}
-	if (setNumThreads && (m_ActualJobRunner instanceof ThreadLimiter))
-	  ((ThreadLimiter) m_ActualJobRunner).setNumThreads(m_NumThreads);
-	list = new JobList<>();
-	while (generator.hasNext()) {
-	  cont = generator.next();
-	  job  = new WekaCrossValidationJob(
-	    ObjectCopyHelper.copyObject(m_Classifier),
-	    (Instances) cont.getValue(WekaTrainTestSetContainer.VALUE_TRAIN),
-	    (Instances) cont.getValue(WekaTrainTestSetContainer.VALUE_TEST),
-	    (Integer) cont.getValue(WekaTrainTestSetContainer.VALUE_FOLD_NUMBER),
-	    m_DiscardPredictions,
-	    m_StatusMessageHandler);
-	  job.setFlowContext(m_FlowContext);
-	  list.add(job);
-	}
-	m_ActualJobRunner.add(list);
-	m_ActualJobRunner.start();
-	m_ActualJobRunner.stop();
-	// aggregate data
-	if (!isStopped()) {
-	  evalAgg = new AggregateEvaluations();
-	  m_Evaluations = new Evaluation[m_ActualJobRunner.getJobs().size()];
-	  m_Classifiers = new Classifier[m_ActualJobRunner.getJobs().size()];
-	  for (i = 0; i < m_ActualJobRunner.getJobs().size(); i++) {
-	    job = (WekaCrossValidationJob) m_ActualJobRunner.getJobs().get(i);
-	    if (job.getEvaluation() == null) {
-	      result.add("Fold #" + (i + 1) + " failed to evaluate" + (job.hasExecutionError() ? job.getExecutionError() : "?"));
-	      break;
-	    }
-	    evalAgg.add(job.getEvaluation());
-	    m_Evaluations[i] = job.getEvaluation();
-	    m_Classifiers[i] = job.getClassifier();
-	    job.cleanUp();
-	  }
-	  m_Evaluation = evalAgg.aggregated();
-	  if (m_Evaluation == null) {
-	    if (evalAgg.hasLastError())
-	      result.add(evalAgg.getLastError());
-	    else
-	      result.add("Failed to aggregate evaluations!");
-	  }
-	}
-	list.cleanUp();
-	m_ActualJobRunner.cleanUp();
-	m_ActualJobRunner = null;
+        if (m_JobRunnerSetup != null) {
+          m_ActualJobRunner = m_JobRunnerSetup.newInstance();
+          setNumThreads     = false;
+        }
+        else if (m_JobRunner != null) {
+          m_ActualJobRunner = ObjectCopyHelper.copyObject(m_JobRunner);
+          setNumThreads     = false;
+        }
+        else {
+          m_ActualJobRunner = new LocalJobRunner<WekaCrossValidationJob>();
+        }
+        if (setNumThreads && (m_ActualJobRunner instanceof ThreadLimiter))
+          ((ThreadLimiter) m_ActualJobRunner).setNumThreads(m_NumThreads);
+        list = new JobList<>();
+        while (generator.hasNext()) {
+          cont = generator.next();
+          job  = new WekaCrossValidationJob(
+              ObjectCopyHelper.copyObject(m_Classifier),
+              (Instances) cont.getValue(WekaTrainTestSetContainer.VALUE_TRAIN),
+              (Instances) cont.getValue(WekaTrainTestSetContainer.VALUE_TEST),
+              (Integer) cont.getValue(WekaTrainTestSetContainer.VALUE_FOLD_NUMBER),
+              m_DiscardPredictions,
+              m_StatusMessageHandler);
+          job.setFlowContext(m_FlowContext);
+          list.add(job);
+        }
+        m_ActualJobRunner.add(list);
+        m_ActualJobRunner.start();
+        m_ActualJobRunner.stop();
+        // aggregate data
+        if (!isStopped()) {
+          evalAgg = new AggregateEvaluations();
+          m_Evaluations = new Evaluation[m_ActualJobRunner.getJobs().size()];
+          m_Classifiers = new Classifier[m_ActualJobRunner.getJobs().size()];
+          for (i = 0; i < m_ActualJobRunner.getJobs().size(); i++) {
+            job = (WekaCrossValidationJob) m_ActualJobRunner.getJobs().get(i);
+            if (job.getEvaluation() == null) {
+              result.add("Fold #" + (i + 1) + " failed to evaluate" + (job.hasExecutionError() ? job.getExecutionError() : "?"));
+              break;
+            }
+            evalAgg.add(job.getEvaluation());
+            m_Evaluations[i] = job.getEvaluation();
+            m_Classifiers[i] = job.getClassifier();
+            job.cleanUp();
+          }
+          m_Evaluation = evalAgg.aggregated();
+          if (m_Evaluation == null) {
+            if (evalAgg.hasLastError())
+              result.add(evalAgg.getLastError());
+            else
+              result.add("Failed to aggregate evaluations!");
+          }
+        }
+        list.cleanUp();
+        m_ActualJobRunner.cleanUp();
+        m_ActualJobRunner = null;
       }
 
       if (!m_DiscardPredictions)
-	indices = generator.crossValidationIndices();
+        indices = generator.crossValidationIndices();
     }
     catch (Exception e) {
       result.add(LoggingHelper.handleException(this, "Failed to cross-validate classifier: ", e));
@@ -653,6 +652,7 @@ public class WekaCrossValidationExecution
    * Stops the execution.
    */
   public void stopExecution() {
+    m_Stopped = true;
     getLogger().severe("Execution stopped");
     if (m_ActualJobRunner != null)
       m_ActualJobRunner.terminate(m_WaitForJobs);

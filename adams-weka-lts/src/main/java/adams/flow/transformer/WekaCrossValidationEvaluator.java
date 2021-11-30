@@ -15,7 +15,7 @@
 
 /*
  * WekaCrossValidationEvaluator.java
- * Copyright (C) 2009-2019 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2009-2021 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.flow.transformer;
@@ -148,14 +148,14 @@ import weka.core.Instances;
  * &nbsp;&nbsp;&nbsp;If enabled, a final model is built on the full dataset.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  <!-- options-end -->
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
  */
 public class WekaCrossValidationEvaluator
-  extends AbstractCallableWekaClassifierEvaluator
-  implements Randomizable, ThreadLimiter, InstancesViewSupporter {
+    extends AbstractCallableWekaClassifierEvaluator
+    implements Randomizable, ThreadLimiter, InstancesViewSupporter {
 
   /** for serialization. */
   private static final long serialVersionUID = -3019442578354930841L;
@@ -193,7 +193,7 @@ public class WekaCrossValidationEvaluator
   public String globalInfo() {
     return
         "Cross-validates a classifier on an incoming dataset. The classifier "
-      + "setup being used in the evaluation is a callable 'Classifier' actor.";
+            + "setup being used in the evaluation is a callable 'Classifier' actor.";
   }
 
   /**
@@ -204,28 +204,28 @@ public class WekaCrossValidationEvaluator
     super.defineOptions();
 
     m_OptionManager.add(
-      "seed", "seed",
-      1L);
+        "seed", "seed",
+        1L);
 
     m_OptionManager.add(
-      "folds", "folds",
-      10, -1, null);
+        "folds", "folds",
+        10, -1, null);
 
     m_OptionManager.add(
-      "num-threads", "numThreads",
-      1);
+        "num-threads", "numThreads",
+        1);
 
     m_OptionManager.add(
-      "use-views", "useViews",
-      false);
+        "use-views", "useViews",
+        false);
 
     m_OptionManager.add(
-      "generator", "generator",
-      new DefaultCrossValidationFoldGenerator());
+        "generator", "generator",
+        new DefaultCrossValidationFoldGenerator());
 
     m_OptionManager.add(
-      "final-model", "finalModel",
-      false);
+        "final-model", "finalModel",
+        false);
   }
 
   /**
@@ -273,9 +273,9 @@ public class WekaCrossValidationEvaluator
   @Override
   public String outputTipText() {
     return
-	"The class for generating prediction output; if 'Null' is used, then "
-	+ "an Evaluation object is forwarded instead of a String; not used when "
-	+ "using parallel execution.";
+        "The class for generating prediction output; if 'Null' is used, then "
+            + "an Evaluation object is forwarded instead of a String; not used when "
+            + "using parallel execution.";
   }
 
   /**
@@ -290,7 +290,7 @@ public class WekaCrossValidationEvaluator
     }
     else {
       getLogger().severe(
-	  "Number of folds must be >=2 or -1 for LOOCV, provided: " + value);
+          "Number of folds must be >=2 or -1 for LOOCV, provided: " + value);
     }
   }
 
@@ -311,7 +311,7 @@ public class WekaCrossValidationEvaluator
    */
   public String foldsTipText() {
     return "The number of folds to use in the cross-validation; use -1 for "
-      + "leave-one-out cross-validation (LOOCV); overrides the value defined by the fold generator scheme.";
+        + "leave-one-out cross-validation (LOOCV); overrides the value defined by the fold generator scheme.";
   }
 
   /**
@@ -519,7 +519,7 @@ public class WekaCrossValidationEvaluator
       // evaluate classifier
       cls = getClassifierInstance();
       if (cls == null)
-	throw new IllegalStateException("Classifier '" + getClassifier() + "' not found!");
+        throw new IllegalStateException("Classifier '" + getClassifier() + "' not found!");
       if (isLoggingEnabled())
         getLogger().info(OptionUtils.getCommandLine(cls));
 
@@ -540,31 +540,31 @@ public class WekaCrossValidationEvaluator
       result = m_CrossValidation.execute();
 
       if (!m_CrossValidation.isStopped()) {
-	indices = m_CrossValidation.getOriginalIndices();
-	if (m_CrossValidation.isSingleThreaded()) {
-	  if (m_Output instanceof Null) {
-	    m_OutputToken = new Token(new WekaEvaluationContainer(m_CrossValidation.getEvaluation()));
-	  }
-	  else {
-	    if (m_CrossValidation.getOutputBuffer() != null)
-	      m_OutputBuffer.append(m_CrossValidation.getOutputBuffer().toString());
-	    if (m_AlwaysUseContainer || m_FinalModel)
-	      m_OutputToken = new Token(new WekaEvaluationContainer(m_CrossValidation.getEvaluation(), null, m_Output.getBuffer().toString()));
-	    else
-	      m_OutputToken = new Token(m_Output.getBuffer().toString());
-	  }
-	}
-	else {
-	  m_OutputToken = new Token(new WekaEvaluationContainer(m_CrossValidation.getEvaluation()));
-	}
-	// build model
-	if (m_OutputToken.hasPayload(WekaEvaluationContainer.class)) {
-	  if (m_FinalModel) {
-	    model = ObjectCopyHelper.copyObject(cls);
-	    model.buildClassifier(data);
-	    m_OutputToken.getPayload(WekaEvaluationContainer.class).setValue(WekaEvaluationContainer.VALUE_MODEL, model);
-	  }
-	}
+        indices = m_CrossValidation.getOriginalIndices();
+        if (m_CrossValidation.isSingleThreaded()) {
+          if (m_Output instanceof Null) {
+            m_OutputToken = new Token(new WekaEvaluationContainer(m_CrossValidation.getEvaluation()));
+          }
+          else {
+            if (m_CrossValidation.getOutputBuffer() != null)
+              m_OutputBuffer.append(m_CrossValidation.getOutputBuffer().toString());
+            if (m_AlwaysUseContainer || m_FinalModel)
+              m_OutputToken = new Token(new WekaEvaluationContainer(m_CrossValidation.getEvaluation(), null, m_Output.getBuffer().toString()));
+            else
+              m_OutputToken = new Token(m_Output.getBuffer().toString());
+          }
+        }
+        else {
+          m_OutputToken = new Token(new WekaEvaluationContainer(m_CrossValidation.getEvaluation()));
+        }
+        // build model
+        if (m_OutputToken.hasPayload(WekaEvaluationContainer.class)) {
+          if (m_FinalModel) {
+            model = ObjectCopyHelper.copyObject(cls);
+            model.buildClassifier(data);
+            m_OutputToken.getPayload(WekaEvaluationContainer.class).setValue(WekaEvaluationContainer.VALUE_MODEL, model);
+          }
+        }
       }
     }
     catch (Exception e) {
@@ -593,11 +593,21 @@ public class WekaCrossValidationEvaluator
    */
   @Override
   public void stopExecution() {
-    if (m_CrossValidation != null) {
+    if (m_CrossValidation != null)
       m_CrossValidation.stopExecution();
+    super.stopExecution();
+  }
+
+  /**
+   * Cleans up after the execution has finished.
+   */
+  @Override
+  public void wrapUp() {
+    if (m_CrossValidation != null) {
       m_CrossValidation.cleanUp();
       m_CrossValidation = null;
     }
-    super.stopExecution();
+
+    super.wrapUp();
   }
 }
