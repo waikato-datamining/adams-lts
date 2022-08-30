@@ -15,7 +15,7 @@
 
 /*
  * AggregateEvaluations.java
- * Copyright (C) 2018-2020 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2018-2022 University of Waikato, Hamilton, NZ
  */
 
 package weka.classifiers;
@@ -47,8 +47,8 @@ import java.util.List;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  */
 public class AggregateEvaluations
-  extends LoggingObject
-  implements ErrorProvider {
+    extends LoggingObject
+    implements ErrorProvider {
 
   private static final long serialVersionUID = 7021888369517311031L;
 
@@ -116,7 +116,7 @@ public class AggregateEvaluations
     if (m_SortLabels) {
       m_ClassLabels.sort(m_Comparator);
       if (m_Reverse)
-        Collections.reverse(m_ClassLabels);
+	Collections.reverse(m_ClassLabels);
     }
   }
 
@@ -196,9 +196,9 @@ public class AggregateEvaluations
     if (m_Predictions.size() > 0) {
       if (m_Predictions.get(0).getClass() != pred.getClass())
 	return "Prediction classes differ: "
-	  + Utils.classToString(m_Predictions.get(0))
-	  + " != "
-	  + Utils.classToString(pred);
+	    + Utils.classToString(m_Predictions.get(0))
+	    + " != "
+	    + Utils.classToString(pred);
     }
 
     m_Predictions.add(pred);
@@ -224,9 +224,9 @@ public class AggregateEvaluations
     if (m_Predictions.size() > 0) {
       if (m_Predictions.get(0).getClass() != eval.predictions().get(0).getClass())
 	return "Prediction classes differ: "
-	  + Utils.classToString(m_Predictions.get(0))
-	  + " != "
-	  + Utils.classToString(eval.predictions().get(0));
+	    + Utils.classToString(m_Predictions.get(0))
+	    + " != "
+	    + Utils.classToString(eval.predictions().get(0));
     }
     else {
       m_RelationName = eval.getHeader().relationName();
@@ -321,24 +321,31 @@ public class AggregateEvaluations
 	    continue;
 	  labels.add(label);
 	}
+	predictedLabels = SpreadSheetUtils.getColumn(sheet, colPred, true, true, "?");
+	for (String label: predictedLabels) {
+	  if (label.equals("?"))
+	    continue;
+	  if (!labels.contains(label))
+	    labels.add(label);
+	}
 	setClassLabels(labels);
       }
 
       actualLabels = SpreadSheetUtils.getColumn(sheet, colAct, false, false, "?");
       actual = new double[actualLabels.length];
       for (i = 0; i < actualLabels.length; i++) {
-        if (actualLabels[i].equals("?"))
-          actual[i] = weka.core.Utils.missingValue();
-        else
-          actual[i] = labels.indexOf(actualLabels[i]);
+	if (actualLabels[i].equals("?"))
+	  actual[i] = weka.core.Utils.missingValue();
+	else
+	  actual[i] = labels.indexOf(actualLabels[i]);
       }
       predictedLabels = SpreadSheetUtils.getColumn(sheet, colPred, false, false, "?");
       predicted = new double[predictedLabels.length];
       for (i = 0; i < predictedLabels.length; i++) {
-        if (predictedLabels[i].equals("?"))
-          predicted[i] = weka.core.Utils.missingValue();
-        else
-          predicted[i] = labels.indexOf(predictedLabels[i]);
+	if (predictedLabels[i].equals("?"))
+	  predicted[i] = weka.core.Utils.missingValue();
+	else
+	  predicted[i] = labels.indexOf(predictedLabels[i]);
       }
     }
     else {
@@ -384,9 +391,9 @@ public class AggregateEvaluations
 	}
       }
       else {
-        if (weight != null)
+	if (weight != null)
 	  add(new NumericPrediction(actual[i], predicted[i], weight[i]));
-        else
+	else
 	  add(new NumericPrediction(actual[i], predicted[i]));
       }
     }
@@ -432,8 +439,8 @@ public class AggregateEvaluations
       atts.add(new Attribute("Actual", labels));
     }
     data = new Instances(
-      (m_RelationName == null ? Environment.getInstance().getProject() : m_RelationName),
-      atts, m_Predictions.size());
+	(m_RelationName == null ? Environment.getInstance().getProject() : m_RelationName),
+	atts, m_Predictions.size());
     data.setClassIndex(0);
     for (i = 0; i < m_Predictions.size(); i++) {
       inst = new DenseInstance(m_Predictions.get(i).weight(), new double[]{m_Predictions.get(i).actual()});
@@ -446,11 +453,11 @@ public class AggregateEvaluations
       for (i = 0; i < m_Predictions.size(); i++) {
 	if (distLen > 0) {
 	  result.evaluateModelOnceAndRecordPrediction(
-	    ((NominalPrediction) m_Predictions.get(i)).distribution(), data.instance(i));
+	      ((NominalPrediction) m_Predictions.get(i)).distribution(), data.instance(i));
 	}
 	else {
 	  result.evaluateModelOnceAndRecordPrediction(
-	    new double[]{m_Predictions.get(i).predicted()}, data.instance(i));
+	      new double[]{m_Predictions.get(i).predicted()}, data.instance(i));
 	}
       }
     }
@@ -498,8 +505,8 @@ public class AggregateEvaluations
    */
   public String toString() {
     return
-      "# predictions: " + getPredictions().size() + "\n"
-      + "class labels: " + (getClassLabels() != null ? getClassLabels() : "-none-") + "\n"
-      + "last error: " + (hasLastError() ? getLastError() : "-none-");
+	"# predictions: " + getPredictions().size() + "\n"
+	    + "class labels: " + (getClassLabels() != null ? getClassLabels() : "-none-") + "\n"
+	    + "last error: " + (hasLastError() ? getLastError() : "-none-");
   }
 }
