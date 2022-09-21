@@ -15,7 +15,7 @@
 
 /*
  * InstancesTablePopupMenuItemHelper.java
- * Copyright (C) 2016-2021 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2016-2022 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.visualization.instances.instancestable;
@@ -33,7 +33,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Helper class for constructing popup menus for the InstancesTable.
@@ -79,11 +81,11 @@ public class InstancesTablePopupMenuItemHelper {
    * @param range	the range to use
    * @return		the state
    */
-  public static TableState getState(InstancesTable table, MouseEvent e, TableRowRange range) {
-    TableState result;
+  public static InstancesTablePopupMenuItemHelper.TableState getState(InstancesTable table, MouseEvent e, TableRowRange range) {
+    InstancesTablePopupMenuItemHelper.TableState result;
     int		i;
 
-    result = new TableState();
+    result = new InstancesTablePopupMenuItemHelper.TableState();
     result.table = table;
     result.range = range;
     result.selRow = table.getSelectedRow();
@@ -112,13 +114,14 @@ public class InstancesTablePopupMenuItemHelper {
     String[]					classes;
 
     result = new ArrayList<>();
+    System.out.println(cls.getName());
     classes = ClassLister.getSingleton().getClassnames(cls);
     for (String c : classes) {
       try {
-	result.add((InstancesTablePopupMenuItem) ClassManager.getSingleton().forName(c).newInstance());
+        result.add((InstancesTablePopupMenuItem) ClassManager.getSingleton().forName(c).newInstance());
       }
       catch (Exception e) {
-	ConsolePanel.getSingleton().append("Failed to instantiate InstancesTable menu item: " + c, e);
+        ConsolePanel.getSingleton().append("Failed to instantiate InstancesTable menu item: " + c, e);
       }
     }
 
@@ -144,41 +147,41 @@ public class InstancesTablePopupMenuItemHelper {
     if (isRow) {
       if (item instanceof PlotSelectedRows) {
         plotSelRows = (PlotSelectedRows) item;
-	menuitem.addActionListener((ActionEvent e) -> ((PlotSelectedRows) item).plotSelectedRows(state));
-	enabled = (state.actRows.length >= plotSelRows.minNumRows());
-	if (plotSelRows.maxNumRows() != -1)
-	  enabled = enabled && (state.actRows.length <= plotSelRows.maxNumRows());
- 	menuitem.setEnabled(enabled);
+        menuitem.addActionListener((ActionEvent e) -> ((PlotSelectedRows) item).plotSelectedRows(state));
+        enabled = (state.actRows.length >= plotSelRows.minNumRows());
+        if (plotSelRows.maxNumRows() != -1)
+          enabled = enabled && (state.actRows.length <= plotSelRows.maxNumRows());
+        menuitem.setEnabled(enabled);
       }
       else if (item instanceof PlotRow) {
-	menuitem.addActionListener((ActionEvent e) -> ((PlotRow) item).plotRow(state));
-	menuitem.setEnabled(state.actRows.length <= 1);
+        menuitem.addActionListener((ActionEvent e) -> ((PlotRow) item).plotRow(state));
+        menuitem.setEnabled(state.actRows.length <= 1);
       }
       else if (item instanceof ProcessSelectedRows) {
         procSelRows = (ProcessSelectedRows) item;
-	menuitem.addActionListener((ActionEvent e) -> ((ProcessSelectedRows) item).processSelectedRows(state));
-	enabled = (state.actRows.length >= procSelRows.minNumRows());
-	if (procSelRows.maxNumRows() != -1)
-	  enabled = enabled && (state.actRows.length <= procSelRows.maxNumRows());
- 	menuitem.setEnabled(enabled);
+        menuitem.addActionListener((ActionEvent e) -> ((ProcessSelectedRows) item).processSelectedRows(state));
+        enabled = (state.actRows.length >= procSelRows.minNumRows());
+        if (procSelRows.maxNumRows() != -1)
+          enabled = enabled && (state.actRows.length <= procSelRows.maxNumRows());
+        menuitem.setEnabled(enabled);
       }
       else if (item instanceof ProcessRow) {
-	menuitem.addActionListener((ActionEvent e) -> ((ProcessRow) item).processRow(state));
-	menuitem.setEnabled(state.actRows.length <= 1);
+        menuitem.addActionListener((ActionEvent e) -> ((ProcessRow) item).processRow(state));
+        menuitem.setEnabled(state.actRows.length <= 1);
       }
       else if (item instanceof ProcessCell) {
         menuitem.setEnabled((state.selRow >= 0) && (state.selCol >= 0));
-	menuitem.addActionListener((ActionEvent e) -> ((ProcessCell) item).processCell(state));
+        menuitem.addActionListener((ActionEvent e) -> ((ProcessCell) item).processCell(state));
       }
     }
     else {
       if (item instanceof PlotColumn) {
         menuitem.setEnabled(((PlotColumn) item).handlesRowRange(state.range));
-	menuitem.addActionListener((ActionEvent e) -> ((PlotColumn) item).plotColumn(state));
+        menuitem.addActionListener((ActionEvent e) -> ((PlotColumn) item).plotColumn(state));
       }
       else if (item instanceof ProcessColumn) {
         menuitem.setEnabled(((ProcessColumn) item).handlesRowRange(state.range));
-	menuitem.addActionListener((ActionEvent e) -> ((ProcessColumn) item).processColumn(state));
+        menuitem.addActionListener((ActionEvent e) -> ((ProcessColumn) item).processColumn(state));
       }
     }
   }
@@ -190,8 +193,9 @@ public class InstancesTablePopupMenuItemHelper {
    * @param isRow	whether this is for a row or a column
    * @param menu	the menu to add the items to
    * @param items	the available schemes
+   * @param added	the set of items already added
    */
-  protected static void addToPopupMenu(TableState state, boolean isRow, JPopupMenu menu, List<InstancesTablePopupMenuItem> items) {
+  protected static void addToPopupMenu(TableState state, boolean isRow, JPopupMenu menu, List<InstancesTablePopupMenuItem> items, Set<Class> added) {
     JMenuItem		menuitem;
 
     if (items.size() == 0)
@@ -200,6 +204,8 @@ public class InstancesTablePopupMenuItemHelper {
     if (menu.getComponent(menu.getComponentCount() - 1) instanceof JMenuItem)
       menu.addSeparator();
     for (InstancesTablePopupMenuItem item: items) {
+      if (added.contains(item.getClass()))
+        continue;
       if (!item.isAvailable(state))
         continue;
       menuitem = new JMenuItem(item.getMenuItem());
@@ -207,6 +213,7 @@ public class InstancesTablePopupMenuItemHelper {
         menuitem.setIcon(ImageManager.getIcon(item.getIconName()));
       addAction(state, isRow, menuitem, item);
       menu.add(menuitem);
+      added.add(item.getClass());
     }
   }
 
@@ -218,16 +225,19 @@ public class InstancesTablePopupMenuItemHelper {
    * @param isRow	whether this is for a row or a column
    */
   public static void addToPopupMenu(TableState state, JPopupMenu menu, boolean isRow) {
+    Set<Class>	added;
+
     menu.addSeparator();
+    added = new HashSet<>();
     if (isRow) {
-      addToPopupMenu(state, true, menu, getItems(PlotRow.class));
-      addToPopupMenu(state, true, menu, getItems(ProcessRow.class));
-      addToPopupMenu(state, true, menu, getItems(ProcessSelectedRows.class));
-      addToPopupMenu(state, true, menu, getItems(ProcessCell.class));
+      addToPopupMenu(state, true, menu, getItems(PlotRow.class), added);
+      addToPopupMenu(state, true, menu, getItems(ProcessRow.class), added);
+      addToPopupMenu(state, true, menu, getItems(ProcessSelectedRows.class), added);
+      addToPopupMenu(state, true, menu, getItems(ProcessCell.class), added);
     }
     else {
-      addToPopupMenu(state, false, menu, getItems(PlotColumn.class));
-      addToPopupMenu(state, false, menu, getItems(ProcessColumn.class));
+      addToPopupMenu(state, false, menu, getItems(PlotColumn.class), added);
+      addToPopupMenu(state, false, menu, getItems(ProcessColumn.class), added);
     }
   }
 }
