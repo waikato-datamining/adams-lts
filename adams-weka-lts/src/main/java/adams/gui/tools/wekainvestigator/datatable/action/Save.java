@@ -13,9 +13,9 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
+/*
  * Save.java
- * Copyright (C) 2016-2017 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2016-2022 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekainvestigator.datatable.action;
@@ -90,7 +90,7 @@ public class Save
       else
         suggested = new PlaceholderFile(m_FileChooser.getCurrentDirectory().getAbsolutePath() + File.separator + FileUtils.createFilename(data.getData().relationName(), "_"));
       m_FileChooser.setDialogTitle("Saving " + (i+1) + "/" + (rows.length) + ": " + data.getData().relationName());
-      m_FileChooser.setCurrentDirectory(suggested.getParentFile());
+      m_FileChooser.setCurrentDirectory(suggested.getParentFile().getAbsoluteFile());
       m_FileChooser.setSelectedFile(suggested);
       retVal = m_FileChooser.showSaveDialog(getOwner());
       if (retVal != WekaFileChooser.APPROVE_OPTION)
