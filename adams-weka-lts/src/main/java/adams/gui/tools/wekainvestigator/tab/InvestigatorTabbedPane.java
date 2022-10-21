@@ -145,7 +145,7 @@ public class InvestigatorTabbedPane
     tab    = (AbstractInvestigatorTab) getComponentAt(index);
     errors = new MessageCollection();
     try {
-      tabNew = tab.getClass().newInstance();
+      tabNew = tab.getClass().getDeclaredConstructor().newInstance();
       addTab(tabNew);
       tabNew.deserialize(ClassManager.getSingleton().deepCopy(tab.serialize(new HashSet<>(Arrays.asList(SerializationOption.values())))), errors);
     }
