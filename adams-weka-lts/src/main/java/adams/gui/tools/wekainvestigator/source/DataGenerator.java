@@ -69,6 +69,7 @@ public class DataGenerator
     else
       dialog = new GenericObjectEditorDialog(getOwner().getParentFrame(), true);
     dialog.setTitle("Data generator");
+    dialog.setUISettingsPrefix(weka.datagenerators.DataGenerator.class);
     dialog.getGOEEditor().setCanChangeClassInDialog(true);
     dialog.getGOEEditor().setClassType(weka.datagenerators.DataGenerator.class);
     dialog.setCurrent(m_Generator);
