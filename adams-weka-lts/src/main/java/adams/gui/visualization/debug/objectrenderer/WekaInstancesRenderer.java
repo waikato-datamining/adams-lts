@@ -15,7 +15,7 @@
 
 /*
  * WekaInstancesRenderer.java
- * Copyright (C) 2015-2019 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2015-2022 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.visualization.debug.objectrenderer;
@@ -44,7 +44,7 @@ import java.awt.event.ActionEvent;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  */
 public class WekaInstancesRenderer
-  extends AbstractObjectRenderer {
+    extends AbstractObjectRenderer {
 
   private static final long serialVersionUID = -3528006886476495175L;
 
@@ -52,6 +52,20 @@ public class WekaInstancesRenderer
 
   /** the last setup. */
   protected InstancesTable m_LastTable;
+
+  /** the last limit. */
+  protected Integer m_LastLimit;
+
+  /**
+   * Returns whether a limit is supported by the renderer.
+   *
+   * @param obj		the object to render
+   * @return		true if supplying a limit has an effect
+   */
+  @Override
+  public boolean supportsLimit(Object obj) {
+    return true;
+  }
 
   /**
    * Checks whether the renderer can handle the specified class.
@@ -62,7 +76,7 @@ public class WekaInstancesRenderer
   @Override
   public boolean handles(Class cls) {
     return ClassLocator.isSubclass(Instances.class, cls)
-      || ClassLocator.hasInterface(Instance.class, cls);
+	|| ClassLocator.hasInterface(Instance.class, cls);
   }
 
   /**
@@ -75,8 +89,8 @@ public class WekaInstancesRenderer
   @Override
   public boolean canRenderCached(Object obj, JPanel panel) {
     return (m_LastTable != null)
-      && (    ((obj instanceof Instances) && (((Instances) obj).numInstances() > 0))
-           || ((obj instanceof Instance) && ((Instance) obj).dataset() != null) );
+	&& (    ((obj instanceof Instances) && (((Instances) obj).numInstances() > 0))
+	|| ((obj instanceof Instance) && ((Instance) obj).dataset() != null) );
   }
 
   /**
@@ -84,13 +98,19 @@ public class WekaInstancesRenderer
    *
    * @param obj		the object to render
    * @param panel	the panel to render into
+   * @param limit       the limit to use for the rendering (if applicable), ignored if null
    * @return		null if successful, otherwise error message
    */
   @Override
-  protected String doRenderCached(Object obj, JPanel panel) {
+  protected String doRenderCached(Object obj, JPanel panel, Integer limit) {
     BaseScrollPane	scrollPane;
     Instances		data;
     Instance 		inst;
+
+    if (m_LastLimit != limit) {
+      m_LastLimit = limit;
+      return render(obj, panel, limit);
+    }
 
     if (obj instanceof Instances) {
       data = (Instances) obj;
@@ -112,10 +132,11 @@ public class WekaInstancesRenderer
    *
    * @param obj		the object to render
    * @param panel	the panel to render into
+   * @param limit       the limit to use for the rendering (if applicable), ignored if null
    * @return		null if successful, otherwise error message
    */
   @Override
-  protected String doRender(Object obj, JPanel panel) {
+  protected String doRender(Object obj, JPanel panel, Integer limit) {
     Instance 		inst;
     Instances 		data;
     InstancesView	view;
@@ -129,6 +150,13 @@ public class WekaInstancesRenderer
     SpreadSheetRenderer	sprenderer;
     final JPanel	panelButton;
     BaseButton 		buttonAll;
+    int			maxRows;
+
+    maxRows = MAX_ROWS;
+    if (limit != null)
+      maxRows = (limit == -1 ? Integer.MAX_VALUE : limit);
+
+    m_LastLimit = limit;
 
     if (obj instanceof Instances) {
       data = (Instances) obj;
@@ -147,11 +175,11 @@ public class WekaInstancesRenderer
 	  row.addCell("C").setContent((i == data.classIndex()) ? "true" : "");
 	}
 	sprenderer = new SpreadSheetRenderer();
-	sprenderer.render(sheet, panel);
+	sprenderer.render(sheet, panel, limit);
       }
       else {
-        if (data.numInstances() > MAX_ROWS) {
-	  view  = new InstancesView(data, 0, MAX_ROWS);
+	if (data.numInstances() > maxRows) {
+	  view  = new InstancesView(data, 0, maxRows);
 	  model = new InstancesTableModel(view);
 	  model.setShowAttributeIndex(true);
 	  table = new InstancesTable(model);
@@ -185,11 +213,11 @@ public class WekaInstancesRenderer
 	table      = new InstancesTable(data);
 	scrollPane = new BaseScrollPane(table);
 	panel.add(scrollPane, BorderLayout.CENTER);
-        m_LastTable = table;
+	m_LastTable = table;
       }
       else {
 	plain = new PlainTextRenderer();
-	plain.render(obj, panel);
+	plain.render(obj, panel, limit);
       }
     }
 
