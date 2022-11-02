@@ -22,6 +22,7 @@ package adams.gui.tools.wekamultiexperimenter.setup.weka;
 import adams.core.Constants;
 import adams.gui.core.BaseButton;
 import adams.gui.core.BaseCheckBox;
+import adams.gui.core.BaseTextField;
 import adams.gui.core.ParameterPanel;
 import adams.gui.dialog.ApprovalDialog;
 import weka.experiment.DatabaseResultListener;
@@ -30,7 +31,6 @@ import weka.experiment.ResultListener;
 
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import adams.gui.core.BaseTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.BorderLayout;
@@ -136,7 +136,7 @@ public class JdbcOutputPanel
     
     // backup values
     user = m_TextUser.getText();
-    pw   = m_TextPassword.getText();
+    pw   = new String(m_TextPassword.getPassword());
     
     if (getParentDialog() != null)
       dialog = new ApprovalDialog(getParentDialog(), ModalityType.DOCUMENT_MODAL);
@@ -203,7 +203,7 @@ public class JdbcOutputPanel
       result = new DatabaseResultListener();
       result.setDatabaseURL(m_TextURL.getText());
       result.setUsername(m_TextUser.getText());
-      result.setPassword(m_TextPassword.getText());
+      result.setPassword(new String(m_TextPassword.getPassword()));
     }
     catch (Exception e) {
       result = null;
