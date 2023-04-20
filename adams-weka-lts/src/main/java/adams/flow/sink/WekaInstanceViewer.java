@@ -15,11 +15,12 @@
 
 /*
  * WekaInstanceViewer.java
- * Copyright (C) 2010-2022 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2010-2023 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.flow.sink;
 
+import adams.core.Range;
 import adams.data.report.DataType;
 import adams.data.report.Field;
 import adams.flow.core.Token;
@@ -57,107 +58,106 @@ import java.awt.BorderLayout;
  * &nbsp;&nbsp;&nbsp;The logging level for outputting errors and debugging output.
  * &nbsp;&nbsp;&nbsp;default: WARNING
  * </pre>
- * 
+ *
  * <pre>-name &lt;java.lang.String&gt; (property: name)
  * &nbsp;&nbsp;&nbsp;The name of the actor.
  * &nbsp;&nbsp;&nbsp;default: WekaInstanceViewer
  * </pre>
- * 
+ *
  * <pre>-annotation &lt;adams.core.base.BaseAnnotation&gt; (property: annotations)
  * &nbsp;&nbsp;&nbsp;The annotations to attach to this actor.
- * &nbsp;&nbsp;&nbsp;default: 
+ * &nbsp;&nbsp;&nbsp;default:
  * </pre>
- * 
+ *
  * <pre>-skip &lt;boolean&gt; (property: skip)
- * &nbsp;&nbsp;&nbsp;If set to true, transformation is skipped and the input token is just forwarded 
+ * &nbsp;&nbsp;&nbsp;If set to true, transformation is skipped and the input token is just forwarded
  * &nbsp;&nbsp;&nbsp;as it is.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-stop-flow-on-error &lt;boolean&gt; (property: stopFlowOnError)
  * &nbsp;&nbsp;&nbsp;If set to true, the flow gets stopped in case this actor encounters an error;
  * &nbsp;&nbsp;&nbsp; useful for critical actors.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-silent &lt;boolean&gt; (property: silent)
- * &nbsp;&nbsp;&nbsp;If enabled, then no errors are output in the console; Note: the enclosing 
+ * &nbsp;&nbsp;&nbsp;If enabled, then no errors are output in the console; Note: the enclosing
  * &nbsp;&nbsp;&nbsp;actor handler must have this enabled as well.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-short-title &lt;boolean&gt; (property: shortTitle)
- * &nbsp;&nbsp;&nbsp;If enabled uses just the name for the title instead of the actor's full 
+ * &nbsp;&nbsp;&nbsp;If enabled uses just the name for the title instead of the actor's full
  * &nbsp;&nbsp;&nbsp;name.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-display-in-editor &lt;boolean&gt; (property: displayInEditor)
- * &nbsp;&nbsp;&nbsp;If enabled displays the panel in a tab in the flow editor rather than in 
+ * &nbsp;&nbsp;&nbsp;If enabled displays the panel in a tab in the flow editor rather than in
  * &nbsp;&nbsp;&nbsp;a separate frame.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-width &lt;int&gt; (property: width)
  * &nbsp;&nbsp;&nbsp;The width of the dialog.
  * &nbsp;&nbsp;&nbsp;default: 800
  * &nbsp;&nbsp;&nbsp;minimum: -1
  * </pre>
- * 
+ *
  * <pre>-height &lt;int&gt; (property: height)
  * &nbsp;&nbsp;&nbsp;The height of the dialog.
  * &nbsp;&nbsp;&nbsp;default: 500
  * &nbsp;&nbsp;&nbsp;minimum: -1
  * </pre>
- * 
+ *
  * <pre>-x &lt;int&gt; (property: x)
  * &nbsp;&nbsp;&nbsp;The X position of the dialog (&gt;=0: absolute, -1: left, -2: center, -3: right
  * &nbsp;&nbsp;&nbsp;).
  * &nbsp;&nbsp;&nbsp;default: -1
  * &nbsp;&nbsp;&nbsp;minimum: -3
  * </pre>
- * 
+ *
  * <pre>-y &lt;int&gt; (property: y)
  * &nbsp;&nbsp;&nbsp;The Y position of the dialog (&gt;=0: absolute, -1: top, -2: center, -3: bottom
  * &nbsp;&nbsp;&nbsp;).
  * &nbsp;&nbsp;&nbsp;default: -1
  * &nbsp;&nbsp;&nbsp;minimum: -3
  * </pre>
- * 
+ *
  * <pre>-writer &lt;adams.gui.print.JComponentWriter&gt; (property: writer)
  * &nbsp;&nbsp;&nbsp;The writer to use for generating the graphics output.
  * &nbsp;&nbsp;&nbsp;default: adams.gui.print.NullWriter
  * </pre>
- * 
+ *
  * <pre>-color-provider &lt;adams.gui.visualization.core.ColorProvider&gt; (property: colorProvider)
  * &nbsp;&nbsp;&nbsp;The color provider in use for coloring the instances.
  * &nbsp;&nbsp;&nbsp;default: adams.gui.visualization.core.DefaultColorProvider
  * </pre>
- * 
+ *
  * <pre>-paintlet &lt;adams.gui.visualization.instance.AbstractInstancePaintlet&gt; (property: paintlet)
  * &nbsp;&nbsp;&nbsp;The paintlet to use for drawing the instances.
  * &nbsp;&nbsp;&nbsp;default: adams.gui.visualization.instance.InstanceLinePaintlet
  * </pre>
- * 
+ *
  * <pre>-zoom-overview &lt;boolean&gt; (property: zoomOverview)
  * &nbsp;&nbsp;&nbsp;If enabled, a zoom overview panel gets displayed as well.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-id &lt;java.lang.String&gt; (property: ID)
  * &nbsp;&nbsp;&nbsp;The name of the attribute&#47;field to use as the ID in the display.
- * &nbsp;&nbsp;&nbsp;default: 
+ * &nbsp;&nbsp;&nbsp;default:
  * </pre>
- * 
+ *
  * <pre>-updater &lt;adams.gui.visualization.instance.AbstractInstancePanelUpdater&gt; (property: updater)
  * &nbsp;&nbsp;&nbsp;The updater in use for updating the visualization.
  * &nbsp;&nbsp;&nbsp;default: adams.gui.visualization.instance.SimpleInstancePanelUpdater
  * </pre>
- * 
+ *
  <!-- options-end -->
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class WekaInstanceViewer
   extends AbstractGraphicalDisplay
@@ -177,7 +177,7 @@ public class WekaInstanceViewer
 
   /** whether to display the zoom overview. */
   protected boolean m_ZoomOverview;
-  
+
   /** the name of the attribute/field to use as ID. */
   protected String m_ID;
 
@@ -192,8 +192,8 @@ public class WekaInstanceViewer
   @Override
   public String globalInfo() {
     return
-        "Actor for displaying adams.data.instance.Instance objects in a "
-      + "graphical way (using the internal format), like the 'Instance Explorer' tool.";
+      "Actor for displaying adams.data.instance.Instance objects in a "
+        + "graphical way (using the internal format), like the 'Instance Explorer' tool.";
   }
 
   /**
@@ -446,20 +446,21 @@ public class WekaInstanceViewer
       inst  = new adams.data.instance.Instance();
       inst.set(winst);
       if (!m_ID.isEmpty()) {
-	att = winst.dataset().attribute(m_ID);
-	if (att != null) {
-	  if (att.isNominal() || att.isString())
-	    id = winst.stringValue(att.index());
-	  else
-	    id = "" + winst.value(att.index());
-	  inst.setID(id);
-	}
+        att = winst.dataset().attribute(m_ID);
+        if (att != null) {
+          inst.set(winst, -1, new int[0], new Range("inv(" + (att.index() + 1) + ")"), null);
+          if (att.isNominal() || att.isString())
+            id = winst.stringValue(att.index());
+          else
+            id = "" + winst.value(att.index());
+          inst.setID(id);
+        }
       }
     }
     else {
       inst = (adams.data.instance.Instance) token.getPayload();
       if (inst.hasReport() && inst.getReport().hasValue(m_ID))
-	inst.setID("" + inst.getReport().getValue(new Field(m_ID, DataType.UNKNOWN)));
+        inst.setID("" + inst.getReport().getValue(new Field(m_ID, DataType.UNKNOWN)));
     }
 
     manager = m_InstancePanel.getContainerManager();
@@ -495,24 +496,24 @@ public class WekaInstanceViewer
       protected InstancePanel m_InstancePanel;
       @Override
       protected void initGUI() {
-	super.initGUI();
-	setLayout(new BorderLayout());
-	m_InstancePanel = new InstancePanel();
-	add(m_InstancePanel, BorderLayout.CENTER);
+        super.initGUI();
+        setLayout(new BorderLayout());
+        m_InstancePanel = new InstancePanel();
+        add(m_InstancePanel, BorderLayout.CENTER);
       }
       @Override
       public void display(Token token) {
-	adams.data.instance.Instance inst = null;
-	if (token.getPayload() instanceof weka.core.Instance) {
-	  inst = new adams.data.instance.Instance();
-	  inst.set((weka.core.Instance) token.getPayload());
-	}
-	else {
-	  inst = (adams.data.instance.Instance) token.getPayload();
-	}
-	InstanceContainerManager manager = m_InstancePanel.getContainerManager();
-	InstanceContainer cont = manager.newContainer(inst);
-	manager.add(cont);
+        adams.data.instance.Instance inst = null;
+        if (token.getPayload() instanceof weka.core.Instance) {
+          inst = new adams.data.instance.Instance();
+          inst.set((weka.core.Instance) token.getPayload());
+        }
+        else {
+          inst = (adams.data.instance.Instance) token.getPayload();
+        }
+        InstanceContainerManager manager = m_InstancePanel.getContainerManager();
+        InstanceContainer cont = manager.newContainer(inst);
+        manager.add(cont);
       }
       @Override
       public ExtensionFileFilter getCustomTextFileFilter() {
@@ -520,17 +521,17 @@ public class WekaInstanceViewer
       }
       @Override
       public String supplyText() {
-	return WekaInstanceViewer.supplyText(m_InstancePanel);
+        return WekaInstanceViewer.supplyText(m_InstancePanel);
       }
       @Override
       public void clearPanel() {
-	m_InstancePanel.getContainerManager().clear();
+        m_InstancePanel.getContainerManager().clear();
       }
       public void cleanUp() {
-	m_InstancePanel.getContainerManager().clear();
+        m_InstancePanel.getContainerManager().clear();
       }
     };
-    
+
     if (token != null)
       result.display(token);
 
@@ -548,7 +549,7 @@ public class WekaInstanceViewer
 
   /**
    * Returns a custom file filter for the file chooser.
-   * 
+   *
    * @return		the file filter, null if to use default one
    */
   @Override
@@ -578,7 +579,7 @@ public class WekaInstanceViewer
 
     if (panel == null)
       return null;
-    
+
     manager = panel.getContainerManager();
     if (manager.countVisible() == 0)
       return null;
