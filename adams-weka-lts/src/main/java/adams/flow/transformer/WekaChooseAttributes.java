@@ -15,7 +15,7 @@
 
 /*
  * WekaChooseAttributes.java
- * Copyright (C) 2012-2017 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2012-2023 University of Waikato, Hamilton, New Zealand
  */
 package adams.flow.transformer;
 
@@ -65,61 +65,61 @@ import java.util.List;
  * &nbsp;&nbsp;&nbsp;The logging level for outputting errors and debugging output.
  * &nbsp;&nbsp;&nbsp;default: WARNING
  * </pre>
- * 
+ *
  * <pre>-name &lt;java.lang.String&gt; (property: name)
  * &nbsp;&nbsp;&nbsp;The name of the actor.
  * &nbsp;&nbsp;&nbsp;default: WekaChooseAttributes
  * </pre>
- * 
+ *
  * <pre>-annotation &lt;adams.core.base.BaseAnnotation&gt; (property: annotations)
  * &nbsp;&nbsp;&nbsp;The annotations to attach to this actor.
- * &nbsp;&nbsp;&nbsp;default: 
+ * &nbsp;&nbsp;&nbsp;default:
  * </pre>
- * 
+ *
  * <pre>-skip &lt;boolean&gt; (property: skip)
- * &nbsp;&nbsp;&nbsp;If set to true, transformation is skipped and the input token is just forwarded 
+ * &nbsp;&nbsp;&nbsp;If set to true, transformation is skipped and the input token is just forwarded
  * &nbsp;&nbsp;&nbsp;as it is.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-stop-flow-on-error &lt;boolean&gt; (property: stopFlowOnError)
  * &nbsp;&nbsp;&nbsp;If set to true, the flow gets stopped in case this actor encounters an error;
  * &nbsp;&nbsp;&nbsp; useful for critical actors.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-silent &lt;boolean&gt; (property: silent)
  * &nbsp;&nbsp;&nbsp;If enabled, then no errors are output in the console.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-stop-if-canceled &lt;boolean&gt; (property: stopFlowIfCanceled)
  * &nbsp;&nbsp;&nbsp;If enabled, the flow gets stopped in case the user cancels the dialog.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  * <pre>-custom-stop-message &lt;java.lang.String&gt; (property: customStopMessage)
- * &nbsp;&nbsp;&nbsp;The custom stop message to use in case a user cancelation stops the flow 
+ * &nbsp;&nbsp;&nbsp;The custom stop message to use in case a user cancelation stops the flow
  * &nbsp;&nbsp;&nbsp;(default is the full name of the actor)
- * &nbsp;&nbsp;&nbsp;default: 
+ * &nbsp;&nbsp;&nbsp;default:
  * </pre>
- * 
+ *
  * <pre>-message &lt;java.lang.String&gt; (property: message)
  * &nbsp;&nbsp;&nbsp;The message to display to the user (variables get expanded).
  * &nbsp;&nbsp;&nbsp;default: Choose attributes to use
  * </pre>
- * 
+ *
  * <pre>-pre-selection &lt;adams.core.base.BaseRegExp&gt; (property: preSelection)
  * &nbsp;&nbsp;&nbsp;The regular expression to use for pre-selecting attributes.
  * &nbsp;&nbsp;&nbsp;default: .*
  * </pre>
- * 
+ *
  * <pre>-non-interactive &lt;boolean&gt; (property: nonInteractive)
- * &nbsp;&nbsp;&nbsp;If enabled, attributes that match the 'pre-selection' pattern get selected 
+ * &nbsp;&nbsp;&nbsp;If enabled, attributes that match the 'pre-selection' pattern get selected
  * &nbsp;&nbsp;&nbsp;automatically.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
- * 
+ *
  <!-- options-end -->
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
@@ -136,10 +136,10 @@ public class WekaChooseAttributes
 
   /** the regular expression for pre-selecting attributes by name. */
   protected BaseRegExp m_PreSelection;
-  
+
   /** whether to automate the actor. */
   protected boolean m_NonInteractive;
-  
+
   /** the Remove filter in use. */
   protected Remove m_Remove;
 
@@ -150,10 +150,10 @@ public class WekaChooseAttributes
    */
   @Override
   public String globalInfo() {
-    return 
-	"Lets the user select attributes interactively to use down the track.\n"
-	+ "Internally, a " + Remove.class.getName() + " WEKA filter is constructed "
-	+ "from the selection, to remove the attributes that the user didn't select.";
+    return
+      "Lets the user select attributes interactively to use down the track.\n"
+        + "Internally, a " + Remove.class.getName() + " WEKA filter is constructed "
+        + "from the selection, to remove the attributes that the user didn't select.";
   }
 
   /**
@@ -182,10 +182,10 @@ public class WekaChooseAttributes
   @Override
   protected void initialize() {
     super.initialize();
-    
+
     m_Remove = new Remove();
   }
-  
+
   /**
    * Returns a quick info about the actor, which will be displayed in the GUI.
    *
@@ -198,7 +198,7 @@ public class WekaChooseAttributes
 
     result = QuickInfoHelper.toString(this, "preSelection", m_PreSelection);
 
-    options = new ArrayList<>();
+    options = new ArrayList<String>();
     QuickInfoHelper.add(options, QuickInfoHelper.toString(this, "stopFlowIfCanceled", m_StopFlowIfCanceled, "stop flow if canceled"));
     QuickInfoHelper.add(options, QuickInfoHelper.toString(this, "nonInteractive", m_NonInteractive, "non-interactive"));
     result += QuickInfoHelper.flatten(options);
@@ -295,7 +295,7 @@ public class WekaChooseAttributes
 
   /**
    * Returns the class that the consumer accepts.
-   * 
+   *
    * @return		the Class of objects that can be processed
    */
   @Override
@@ -315,7 +315,7 @@ public class WekaChooseAttributes
 
   /**
    * Prompts the user to select attributes.
-   * 
+   *
    * @param inst	the data to present
    * @param preSelected	the indices of the attributes to use by default
    * @return		the list of selected attributes to keep, null if cancelled
@@ -336,7 +336,7 @@ public class WekaChooseAttributes
     int[][]		segments;
     int			numAtts;
     String		msg;
-    
+
     result = new ArrayList<>();
 
     msg     = getVariables().expand(m_Message);
@@ -347,7 +347,7 @@ public class WekaChooseAttributes
     n = 0;
     for (i = 0; i < inst.numAttributes(); i++) {
       if (inst.classIndex() == i)
-	continue;
+        continue;
       names[n][0] = inst.attribute(i).name();
       n++;
     }
@@ -363,7 +363,7 @@ public class WekaChooseAttributes
     table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     for (int[] segment: segments)
       table.getSelectionModel().addSelectionInterval(segment[0], segment[1]);
-    
+
     panelAll = new JPanel(new BorderLayout());
     panelAll.add(new BaseScrollPane(table), BorderLayout.CENTER);
     if (msg.trim().length() > 0) {
@@ -377,7 +377,7 @@ public class WekaChooseAttributes
     panelAll.add(panelOptions, BorderLayout.SOUTH);
     dialog = new ApprovalDialog(null, ModalityType.DOCUMENT_MODAL);
     dialog.setTitle("Choose attributes");
-      dialog.getContentPane().add(panelAll, BorderLayout.CENTER);
+    dialog.getContentPane().add(panelAll, BorderLayout.CENTER);
     registerWindow(dialog, dialog.getTitle());
     dialog.pack();
     dialog.setLocationRelativeTo(getActualParentComponent());
@@ -386,7 +386,7 @@ public class WekaChooseAttributes
 
     if (dialog.getOption() != ApprovalDialog.APPROVE_OPTION)
       return null;
-    
+
     if (checkBoxInvert.isSelected()) {
       range.setIndices(table.getSelectedRows());
       range.setInverted(true);
@@ -395,13 +395,13 @@ public class WekaChooseAttributes
     else {
       result.addAll(Utils.toList(table.getSelectedRows()));
     }
-    
+
     return result;
   }
-  
+
   /**
    * Returns the pre-selected indices.
-   * 
+   *
    * @param inst	the dataset to work on
    * @return		the indices
    */
@@ -412,17 +412,17 @@ public class WekaChooseAttributes
     result = new ArrayList<>();
     for (i = 0; i < inst.numAttributes(); i++) {
       if (inst.classIndex() == i)
-	continue;
+        continue;
       if (m_PreSelection.isMatch(inst.attribute(i).name()))
-	result.add(i);
+        result.add(i);
     }
-    
+
     return result;
   }
-  
+
   /**
    * Filters the data.
-   * 
+   *
    * @param inst	the data to filter
    * @param selected	the selected attributes
    * @return		the new dataset
@@ -430,18 +430,18 @@ public class WekaChooseAttributes
    */
   protected Instances filter(Instances inst, List<Integer> selected) throws Exception {
     Instances	result;
-    
+
     m_Remove.setInvertSelection(true);
     m_Remove.setAttributeIndicesArray(Utils.toIntArray(selected));
     m_Remove.setInputFormat(inst);
     result = Filter.useFilter(inst, m_Remove);
-    
+
     return result;
   }
-  
+
   /**
    * Creates the output token with the subset of data.
-   * 
+   *
    * @param inst	the instances to process
    * @param selected	the indices to select
    * @return		true if successfully generated
@@ -460,19 +460,19 @@ public class WekaChooseAttributes
 
     return result;
   }
-  
+
   /**
    * Performs the interaction with the user.
    *
-   * @return		true if successfully interacted
+   * @return		null if successfully interacted, otherwise error message
    */
   @Override
-  public boolean doInteract() {
-    boolean		result;
+  public String doInteract() {
+    String		result;
     List<Integer>	selected;
     Instances		inst;
 
-    result = true;
+    result = null;
     inst   = (Instances) m_InputToken.getPayload();
 
     // determine pre-selection
@@ -481,12 +481,17 @@ public class WekaChooseAttributes
     // interact with user
     if (!m_NonInteractive) {
       selected = selectAttributes(inst, selected);
-      result   = (selected != null);
+      if (selected != null)
+        result = null;
+      else
+        result = "Nothing selected!";
     }
-    
-    if (result)
-      result = generateOutput(inst, selected);
-    
+
+    if (result == null) {
+      if (!generateOutput(inst, selected))
+        result = "Failed to generate output!";
+    }
+
     return result;
   }
 
@@ -499,18 +504,18 @@ public class WekaChooseAttributes
   protected String doExecute() {
     String	result;
     Instances	inst;
-    
+
     result = null;
-    
+
     if (isHeadless()) {
       inst = (Instances) m_InputToken.getPayload();
       if (!generateOutput(inst, getPreSelectedIndices(inst)))
-	result = "Failed to generate subset!";
+        result = "Failed to generate subset!";
     }
     else {
       result = super.doExecute();
     }
-    
+
     return result;
   }
 }

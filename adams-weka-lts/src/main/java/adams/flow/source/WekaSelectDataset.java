@@ -127,7 +127,6 @@ import java.util.List;
  <!-- options-end -->
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class WekaSelectDataset
   extends AbstractArrayProvider
@@ -605,23 +604,24 @@ public class WekaSelectDataset
   /**
    * Performs the interaction with the user.
    *
-   * @return		true if successfully interacted
+   * @return		null if successfully interacted, otherwise error message
    */
-  public boolean doInteract() {
-    boolean			result;
+  @Override
+  public String doInteract() {
+    String			result;
     int				retVal;
     File[]			files;
     WekaFileChooser 		fileChooser;
     int				i;
 
-    result = false;
+    result = INTERACTION_CANCELED;
 
     m_Queue.clear();
 
     if (m_NonInteractive) {
       for (File file: m_InitialFiles)
         m_Queue.add(file.getAbsolutePath());
-      return true;
+      return null;
     }
 
     fileChooser = new WekaFileChooser();
@@ -639,7 +639,7 @@ public class WekaSelectDataset
     fileChooser.setSelectedFiles(files);
     retVal = fileChooser.showOpenDialog(getActualParentComponent());
     if (retVal == ConverterFileChooser.APPROVE_OPTION) {
-      result = true;
+      result = null;
       files  = fileChooser.getSelectedFiles();
       for (File file: files)
         m_Queue.add(file.getAbsolutePath());
@@ -662,24 +662,25 @@ public class WekaSelectDataset
    *
    * @return		true if successfully interacted
    */
-  public boolean doInteractHeadless() {
-    boolean		result;
+  @Override
+  public String doInteractHeadless() {
+    String		result;
     String[]		files;
     PlaceholderFile	filePh;
 
-    result = false;
+    result = INTERACTION_CANCELED;
 
     m_Queue.clear();
 
     if (m_NonInteractive) {
       for (File file: m_InitialFiles)
         m_Queue.add(file.getAbsolutePath());
-      return true;
+      return null;
     }
 
     files = ConsoleHelper.enterMultipleValues(m_FileChooserTitle);
     if (files != null) {
-      result = true;
+      result = null;
       for (String fileStr : files) {
         filePh = new PlaceholderFile(fileStr);
         m_Queue.add(filePh.getAbsolutePath());
@@ -696,8 +697,11 @@ public class WekaSelectDataset
    */
   @Override
   protected String doExecute() {
+    String	msg;
+
     if (!isHeadless()) {
-      if (!doInteract()) {
+      msg = doInteract();
+      if (msg != null) {
         if (m_StopFlowIfCanceled) {
           if ((m_CustomStopMessage == null) || (m_CustomStopMessage.trim().length() == 0))
             StopHelper.stop(this, m_StopMode, "Flow canceled: " + getFullName());
@@ -707,7 +711,8 @@ public class WekaSelectDataset
       }
     }
     else if (supportsHeadlessInteraction()) {
-      if (!doInteractHeadless()) {
+      msg = doInteractHeadless();
+      if (msg != null) {
         if (m_StopFlowIfCanceled) {
           if ((m_CustomStopMessage == null) || (m_CustomStopMessage.trim().length() == 0))
             StopHelper.stop(this, m_StopMode, "Flow canceled: " + getFullName());
