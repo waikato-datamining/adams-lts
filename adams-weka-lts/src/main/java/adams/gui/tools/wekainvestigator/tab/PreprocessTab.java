@@ -15,7 +15,7 @@
 
 /*
  * PreprocessTab.java
- * Copyright (C) 2016-2021 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2016-2023 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekainvestigator.tab;
@@ -74,7 +74,7 @@ import java.util.Set;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  */
 public class PreprocessTab
-    extends AbstractInvestigatorTabWithEditableDataTable {
+  extends AbstractInvestigatorTabWithEditableDataTable {
 
   private static final long serialVersionUID = -94945456385486233L;
 
@@ -209,9 +209,9 @@ public class PreprocessTab
 
     try {
       filter = (Filter) OptionUtils.forAnyCommandLine(
-          Filter.class,
-          InvestigatorPanel.getProperties().getProperty(
-              "Preprocess.Filter", AllFilter.class.getName()));
+        Filter.class,
+        InvestigatorPanel.getProperties().getProperty(
+          "Preprocess.Filter", AllFilter.class.getName()));
     }
     catch (Exception e) {
       filter = new AllFilter();
@@ -497,6 +497,7 @@ public class PreprocessTab
   @Override
   protected void postExecutionFinished() {
     super.postExecutionFinished();
+    m_CurrentFilter = null;
     updateButtons();
   }
 
