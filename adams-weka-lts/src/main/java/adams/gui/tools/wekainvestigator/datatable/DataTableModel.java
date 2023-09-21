@@ -13,9 +13,9 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
+/*
  * DataTableModel.java
- * Copyright (C) 2016 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2016-2023 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekainvestigator.datatable;
@@ -32,7 +32,6 @@ import java.util.List;
  * Model for displaying the loaded data.
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class DataTableModel
   extends AbstractMoveableTableModel {
@@ -105,17 +104,17 @@ public class DataTableModel
   public String getColumnName(int column) {
     switch (column) {
       case 0:
-	return "ID";
+        return "ID";
       case 1:
-	return "Mod";
+        return "Mod";
       case 2:
-	return "Relation";
+        return "Relation";
       case 3:
-	return "Class";
+        return "Class";
       case 4:
-	return "Source";
+        return "Source";
       default:
-	return null;
+        return null;
     }
   }
 
@@ -134,17 +133,17 @@ public class DataTableModel
 
     switch (columnIndex) {
       case 0:
-	return cont.getID();
+        return cont.getID();
       case 1:
-	return cont.isModified();
+        return cont.isModified();
       case 2:
-	return cont.getData().relationName();
+        return (cont.getData() != null) ? cont.getData().relationName() : "";
       case 3:
-	return (cont.getData().classIndex() == -1) ? "<none>" : cont.getData().classAttribute().name();
+        return ((cont.getData() == null) || (cont.getData().classIndex() == -1)) ? "<none>" : cont.getData().classAttribute().name();
       case 4:
-	return cont.getSource();
+        return cont.getSource();
       default:
-	return null;
+        return null;
     }
   }
 
@@ -201,21 +200,21 @@ public class DataTableModel
 
     switch (columnIndex) {
       case 3:  // class
-	name = "" + aValue;
-	if (name.isEmpty()) {
+        name = "" + aValue;
+        if (name.isEmpty()) {
           cont.addUndoPoint("Unsetting class");
-	  cont.getData().setClassIndex(-1);
-	  fireTableRowsUpdated(rowIndex, rowIndex);
-	}
-	else {
-	  att = cont.getData().attribute(name);
-	  if (att != null) {
+          cont.getData().setClassIndex(-1);
+          fireTableRowsUpdated(rowIndex, rowIndex);
+        }
+        else {
+          att = cont.getData().attribute(name);
+          if (att != null) {
             cont.addUndoPoint("Setting class");
-	    cont.getData().setClassIndex(att.index());
-	    fireTableRowsUpdated(rowIndex, rowIndex);
-	  }
-	}
-	break;
+            cont.getData().setClassIndex(att.index());
+            fireTableRowsUpdated(rowIndex, rowIndex);
+          }
+        }
+        break;
     }
   }
 
