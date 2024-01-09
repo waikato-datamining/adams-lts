@@ -2,7 +2,6 @@
 # Date: 2020-06-18 09:57:10
 # User: fracpete
 # Charset: UTF-8
-# Modules: adams-core,adams-json,adams-math,adams-ml,adams-spreadsheet,adams-visualstats,adams-weka
 #
 adams.flow.control.Flow -annotation "This flow simulates repeated cross-validation, using the current repetition as seed.\\nIn each cross-validation, train-test folds are generated and attribute selection\\nperformed, feeding the reduced data into a classifier for training and evaluation.\\nThe selected attributes get recorded in a spreadsheet and displayed.\\nThe classifier evaluations per repetition and repetition/fold get displayed as well." -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
  adams.flow.standalone.CallableActors
