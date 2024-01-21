@@ -13,22 +13,21 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
+/*
  * AbstractWekaClassifierEvaluator.java
- * Copyright (C) 2009-2015 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2009-2024 University of Waikato, Hamilton, New Zealand
  */
 package adams.flow.transformer;
 
 import adams.core.option.OptionUtils;
+import adams.flow.container.WekaEvaluationContainer;
 import weka.classifiers.evaluation.output.prediction.AbstractOutput;
 import weka.classifiers.evaluation.output.prediction.Null;
-import adams.flow.container.WekaEvaluationContainer;
 
 /**
  * Ancestor for transformers that evaluate classifiers.
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public abstract class AbstractWekaClassifierEvaluator
   extends AbstractTransformer {
@@ -53,12 +52,12 @@ public abstract class AbstractWekaClassifierEvaluator
     super.defineOptions();
 
     m_OptionManager.add(
-	    "output", "output",
-	    new Null());
+      "output", "output",
+      new Null());
 
     m_OptionManager.add(
-	    "always-use-container", "alwaysUseContainer",
-	    false);
+      "always-use-container", "alwaysUseContainer",
+      false);
   }
 
   /**
@@ -88,8 +87,8 @@ public abstract class AbstractWekaClassifierEvaluator
    */
   public String outputTipText() {
     return
-        "The class for generating prediction output; if 'Null' is used, then "
-      + "an Evaluation object is forwarded instead of a String.";
+      "The class for generating prediction output; if 'Null' is used, then "
+	+ "an Evaluation object is forwarded instead of a String.";
   }
 
   /**
@@ -119,7 +118,7 @@ public abstract class AbstractWekaClassifierEvaluator
    */
   public String alwaysUseContainerTipText() {
     return
-        "If enabled, always outputs an evaluation container.";
+      "If enabled, always outputs an evaluation container.";
   }
 
   /**
@@ -151,14 +150,22 @@ public abstract class AbstractWekaClassifierEvaluator
     m_OutputBuffer = new StringBuffer();
     if (m_Output != null) {
       try {
-        m_Output = (AbstractOutput) OptionUtils.forAnyCommandLine(
-          AbstractOutput.class, OptionUtils.getCommandLine(m_Output));
-        m_Output.setBuffer(m_OutputBuffer);
+	m_Output = (AbstractOutput) OptionUtils.forAnyCommandLine(
+	  AbstractOutput.class, OptionUtils.getCommandLine(m_Output));
+	m_Output.setBuffer(m_OutputBuffer);
       }
       catch (Exception e) {
-        throw new IllegalStateException("Failed to create copy of output!", e);
+	throw new IllegalStateException("Failed to create copy of output!", e);
       }
     }
+  }
+
+  /**
+   * Cleans up the output buffer.
+   */
+  protected void cleanOutputBuffer() {
+    m_Output.setBuffer(null);
+    m_OutputBuffer = null;
   }
 
   /**
@@ -166,9 +173,7 @@ public abstract class AbstractWekaClassifierEvaluator
    */
   @Override
   public void wrapUp() {
-    m_Output.setBuffer(null);
-    m_OutputBuffer = null;
-
+    cleanOutputBuffer();
     super.wrapUp();
   }
 }
