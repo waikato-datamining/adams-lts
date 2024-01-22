@@ -15,7 +15,7 @@
 
 /*
  *    WeightedEuclideanDistance.java
- *    Copyright (C) 1999-2007 University of Waikato, Hamilton, New Zealand
+ *    Copyright (C) 1999-2024 University of Waikato, Hamilton, New Zealand
  *
  */
 
@@ -59,23 +59,22 @@ import java.util.Vector;
  *
  <!-- options-start -->
  * Valid options are: <br><br>
- * 
+ *
  * <pre> -D
- *  Turns off the normalization of attribute 
+ *  Turns off the normalization of attribute
  *  values in distance calculation.</pre>
- * 
+ *
  * <pre> -R &lt;col1,col2-col4,...&gt;
- *  Specifies list of columns to used in the calculation of the 
+ *  Specifies list of columns to used in the calculation of the
  *  distance. 'first' and 'last' are valid indices.
  *  (default: first-last)</pre>
- * 
+ *
  * <pre> -V
  *  Invert matching sense of column indices.</pre>
- * 
- <!-- options-end --> 
+ *
+ <!-- options-end -->
  *
  * @author dale (dale at waikato dot ac dot nz)
- * @version $Revision: 12763 $
  */
 public class WeightedEuclideanDistanceRidge
   extends NormalizableDistance
@@ -112,17 +111,16 @@ public class WeightedEuclideanDistanceRidge
   protected void initialize() {
     super.initialize();
     m_LR.setAttributeSelectionMethod(new SelectedTag(LinearRegressionJ.SELECTION_NONE,
-	LinearRegressionJ.TAGS_SELECTION));
+      LinearRegressionJ.TAGS_SELECTION));
     m_LR.setEliminateColinearAttributes(false);
     m_LR.setRidge(getRidge());
     //m_norm=new Normalize();
-    
+
     try {
       //m_norm.setInputFormat(m_Data);
-      //Instances in=Filter.useFilter(m_Data, m_norm);   
+      //Instances in=Filter.useFilter(m_Data, m_norm);
       m_LR.buildClassifier(m_Data);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     //System.out.println("**\n"+m_Data.toString());
@@ -137,34 +135,34 @@ public class WeightedEuclideanDistanceRidge
   }
   /**
    * Returns a string describing this object.
-   * 
+   *
    * @return 		a description of the evaluator suitable for
    * 			displaying in the explorer/experimenter gui
    */
   @Override
   public String globalInfo() {
-    return 
-        "Implementing Euclidean distance (or similarity) function.\n\n"
-      + "One object defines not one distance but the data model in which "
-      + "the distances between objects of that data model can be computed.\n\n"
-      + "Attention: For efficiency reasons the use of consistency checks "
-      + "(like are the data models of the two instances exactly the same), "
-      + "is low.\n\n"
-      + "For more information, see:\n\n"
-      + getTechnicalInformation().toString();
+    return
+      "Implementing Euclidean distance (or similarity) function.\n\n"
+	+ "One object defines not one distance but the data model in which "
+	+ "the distances between objects of that data model can be computed.\n\n"
+	+ "Attention: For efficiency reasons the use of consistency checks "
+	+ "(like are the data models of the two instances exactly the same), "
+	+ "is low.\n\n"
+	+ "For more information, see:\n\n"
+	+ getTechnicalInformation().toString();
   }
 
   /**
-   * Returns an instance of a TechnicalInformation object, containing 
+   * Returns an instance of a TechnicalInformation object, containing
    * detailed information about the technical background of this class,
    * e.g., paper reference or book this class is based on.
-   * 
+   *
    * @return 		the technical information about this class
    */
   @Override
   public TechnicalInformation getTechnicalInformation() {
     TechnicalInformation 	result;
-    
+
     result = new TechnicalInformation(Type.MISC);
     result.setValue(Field.AUTHOR, "Wikipedia");
     result.setValue(Field.TITLE, "Euclidean distance");
@@ -198,7 +196,7 @@ public class WeightedEuclideanDistanceRidge
    */
   @Override
   public String[] getOptions() {
-    Vector<String> result = new Vector<String>();
+    Vector<String> result = new Vector<>();
 
 
     result.add("-R");
@@ -206,7 +204,7 @@ public class WeightedEuclideanDistanceRidge
 
     Collections.addAll(result, super.getOptions());
 
-    return result.toArray(new String[result.size()]);
+    return result.toArray(new String[0]);
   }
 
   /**
@@ -266,8 +264,8 @@ public class WeightedEuclideanDistanceRidge
 
 
     String ridgeString = Utils.getOption('R', options);
-    if (ridgeString.length() != 0) {
-      setRidge(new Double(ridgeString).doubleValue());
+    if (!ridgeString.isEmpty()) {
+      setRidge(Double.parseDouble(ridgeString));
     } else {
       setRidge(1.0e-8);
     }
@@ -308,17 +306,17 @@ public class WeightedEuclideanDistanceRidge
 
   /**
    * Calculates the distance between two instances.
-   * 
+   *
    * @param first 	the first instance
    * @param second 	the second instance
    * @return 		the distance between the two given instances
    */
   @Override
   public double distance(Instance first, Instance second) {
-   
+
     return Math.sqrt(distance(transform(first), transform(second), Double.POSITIVE_INFINITY));
   }
-  
+
   /**
    * Calculates the distance (or similarity) between two instances. Need to
    * pass this returned distance later on to postprocess method to set it on
@@ -332,19 +330,19 @@ public class WeightedEuclideanDistanceRidge
    * @param first 	the first instance
    * @param second 	the second instance
    * @param stats 	the structure for storing performance statistics.
-   * @return 		the distance between the two given instances or 
+   * @return 		the distance between the two given instances or
    * 			Double.POSITIVE_INFINITY.
    */
   @Override
   public double distance(Instance first, Instance second, PerformanceStats stats) { //debug method pls remove after use
     return Math.sqrt(distance(transform(first), transform(second), Double.POSITIVE_INFINITY, stats));
   }
-  
+
   /**
    * Updates the current distance calculated so far with the new difference
-   * between two attributes. The difference between the attributes was 
+   * between two attributes. The difference between the attributes was
    * calculated with the difference(int,double,double) method.
-   * 
+   *
    * @param currDist	the current distance calculated so far
    * @param diff	the difference between two new attributes
    * @return		the update distance
@@ -353,13 +351,13 @@ public class WeightedEuclideanDistanceRidge
   @Override
   protected double updateDistance(double currDist, double diff) {
     double	result;
-    
+
     result  = currDist;
     result += diff * diff;
-    
+
     return result;
   }
-  
+
   @Override
   public double distance(Instance first, Instance second, double cutOffValue, PerformanceStats stats) {
     return(super.distance(transform(first),transform(second),cutOffValue,stats));
@@ -367,7 +365,7 @@ public class WeightedEuclideanDistanceRidge
   /**
    * Computes the difference between two given attribute
    * values.
-   * 
+   *
    * @param index	the attribute index
    * @param val1	the first value
    * @param val2	the second value
@@ -375,7 +373,7 @@ public class WeightedEuclideanDistanceRidge
    */
   @Override
   protected double difference(int index, double val1, double val2) {
-    //if (m_DontNormalize) { 
+    //if (m_DontNormalize) {
     //System.err.println("diff is:"+(val1-val2)*this.m_Coefficients[index]+", would be:"+(val1-val2)+", factor:"+m_Coefficients[index]);
     //return((val1-val2)*this.m_Coefficients[index]);
     if (index == m_Data.classIndex()) {
@@ -392,19 +390,19 @@ public class WeightedEuclideanDistanceRidge
    * distance(distance(Instance first, Instance second, double cutOffValue) is
    * used. This is because that function actually returns the squared distance
    * to avoid inaccuracies arising from floating point comparison.
-   * 
+   *
    * @param distances	the distances to post-process
    */
   @Override
-  public void postProcessDistances(double distances[]) {
+  public void postProcessDistances(double[] distances) {
     for(int i = 0; i < distances.length; i++) {
       distances[i] = Math.sqrt(distances[i]);
     }
   }
-  
+
   /**
    * Returns the squared difference of two values of an attribute.
-   * 
+   *
    * @param index	the attribute index
    * @param val1	the first value
    * @param val2	the second value
@@ -414,17 +412,16 @@ public class WeightedEuclideanDistanceRidge
     double val = difference(index, val1, val2);
     return val*val;
   }
-  
+
   /**
    * Returns value in the middle of the two parameter values.
-   * 
+   *
    * @param ranges 	the ranges to this dimension
    * @return 		the middle value
    */
   public double getMiddle(double[] ranges) {
 
-    double middle = ranges[R_MIN] + ranges[R_WIDTH] * 0.5;
-    return middle;
+    return ranges[R_MIN] + ranges[R_WIDTH] * 0.5;
   }
 
   protected Instance transform(Instance i) {
@@ -437,23 +434,23 @@ public class WeightedEuclideanDistanceRidge
     return(m_norm.output());*/
     return(i);
   }
-  
+
   /**
    * Returns true if the value of the given dimension is smaller or equal the
    * value to be compared with.
-   * 
+   *
    * @param instance 	the instance where the value should be taken of
    * @param dim 	the dimension of the value
    * @param value 	the value to compare with
    * @return 		true if value of instance is smaller or equal value
    */
   public boolean valueIsSmallerEqual(Instance instance, int dim,
-      				     double value) {  //This stays
+				     double value) {  //This stays
     return instance.value(dim) <= value;
   }
   /**
    * Returns the revision string.
-   * 
+   *
    * @return		the revision
    */
   @Override
