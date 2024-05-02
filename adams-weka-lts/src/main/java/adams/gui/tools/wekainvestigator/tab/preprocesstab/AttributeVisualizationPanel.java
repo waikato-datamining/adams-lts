@@ -27,6 +27,7 @@ import adams.gui.core.BaseComboBox;
 import adams.gui.core.BasePanel;
 import adams.gui.core.ConsolePanel;
 import adams.gui.core.GUIHelper;
+import adams.gui.core.ImageManager;
 import adams.gui.core.MouseUtils;
 import adams.gui.goe.GenericObjectEditorDialog;
 import adams.gui.tools.wekainvestigator.InvestigatorPanel;
@@ -46,6 +47,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
@@ -262,12 +264,16 @@ public class AttributeVisualizationPanel extends BasePanel {
 
     result = new JPopupMenu();
 
-    menuitem = new JMenuItem("Change color provider...");
+    menuitem = new JMenuItem("Change color provider...", ImageManager.getIcon("properties.gif"));
     menuitem.addActionListener((ActionEvent e) -> changeColorProvider());
     result.add(menuitem);
 
     menuitem = new JMenuItem("Reset color provider");
     menuitem.addActionListener((ActionEvent e) -> resetColorProvider());
+    result.add(menuitem);
+
+    menuitem = new JMenuItem("Save plot...", ImageManager.getIcon("save.gif"));
+    menuitem.addActionListener((ActionEvent e) -> saveComponent());
     result.add(menuitem);
 
     return result;
@@ -527,7 +533,7 @@ public class AttributeVisualizationPanel extends BasePanel {
 	if ((m_classIndex >= 0) && (m_data.attribute(m_classIndex).isNominal())) {
 	  SparseInstance[] histClassCounts;
 	  histClassCounts = new SparseInstance[m_data.attribute(m_attribIndex)
-	    .numValues()];
+						 .numValues()];
 	  // [m_data.attribute(m_classIndex).numValues()+1];
 
 	  if (m_as.nominalWeights.length > 0) {
@@ -668,7 +674,7 @@ public class AttributeVisualizationPanel extends BasePanel {
 	  // width. See "On optimal and data-based histograms".
 	  // See Biometrika, 66, 605-610 OR see the same paper mentioned above.
 	  intervalWidth = 3.49 * m_as.numericStats.stdDev
-	    * Math.pow(m_data.numInstances(), -1 / 3D);
+			    * Math.pow(m_data.numInstances(), -1 / 3D);
 	  // The Math.max is introduced to remove the possibility of
 	  // intervals=0 and =NAN that can happen if respectively all the
 	  // numeric
@@ -676,7 +682,7 @@ public class AttributeVisualizationPanel extends BasePanel {
 	  intervals = Math.max(
 	    1,
 	    (int) Math.round((m_as.numericStats.max - m_as.numericStats.min)
-	      / intervalWidth));
+			       / intervalWidth));
 
 	  // The number 4 below actually represents a padding of 3 pixels on
 	  // each side of the histogram, and is also reflected in other parts of
@@ -714,22 +720,22 @@ public class AttributeVisualizationPanel extends BasePanel {
 	      }
 	    } catch (ArrayIndexOutOfBoundsException ae) {
 	      System.out.println("t:"
-		+ (t)
-		+ " barRange:"
-		+ barRange
-		+ " histLength:"
-		+ histClassCounts.length
-		+ " value:"
-		+ m_data.instance(k).value(m_attribIndex)
-		+ " min:"
-		+ m_as.numericStats.min
-		+ " sumResult:"
-		+ (m_data.instance(k).value(m_attribIndex) - m_as.numericStats.min)
-		+ " divideResult:"
-		+ (float) ((m_data.instance(k).value(m_attribIndex) - m_as.numericStats.min) / barRange)
-		+ " finalResult:"
-		+ Math
-		.ceil((float) ((m_data.instance(k).value(m_attribIndex) - m_as.numericStats.min) / barRange)));
+				   + (t)
+				   + " barRange:"
+				   + barRange
+				   + " histLength:"
+				   + histClassCounts.length
+				   + " value:"
+				   + m_data.instance(k).value(m_attribIndex)
+				   + " min:"
+				   + m_as.numericStats.min
+				   + " sumResult:"
+				   + (m_data.instance(k).value(m_attribIndex) - m_as.numericStats.min)
+				   + " divideResult:"
+				   + (float) ((m_data.instance(k).value(m_attribIndex) - m_as.numericStats.min) / barRange)
+				   + " finalResult:"
+				   + Math
+				       .ceil((float) ((m_data.instance(k).value(m_attribIndex) - m_as.numericStats.min) / barRange)));
 	    }
 	  }
 	  for (double[] histClassCount : histClassCounts) {
@@ -793,7 +799,7 @@ public class AttributeVisualizationPanel extends BasePanel {
 	  // width. See "On optimal and data-based histograms".
 	  // See Biometrika, 66, 605-610 OR see the same paper mentioned above.
 	  intervalWidth = 3.49 * m_as.numericStats.stdDev
-	    * Math.pow(m_data.numInstances(), -1 / 3D);
+			    * Math.pow(m_data.numInstances(), -1 / 3D);
 	  // The Math.max is introduced to remove the possibility of
 	  // intervals=0 and =NAN that can happen if respectively all the
 	  // numeric
@@ -801,7 +807,7 @@ public class AttributeVisualizationPanel extends BasePanel {
 	  intervals = Math.max(
 	    1,
 	    (int) Math.round((m_as.numericStats.max - m_as.numericStats.min)
-	      / intervalWidth));
+			       / intervalWidth));
 
 	  // The number 4 below actually represents a padding of 3 pixels on
 	  // each side of the histogram, and is also reflected in other parts of
@@ -843,22 +849,22 @@ public class AttributeVisualizationPanel extends BasePanel {
 	    } catch (ArrayIndexOutOfBoundsException ae) {
 	      ae.printStackTrace();
 	      System.out.println("t:"
-		+ (t)
-		+ " barRange:"
-		+ barRange
-		+ " histLength:"
-		+ histCounts.length
-		+ " value:"
-		+ m_data.instance(k).value(m_attribIndex)
-		+ " min:"
-		+ m_as.numericStats.min
-		+ " sumResult:"
-		+ (m_data.instance(k).value(m_attribIndex) - m_as.numericStats.min)
-		+ " divideResult:"
-		+ (float) ((m_data.instance(k).value(m_attribIndex) - m_as.numericStats.min) / barRange)
-		+ " finalResult:"
-		+ Math
-		.ceil((float) ((m_data.instance(k).value(m_attribIndex) - m_as.numericStats.min) / barRange)));
+				   + (t)
+				   + " barRange:"
+				   + barRange
+				   + " histLength:"
+				   + histCounts.length
+				   + " value:"
+				   + m_data.instance(k).value(m_attribIndex)
+				   + " min:"
+				   + m_as.numericStats.min
+				   + " sumResult:"
+				   + (m_data.instance(k).value(m_attribIndex) - m_as.numericStats.min)
+				   + " divideResult:"
+				   + (float) ((m_data.instance(k).value(m_attribIndex) - m_as.numericStats.min) / barRange)
+				   + " finalResult:"
+				   + Math
+				       .ceil((float) ((m_data.instance(k).value(m_attribIndex) - m_as.numericStats.min) / barRange)));
 	    }
 	  }
 	  m_histBarCounts = histCounts;
@@ -936,7 +942,7 @@ public class AttributeVisualizationPanel extends BasePanel {
     if (m_as.nominalWeights != null) { // if current attrib is nominal
 
       float intervalWidth = this.getWidth()
-	/ (float) m_as.nominalWeights.length;
+			      / (float) m_as.nominalWeights.length;
       double heightRatio;
       int barWidth, x = 0;
 
@@ -952,17 +958,17 @@ public class AttributeVisualizationPanel extends BasePanel {
       // the padding which is 20% of interval width, as there is 10% on each
       // side of the bar) so that it points to the start of the 1st bar
       x = x
-	+ (int) ((Math.floor(intervalWidth * 0.1F)) < 1 ? 1 : (Math
-	.floor(intervalWidth * 0.1F)));
+	    + (int) ((Math.floor(intervalWidth * 0.1F)) < 1 ? 1 : (Math
+								     .floor(intervalWidth * 0.1F)));
 
       // Adding to x the appropriate value so that it points to the 1st bar of
       // our "centered" barplot. If subtracting barplots width from panel width
       // gives <=2 then the barplot is not centered.
       if (this.getWidth()
-	- (m_as.nominalWeights.length * barWidth + (int) ((Math
-	.floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
-	.floor(intervalWidth * 0.2F)))
-	* m_as.nominalWeights.length) > 2) {
+	    - (m_as.nominalWeights.length * barWidth + (int) ((Math
+								 .floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
+													    .floor(intervalWidth * 0.2F)))
+							 * m_as.nominalWeights.length) > 2) {
 
 	// The following amounts to adding to x the half of the area left after
 	// subtracting from the components width the width of the whole barplot
@@ -970,34 +976,34 @@ public class AttributeVisualizationPanel extends BasePanel {
 	// thereby equaling to the whole barplot), since our barplot is
 	// centered.
 	x += (this.getWidth() - (m_as.nominalWeights.length * barWidth + (int) ((Math
-	  .floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
-	  .floor(intervalWidth * 0.2F)))
-	  * m_as.nominalWeights.length)) / 2;
+										   .floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
+															      .floor(intervalWidth * 0.2F)))
+									   * m_as.nominalWeights.length)) / 2;
       }
 
       for (int i = 0; i < m_as.nominalWeights.length; i++) {
 	heightRatio = (this.getHeight() - (double) m_fm.getHeight())
-	  / m_maxValue;
+			/ m_maxValue;
 
 	// if our mouse is on a bar then return the count of this bar in our
 	// barplot
 	if (ev.getX() >= x
-	  && ev.getX() <= x + barWidth
-	  && ev.getY() >= this.getHeight()
-	  - Math.round(m_as.nominalWeights[i] * heightRatio)) {
+	      && ev.getX() <= x + barWidth
+	      && ev.getY() >= this.getHeight()
+				- Math.round(m_as.nominalWeights[i] * heightRatio)) {
 	  return (m_data.attribute(m_attribIndex).value(i) + " ["
-	    + Utils.doubleToString(m_as.nominalWeights[i], 3) + "]");
+		    + Utils.doubleToString(m_as.nominalWeights[i], 3) + "]");
 	}
 	// otherwise advance x to next bar and check that. Add barwidth to x
 	// and padding which is max(1, 20% of interval width)
 	x = x
-	  + barWidth
-	  + (int) ((Math.floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
-	  .floor(intervalWidth * 0.2F)));
+	      + barWidth
+	      + (int) ((Math.floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
+								       .floor(intervalWidth * 0.2F)));
       }
     }
     else if (!m_threadRun && // if attrib is numeric
-      (m_histBarCounts != null || m_histBarClassCounts != null)) {
+	       (m_histBarCounts != null || m_histBarClassCounts != null)) {
 
       int x = 0, barWidth;
       double bar = m_as.numericStats.min;
@@ -1008,7 +1014,7 @@ public class AttributeVisualizationPanel extends BasePanel {
 	// the barwidth is 1 if after removing the padding its width is less
 	// then the displayable width
 	barWidth = ((this.getWidth() - 6) / m_histBarClassCounts.length) < 1 ? 1
-	  : ((this.getWidth() - 6) / m_histBarClassCounts.length);
+		     : ((this.getWidth() - 6) / m_histBarClassCounts.length);
 
 	// initializing x to 3 adding appropriate value to make it point to the
 	// start of the 1st bar of our "centered" histogram.
@@ -1030,9 +1036,9 @@ public class AttributeVisualizationPanel extends BasePanel {
 	    // return the count of the interval mouse is pointing to plus
 	    // the range of values that fall into this interval
 	    return ("<html><center><font face=Dialog size=-1>"
-	      + Utils.doubleToString(sum, 3) + "<br>" + "["
-	      + Utils.doubleToString(bar + m_barRange * temp, 3) + ", "
-	      + Utils.doubleToString((bar + m_barRange * (temp + 1)), 3) + "]" + "</font></center></html>");
+		      + Utils.doubleToString(sum, 3) + "<br>" + "["
+		      + Utils.doubleToString(bar + m_barRange * temp, 3) + ", "
+		      + Utils.doubleToString((bar + m_barRange * (temp + 1)), 3) + "]" + "</font></center></html>");
 	  }
 	  else if (temp < m_histBarClassCounts.length) { // handle case
 	    // temp!=0
@@ -1043,15 +1049,15 @@ public class AttributeVisualizationPanel extends BasePanel {
 	    // return the count of the interval mouse is pointing to plus
 	    // the range of values that fall into this interval
 	    return ("<html><center><font face=Dialog size=-1>"
-	      + Utils.doubleToString(sum, 3) + "<br>("
-	      + Utils.doubleToString(bar + m_barRange * temp, 3) + ", "
-	      + Utils.doubleToString((bar + m_barRange * (temp + 1)), 3) + "]</font></center></html>");
+		      + Utils.doubleToString(sum, 3) + "<br>("
+		      + Utils.doubleToString(bar + m_barRange * temp, 3) + ", "
+		      + Utils.doubleToString((bar + m_barRange * (temp + 1)), 3) + "]</font></center></html>");
 	  }
 	}
       }
       else { // else if the class attribute is not set or is numeric
 	barWidth = ((this.getWidth() - 6) / m_histBarCounts.length) < 1 ? 1
-	  : ((this.getWidth() - 6) / m_histBarCounts.length);
+		     : ((this.getWidth() - 6) / m_histBarCounts.length);
 
 	// initializing x to 3 adding appropriate value to make it point to the
 	// start of the 1st bar of our "centered" histogram.
@@ -1067,15 +1073,15 @@ public class AttributeVisualizationPanel extends BasePanel {
 	  // return interval count as well as its range
 	  if (temp == 0) {
 	    return ("<html><center><font face=Dialog size=-1>"
-	      + m_histBarCounts[0] + "<br>" + "["
-	      + Utils.doubleToString(bar + m_barRange * temp, 3) + ", "
-	      + Utils.doubleToString((bar + m_barRange * (temp + 1)), 3) + "]" + "</font></center></html>");
+		      + m_histBarCounts[0] + "<br>" + "["
+		      + Utils.doubleToString(bar + m_barRange * temp, 3) + ", "
+		      + Utils.doubleToString((bar + m_barRange * (temp + 1)), 3) + "]" + "</font></center></html>");
 	  }
 	  else if (temp < m_histBarCounts.length) {
 	    return ("<html><center><font face=Dialog size=-1>"
-	      + m_histBarCounts[temp] + "<br>" + "("
-	      + Utils.doubleToString(bar + m_barRange * temp, 3) + ", "
-	      + Utils.doubleToString((bar + m_barRange * (temp + 1)), 3) + "]" + "</font></center></html>");
+		      + m_histBarCounts[temp] + "<br>" + "("
+		      + Utils.doubleToString(bar + m_barRange * temp, 3) + ", "
+		      + Utils.doubleToString((bar + m_barRange * (temp + 1)), 3) + "]" + "</font></center></html>");
 	  }
 	}
       }
@@ -1090,6 +1096,7 @@ public class AttributeVisualizationPanel extends BasePanel {
    */
   @Override
   public void paintComponent(Graphics g) {
+    ((Graphics2D) g).setBackground(Color.WHITE);
     g.clearRect(0, 0, this.getWidth(), this.getHeight());
     GUIHelper.configureAntiAliasing(g, true);
 
@@ -1104,19 +1111,19 @@ public class AttributeVisualizationPanel extends BasePanel {
 
 	if (m_colorAttrib != null) {
 	  buttonHeight = m_colorAttrib.getHeight()
-	    + m_colorAttrib.getLocation().y;
+			   + m_colorAttrib.getLocation().y;
 	}
 
 	// if current attribute is nominal then draw barplot.
 	if (m_as.nominalWeights != null
-	  && (m_histBarClassCounts != null || m_histBarCounts != null)) {
+	      && (m_histBarClassCounts != null || m_histBarCounts != null)) {
 	  double heightRatio, intervalWidth;
 	  int x = 0, y = 0, barWidth;
 
 	  // if the class attribute is set and is nominal then draw coloured
 	  // subbars for each bar
 	  if ((m_classIndex >= 0)
-	    && (m_data.attribute(m_classIndex).isNominal())) {
+		&& (m_data.attribute(m_classIndex).isNominal())) {
 
 	    intervalWidth = (this.getWidth() / (float) m_histBarClassCounts.length);
 
@@ -1136,16 +1143,16 @@ public class AttributeVisualizationPanel extends BasePanel {
 	    // This
 	    // is essentially the LHS padding of the 1st bar.
 	    x = x
-	      + (int) ((Math.floor(intervalWidth * 0.1F)) < 1 ? 1 : (Math
-	      .floor(intervalWidth * 0.1F)));
+		  + (int) ((Math.floor(intervalWidth * 0.1F)) < 1 ? 1 : (Math
+									   .floor(intervalWidth * 0.1F)));
 
 	    // Add appropriate value to x so that it starts at the 1st bar of
 	    // a "centered" barplot.
 	    if (this.getWidth()
-	      - (m_histBarClassCounts.length * barWidth + (int) ((Math
-	      .floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
-	      .floor(intervalWidth * 0.2F)))
-	      * m_histBarClassCounts.length) > 2) {
+		  - (m_histBarClassCounts.length * barWidth + (int) ((Math
+									.floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
+														   .floor(intervalWidth * 0.2F)))
+								* m_histBarClassCounts.length) > 2) {
 	      // We take the width of all the bars and all the paddings (20%
 	      // of interval width), and subtract it from the width of the panel
 	      // to get the extra space that would be left after drawing. We
@@ -1153,9 +1160,9 @@ public class AttributeVisualizationPanel extends BasePanel {
 	      // x, thus making the whole bar plot drawn centered in our
 	      // component.
 	      x += (this.getWidth() - (m_histBarClassCounts.length * barWidth + (int) ((Math
-		.floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
-		.floor(intervalWidth * 0.2F)))
-		* m_histBarClassCounts.length)) / 2;
+											  .floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
+																     .floor(intervalWidth * 0.2F)))
+										  * m_histBarClassCounts.length)) / 2;
 	    }
 
 	    // this holds the count of the bar and will be calculated by adding
@@ -1170,17 +1177,17 @@ public class AttributeVisualizationPanel extends BasePanel {
 	      // class
 	      // ComboBox.
 	      heightRatio = (this.getHeight() - (double) m_fm.getHeight() - buttonHeight)
-		/ m_maxValue;
+			      / m_maxValue;
 	      y = this.getHeight();
 	      if (m_histBarClassCount != null) {
 		for (int j = 0; j < m_histBarClassCount.numAttributes(); j++) {
 		  sum = sum + m_histBarClassCount.value(j);
 		  y = (int) (y - Math.round(m_histBarClassCount.value(j)
-		    * heightRatio));
+					      * heightRatio));
 		  // selecting the colour corresponding to the current class.
 		  g.setColor(getColorList().get(j));
 		  g.fillRect(x, y, barWidth, (int) Math
-		    .round(m_histBarClassCount.value(j) * heightRatio));
+						     .round(m_histBarClassCount.value(j) * heightRatio));
 		  g.setColor(Color.black);
 		}
 	      }
@@ -1194,9 +1201,9 @@ public class AttributeVisualizationPanel extends BasePanel {
 	      // LHS
 	      // padding of the new bar).
 	      x = x
-		+ barWidth
-		+ (int) ((Math.floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
-		.floor(intervalWidth * 0.2F)));
+		    + barWidth
+		    + (int) ((Math.floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
+									     .floor(intervalWidth * 0.2F)));
 	      // reseting sum for the next bar.
 	      sum = 0;
 
@@ -1216,26 +1223,26 @@ public class AttributeVisualizationPanel extends BasePanel {
 	    // same as in the case of nominal class (see inside of if stmt
 	    // corresponding to the current else above).
 	    x = x
-	      + (int) ((Math.floor(intervalWidth * 0.1F)) < 1 ? 1 : (Math
-	      .floor(intervalWidth * 0.1F)));
+		  + (int) ((Math.floor(intervalWidth * 0.1F)) < 1 ? 1 : (Math
+									   .floor(intervalWidth * 0.1F)));
 
 	    // same as in the case of nominal class
 	    if (this.getWidth()
-	      - (m_histBarCounts.length * barWidth + (int) ((Math
-	      .floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
-	      .floor(intervalWidth * 0.2F)))
-	      * m_histBarCounts.length) > 2) {
+		  - (m_histBarCounts.length * barWidth + (int) ((Math
+								   .floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
+													      .floor(intervalWidth * 0.2F)))
+							   * m_histBarCounts.length) > 2) {
 	      x += (this.getWidth() - (m_histBarCounts.length * barWidth + (int) ((Math
-		.floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
-		.floor(intervalWidth * 0.2F)))
-		* m_histBarCounts.length)) / 2;
+										     .floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
+																.floor(intervalWidth * 0.2F)))
+									     * m_histBarCounts.length)) / 2;
 	    }
 
 	    for (double m_histBarCount : m_histBarCounts) {
 	      // calculating the proportion of the height of the component
 	      // compared to the maxValue in our attribute.
 	      heightRatio = (this.getHeight() - (float) m_fm.getHeight() - buttonHeight)
-		/ m_maxValue;
+			      / m_maxValue;
 	      y = (int) (this.getHeight() - Math.round(m_histBarCount * heightRatio));
 	      g.fillRect(x, y, barWidth, (int) Math.round(m_histBarCount * heightRatio));
 	      // draw the bar count if it's width is smaller than intervalWidth.
@@ -1246,16 +1253,16 @@ public class AttributeVisualizationPanel extends BasePanel {
 	      // of the bars (RHS padding of current bar & LHS padding of next
 	      // bar).
 	      x = x
-		+ barWidth
-		+ (int) ((Math.floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
-		.floor(intervalWidth * 0.2F)));
+		    + barWidth
+		    + (int) ((Math.floor(intervalWidth * 0.2F)) < 1 ? 1 : (Math
+									     .floor(intervalWidth * 0.2F)));
 	    }
 	  }
 
 	} // <--end if m_as.nominalCount!=null
 	// if the current attribute is numeric then draw a histogram.
 	else if (m_as.numericStats != null
-	  && (m_histBarClassCounts != null || m_histBarCounts != null)) {
+		   && (m_histBarClassCounts != null || m_histBarCounts != null)) {
 
 	  double heightRatio;
 	  int x, y, barWidth;
@@ -1263,11 +1270,11 @@ public class AttributeVisualizationPanel extends BasePanel {
 	  // If the class attribute is set and is not numeric then draw coloured
 	  // subbars for the histogram bars
 	  if ((m_classIndex >= 0)
-	    && (m_data.attribute(m_classIndex).isNominal())) {
+		&& (m_data.attribute(m_classIndex).isNominal())) {
 
 	    // There is a padding of 3px on each side of the histogram.
 	    barWidth = ((this.getWidth() - 6) / m_histBarClassCounts.length) < 1 ? 1
-	      : ((this.getWidth() - 6) / m_histBarClassCounts.length);
+			 : ((this.getWidth() - 6) / m_histBarClassCounts.length);
 
 	    // initializing x to start at the start of the 1st bar after
 	    // padding.
@@ -1285,7 +1292,7 @@ public class AttributeVisualizationPanel extends BasePanel {
 	      // space. That space is then added to our x, hence making the
 	      // histogram centered.
 	      x += (this.getWidth() - (x + m_histBarClassCounts.length
-		* barWidth)) / 2;
+					     * barWidth)) / 2;
 	    }
 
 	    for (SparseInstance m_histBarClassCount : m_histBarClassCounts) {
@@ -1294,14 +1301,14 @@ public class AttributeVisualizationPanel extends BasePanel {
 		// at
 		// the bottom
 		heightRatio = (this.getHeight() - (float) m_fm.getHeight()
-		  - buttonHeight - 19)
-		  / m_maxValue;
+				 - buttonHeight - 19)
+				/ m_maxValue;
 		y = this.getHeight() - 19;
 		// This would hold the count of the bar (sum of sub-bars).
 		double sum = 0;
 		for (int j = 0; j < m_histBarClassCount.numValues(); j++) {
 		  y = (int) (y - Math.round(m_histBarClassCount.valueSparse(j)
-		    * heightRatio));
+					      * heightRatio));
 		  // selecting the color corresponding to our class
 		  g.setColor(getColorList().get(m_histBarClassCount.index(j)));
 		  // drawing the bar if its width is greater than 1
@@ -1311,7 +1318,7 @@ public class AttributeVisualizationPanel extends BasePanel {
 		      y,
 		      barWidth,
 		      (int) Math.round(m_histBarClassCount.valueSparse(j)
-			* heightRatio));
+					 * heightRatio));
 		  }
 		  else if ((m_histBarClassCount.valueSparse(j) * heightRatio) > 0) {
 		    g.drawLine(
@@ -1319,7 +1326,7 @@ public class AttributeVisualizationPanel extends BasePanel {
 		      y,
 		      x,
 		      (int) (y + Math.round(m_histBarClassCount.valueSparse(j)
-			* heightRatio)));
+					      * heightRatio)));
 		  }
 		  g.setColor(Color.black);
 		  sum = sum + m_histBarClassCount.valueSparse(j);
@@ -1338,12 +1345,12 @@ public class AttributeVisualizationPanel extends BasePanel {
 	    x = 3;
 	    if ((this.getWidth() - (x + m_histBarClassCounts.length * barWidth)) > 5) {
 	      x += (this.getWidth() - (x + m_histBarClassCounts.length
-		* barWidth)) / 2;
+					     * barWidth)) / 2;
 	    }
 
 	    g.drawLine(x, this.getHeight() - 17, (barWidth == 1) ? x + barWidth
-	      * m_histBarClassCounts.length - 1 : x + barWidth
-	      * m_histBarClassCounts.length, this.getHeight() - 17); // axis
+									 * m_histBarClassCounts.length - 1 : x + barWidth
+														   * m_histBarClassCounts.length, this.getHeight() - 17); // axis
 	    // line --
 	    // see
 	    // footnote
@@ -1354,36 +1361,36 @@ public class AttributeVisualizationPanel extends BasePanel {
 	      this.getHeight() - 12 + m_fm.getHeight()); // minimum value
 	    g.drawLine(x + (barWidth * m_histBarClassCounts.length) / 2,
 	      this.getHeight() - 16, x
-		+ (barWidth * m_histBarClassCounts.length) / 2,
+				       + (barWidth * m_histBarClassCounts.length) / 2,
 	      this.getHeight() - 12); // median line
 	    // Drawing median value. X position for drawing the value is: from
 	    // start of the plot take the mid point and subtract from it half
 	    // of the width of the value to draw.
 	    g.drawString(
 	      Utils.doubleToString(m_as.numericStats.max / 2
-		+ m_as.numericStats.min / 2, 2),
+				     + m_as.numericStats.min / 2, 2),
 	      x
 		+ (barWidth * m_histBarClassCounts.length)
-		/ 2
+		    / 2
 		- m_fm.stringWidth(Utils.doubleToString(m_as.numericStats.max
-		/ 2 + m_as.numericStats.min / 2, 2)) / 2, this.getHeight()
-		- 12 + m_fm.getHeight()); // median value
+							  / 2 + m_as.numericStats.min / 2, 2)) / 2, this.getHeight()
+												      - 12 + m_fm.getHeight()); // median value
 	    g.drawLine((barWidth == 1) ? x + barWidth
-		* m_histBarClassCounts.length - 1 : x + barWidth
-		* m_histBarClassCounts.length, this.getHeight() - 16,
+					       * m_histBarClassCounts.length - 1 : x + barWidth
+											 * m_histBarClassCounts.length, this.getHeight() - 16,
 	      (barWidth == 1) ? x + barWidth * m_histBarClassCounts.length - 1
 		: x + barWidth * m_histBarClassCounts.length,
 	      this.getHeight() - 12); // maximum line
 	    g.drawString(
 	      Utils.doubleToString(m_as.numericStats.max, 2),
 	      (barWidth == 1) ? x
-		+ barWidth
-		* m_histBarClassCounts.length
-		- m_fm.stringWidth(Utils.doubleToString(m_as.numericStats.max,
+				  + barWidth
+				      * m_histBarClassCounts.length
+				  - m_fm.stringWidth(Utils.doubleToString(m_as.numericStats.max,
 		2)) - 1 : x
-		+ barWidth
-		* m_histBarClassCounts.length
-		- m_fm.stringWidth(Utils.doubleToString(m_as.numericStats.max,
+			    + barWidth
+				* m_histBarClassCounts.length
+			    - m_fm.stringWidth(Utils.doubleToString(m_as.numericStats.max,
 		2)), this.getHeight() - 12 + m_fm.getHeight()); // maximum
 	    // value --
 	    // see 2.
@@ -1391,7 +1398,7 @@ public class AttributeVisualizationPanel extends BasePanel {
 	  else { // if class attribute is numeric
 	    // There is a padding of 3px on each side of the histogram.
 	    barWidth = ((this.getWidth() - 6) / m_histBarCounts.length) < 1 ? 1
-	      : ((this.getWidth() - 6) / m_histBarCounts.length);
+			 : ((this.getWidth() - 6) / m_histBarCounts.length);
 
 	    // Same as above. Pls inside of the if stmt.
 	    x = 3;
@@ -1405,10 +1412,10 @@ public class AttributeVisualizationPanel extends BasePanel {
 	      // the maxValue in our current attribute. Leaving 19 pixels to
 	      // draw the axis at the bottom of the histogram.
 	      heightRatio = (this.getHeight() - (float) m_fm.getHeight()
-		- buttonHeight - 19)
-		/ m_maxValue;
+			       - buttonHeight - 19)
+			      / m_maxValue;
 	      y = (int) (this.getHeight()
-		- Math.round(m_histBarCount * heightRatio) - 19);
+			   - Math.round(m_histBarCount * heightRatio) - 19);
 	      // same as in the if stmt above
 	      if (barWidth > 1) {
 		g.drawRect(x, y, barWidth,
@@ -1419,7 +1426,7 @@ public class AttributeVisualizationPanel extends BasePanel {
 		  (int) (y + Math.round(m_histBarCount * heightRatio)));
 	      }
 	      if (m_fm.stringWidth(" "
-		+ Utils.doubleToString(m_histBarCount, 1)) < barWidth) {
+				     + Utils.doubleToString(m_histBarCount, 1)) < barWidth) {
 		g.drawString(" " + Utils.doubleToString(m_histBarCount, 1), x,
 		  y - 1);
 	      }
@@ -1436,40 +1443,40 @@ public class AttributeVisualizationPanel extends BasePanel {
 	    // This is exact the same as in the if stmt above. See the inside of
 	    // the stmt for details
 	    g.drawLine(x, this.getHeight() - 17, (barWidth == 1) ? x + barWidth
-	      * m_histBarCounts.length - 1 : x + barWidth
-	      * m_histBarCounts.length, this.getHeight() - 17); // axis line
+									 * m_histBarCounts.length - 1 : x + barWidth
+													      * m_histBarCounts.length, this.getHeight() - 17); // axis line
 	    g.drawLine(x, this.getHeight() - 16, x, this.getHeight() - 12); // minimum
 	    // line
 	    g.drawString(Utils.doubleToString(m_as.numericStats.min, 2), x,
 	      this.getHeight() - 12 + m_fm.getHeight()); // minimum value
 	    g.drawLine(x + (barWidth * m_histBarCounts.length) / 2,
 	      this.getHeight() - 16, x + (barWidth * m_histBarCounts.length)
-		/ 2, this.getHeight() - 12); // median line
+					   / 2, this.getHeight() - 12); // median line
 	    g.drawString(
 	      Utils.doubleToString(m_as.numericStats.max / 2
-		+ m_as.numericStats.min / 2, 2),
+				     + m_as.numericStats.min / 2, 2),
 	      x
 		+ (barWidth * m_histBarCounts.length)
-		/ 2
+		    / 2
 		- m_fm.stringWidth(Utils.doubleToString(m_as.numericStats.max
-		/ 2 + m_as.numericStats.min / 2, 2)) / 2, this.getHeight()
-		- 12 + m_fm.getHeight()); // median value
+							  / 2 + m_as.numericStats.min / 2, 2)) / 2, this.getHeight()
+												      - 12 + m_fm.getHeight()); // median value
 	    g.drawLine((barWidth == 1) ? x + barWidth * m_histBarCounts.length
-		- 1 : x + barWidth * m_histBarCounts.length,
+					   - 1 : x + barWidth * m_histBarCounts.length,
 	      this.getHeight() - 16, (barWidth == 1) ? x + barWidth
-		* m_histBarCounts.length - 1 : x + barWidth
-		* m_histBarCounts.length, this.getHeight() - 12); // maximum
+							     * m_histBarCounts.length - 1 : x + barWidth
+												  * m_histBarCounts.length, this.getHeight() - 12); // maximum
 	    // line
 	    g.drawString(
 	      Utils.doubleToString(m_as.numericStats.max, 2),
 	      (barWidth == 1) ? x
-		+ barWidth
-		* m_histBarCounts.length
-		- m_fm.stringWidth(Utils.doubleToString(m_as.numericStats.max,
+				  + barWidth
+				      * m_histBarCounts.length
+				  - m_fm.stringWidth(Utils.doubleToString(m_as.numericStats.max,
 		2)) - 1 : x
-		+ barWidth
-		* m_histBarCounts.length
-		- m_fm.stringWidth(Utils.doubleToString(m_as.numericStats.max,
+			    + barWidth
+				* m_histBarCounts.length
+			    - m_fm.stringWidth(Utils.doubleToString(m_as.numericStats.max,
 		2)), this.getHeight() - 12 + m_fm.getHeight()); // maximum
 	    // value
 	  }
@@ -1481,7 +1488,7 @@ public class AttributeVisualizationPanel extends BasePanel {
 	    "Attribute is neither numeric nor nominal.",
 	    this.getWidth() / 2
 	      - m_fm.stringWidth("Attribute is neither numeric nor nominal.")
-	      / 2, this.getHeight() / 2 - m_fm.getHeight() / 2);
+		  / 2, this.getHeight() / 2 - m_fm.getHeight() / 2);
 	}
       } // <--end if of calculation thread
       else if (m_displayCurrentAttribute) { // if still calculation thread is
@@ -1489,13 +1496,13 @@ public class AttributeVisualizationPanel extends BasePanel {
 	g.clearRect(0, 0, this.getWidth(), this.getHeight());
 	g.drawString("Calculating. Please Wait...",
 	  this.getWidth() / 2 - m_fm.stringWidth("Calculating. Please Wait...")
-	    / 2, this.getHeight() / 2 - m_fm.getHeight() / 2);
+				  / 2, this.getHeight() / 2 - m_fm.getHeight() / 2);
       }
       else {
 	g.clearRect(0, 0, this.getWidth(), this.getHeight());
 	g.drawString("Too many values to display.",
 	  this.getWidth() / 2 - m_fm.stringWidth("Too many values to display.")
-	    / 2, this.getHeight() / 2 - m_fm.getHeight() / 2);
+				  / 2, this.getHeight() / 2 - m_fm.getHeight() / 2);
       }
     } // <--end if(m_as==null) this means
   }
