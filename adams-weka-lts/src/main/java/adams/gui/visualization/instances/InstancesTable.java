@@ -15,7 +15,7 @@
 
 /*
  * InstancesTable.java
- * Copyright (C) 2016-2021 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2016-2024 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.visualization.instances;
@@ -298,8 +298,8 @@ public class InstancesTable
 	break;
       case SELECTED:
 	indices = getSelectedRows();
-        for (i = 0; i < indices.length; i++)
-          indices[i] = selectionRowToModelRow(indices[i]);
+	for (i = 0; i < indices.length; i++)
+	  indices[i] = selectionRowToModelRow(indices[i]);
 	if (view) {
 	  result = new InstancesView(full, indices);
 	}
@@ -310,9 +310,9 @@ public class InstancesTable
 	}
 	break;
       case VISIBLE:
-        indices = new int[getRowCount()];
-        for (i = 0; i < getRowCount(); i++)
-          indices[i] = selectionRowToModelRow(i);
+	indices = new int[getRowCount()];
+	for (i = 0; i < getRowCount(); i++)
+	  indices[i] = selectionRowToModelRow(i);
 	if (view) {
 	  result = new InstancesView(full, indices);
 	}
@@ -387,9 +387,9 @@ public class InstancesTable
     menuitem = new JMenuItem("Rename...", ImageManager.getEmptyIcon());
     menuitem.addActionListener((ActionEvent ae) -> {
       String newName = GUIHelper.showInputDialog(
-	InstancesTable.this, "Please enter new name", getInstances().attribute(state.selCol).name());
+	InstancesTable.this, "Please enter new name", getInstances().attribute(state.actCol).name());
       if (newName != null) {
-	instModel.renameAttributeAt(state.actCol, newName);
+	instModel.renameAttributeAt(state.selCol, newName);
 	afterTableLayoutChanged();
 	notifyChangeListeners();
       }
@@ -412,16 +412,16 @@ public class InstancesTable
     if (getShowWeightsColumn()) {
       menuitem = new JMenuItem("Hide weights", ImageManager.getEmptyIcon());
       menuitem.addActionListener((ActionEvent ae) -> {
-        setShowWeightsColumn(false);
-        setShowAttributeWeights(false);
+	setShowWeightsColumn(false);
+	setShowAttributeWeights(false);
       });
       menu.add(menuitem);
     }
     else {
       menuitem = new JMenuItem("Show weights", ImageManager.getEmptyIcon());
       menuitem.addActionListener((ActionEvent ae) -> {
-        setShowWeightsColumn(true);
-        setShowAttributeWeights(true);
+	setShowWeightsColumn(true);
+	setShowAttributeWeights(true);
       });
       menu.add(menuitem);
     }
@@ -431,10 +431,10 @@ public class InstancesTable
     menuitem.addActionListener((ActionEvent ae) -> {
       String filter = "";
       if (getColumnFilter(state.selCol) != null)
-        filter = getColumnFilter(state.selCol);
+	filter = getColumnFilter(state.selCol);
       filter = GUIHelper.showInputDialog(getParent(), "Please enter filter string", filter);
       if ((filter == null) || filter.isEmpty())
-        return;
+	return;
       setColumnFilter(state.selCol, filter, false);
     });
     menu.add(menuitem);
@@ -444,10 +444,10 @@ public class InstancesTable
     menuitem.addActionListener((ActionEvent ae) -> {
       String filter = "";
       if (getColumnFilter(state.selCol) != null)
-        filter = getColumnFilter(state.selCol);
+	filter = getColumnFilter(state.selCol);
       filter = GUIHelper.showInputDialog(getParent(), "Please enter regular expression filter", filter);
       if ((filter == null) || filter.isEmpty())
-        return;
+	return;
       setColumnFilter(state.selCol, filter, true);
     });
     menu.add(menuitem);
