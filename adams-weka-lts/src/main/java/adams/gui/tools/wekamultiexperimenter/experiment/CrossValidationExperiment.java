@@ -15,7 +15,7 @@
 
 /*
  * CrossValidationExperiment.java
- * Copyright (C) 2016-2021 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2016-2024 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekamultiexperimenter.experiment;
@@ -79,7 +79,7 @@ public class CrossValidationExperiment
       m_Owner.log("Run " + m_Run + " [start]: " + m_Data.relationName() + " on " + shortenCommandLine(m_Classifier));
 
       simple = (m_Owner.getDatasets().length == 1)
-	&& (m_Owner.getClassifiers().length == 1);
+		 && (m_Owner.getClassifiers().length == 1);
 
       m_CrossValidation = new WekaCrossValidationExecution();
       m_CrossValidation.setClassifier(m_Classifier);
@@ -98,7 +98,7 @@ public class CrossValidationExperiment
 
       if (result == null) {
 	results = new DefaultSpreadSheet();
-	for (fold = 0; fold < m_Owner.getFolds(); fold++) {
+	for (fold = 0; fold < m_CrossValidation.getActualFolds(); fold++) {
 	  addMetrics(results, m_Run, m_Classifier, m_Data, m_CrossValidation.getEvaluations()[fold]);
 	  addMetric(results, "Key_Fold", fold);
 	}
@@ -124,8 +124,8 @@ public class CrossValidationExperiment
      */
     public void cleanUp() {
       if (m_CrossValidation != null) {
-        m_CrossValidation.cleanUp();
-        m_CrossValidation = null;
+	m_CrossValidation.cleanUp();
+	m_CrossValidation = null;
       }
       super.cleanUp();
     }
