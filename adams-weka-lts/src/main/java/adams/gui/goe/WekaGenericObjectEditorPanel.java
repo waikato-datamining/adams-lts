@@ -15,7 +15,7 @@
 
 /*
  * WekaGenericObjectEditorPanel.java
- * Copyright (C) 2013-2020 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2013-2024 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.gui.goe;
@@ -58,6 +58,9 @@ public class WekaGenericObjectEditorPanel
   /** the current object. */
   protected transient Object m_Current;
 
+  /** the class type. */
+  protected Class m_ClassType;
+
   /**
    * Initializes the panel with the given class and default value. Cannot
    * change the class.
@@ -79,7 +82,7 @@ public class WekaGenericObjectEditorPanel
    */
   public WekaGenericObjectEditorPanel(Class cls, Object defValue, boolean canChangeClassInDialog) {
     super();
-    
+
     m_Editor = new weka.gui.GenericObjectEditor(canChangeClassInDialog);
     m_Editor.setClassType(cls);
     ((GOEPanel) m_Editor.getCustomEditor()).addOkListener((ActionEvent e) -> {
@@ -88,7 +91,7 @@ public class WekaGenericObjectEditorPanel
       notifyChangeListeners(new ChangeEvent(m_Self));
     });
     ((GOEPanel) m_Editor.getCustomEditor()).addCancelListener((ActionEvent e)
-      -> m_Editor.setValue(getCurrent()));
+								-> m_Editor.setValue(getCurrent()));
 
     setCurrent(defValue);
 
@@ -105,6 +108,35 @@ public class WekaGenericObjectEditorPanel
 
     m_Editor  = null;
     m_Current = null;
+  }
+
+  /**
+   * Returns the class type.
+   *
+   * @return		the type
+   */
+  public Class getClassType() {
+    return m_ClassType;
+  }
+
+  /**
+   * Whether the favorites button is shown or not.
+   *
+   * @return		true if to show
+   */
+  @Override
+  protected boolean supportsFavorites() {
+    return true;
+  }
+
+  /**
+   * The class to use for the favorites (can be array class).
+   *
+   * @return		the class
+   */
+  @Override
+  protected Class getFavoritesClass() {
+    return getClassType();
   }
 
   /**
@@ -178,7 +210,7 @@ public class WekaGenericObjectEditorPanel
     if (result) {
       m_Current = value;
       if (m_Current != null)
-        m_Editor.setValue(m_Current);
+	m_Editor.setValue(m_Current);
     }
 
     return result;
@@ -206,12 +238,12 @@ public class WekaGenericObjectEditorPanel
     menu.insert(item, 0);
 
     m_History.customizePopupMenu(
-	menu,
-	getCurrent(),
-	(HistorySelectionEvent e) -> {
-	    setCurrent(e.getHistoryItem());
-	    notifyChangeListeners(new ChangeEvent(m_Self));
-	});
+      menu,
+      getCurrent(),
+      (HistorySelectionEvent e) -> {
+	setCurrent(e.getHistoryItem());
+	notifyChangeListeners(new ChangeEvent(m_Self));
+      });
 
     // customized menu?
     if (m_PopupMenuCustomizer != null)
