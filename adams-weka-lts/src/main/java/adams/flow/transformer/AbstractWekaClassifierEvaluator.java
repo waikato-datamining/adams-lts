@@ -52,12 +52,12 @@ public abstract class AbstractWekaClassifierEvaluator
     super.defineOptions();
 
     m_OptionManager.add(
-      "output", "output",
-      new Null());
+	    "output", "output",
+	    new Null());
 
     m_OptionManager.add(
-      "always-use-container", "alwaysUseContainer",
-      false);
+	    "always-use-container", "alwaysUseContainer",
+	    false);
   }
 
   /**
@@ -87,8 +87,8 @@ public abstract class AbstractWekaClassifierEvaluator
    */
   public String outputTipText() {
     return
-      "The class for generating prediction output; if 'Null' is used, then "
-	+ "an Evaluation object is forwarded instead of a String.";
+        "The class for generating prediction output; if 'Null' is used, then "
+      + "an Evaluation object is forwarded instead of a String.";
   }
 
   /**
@@ -118,7 +118,7 @@ public abstract class AbstractWekaClassifierEvaluator
    */
   public String alwaysUseContainerTipText() {
     return
-      "If enabled, always outputs an evaluation container.";
+        "If enabled, always outputs an evaluation container.";
   }
 
   /**
@@ -150,12 +150,12 @@ public abstract class AbstractWekaClassifierEvaluator
     m_OutputBuffer = new StringBuffer();
     if (m_Output != null) {
       try {
-	m_Output = (AbstractOutput) OptionUtils.forAnyCommandLine(
-	  AbstractOutput.class, OptionUtils.getCommandLine(m_Output));
-	m_Output.setBuffer(m_OutputBuffer);
+        m_Output = (AbstractOutput) OptionUtils.forAnyCommandLine(
+          AbstractOutput.class, OptionUtils.getCommandLine(m_Output));
+        m_Output.setBuffer(m_OutputBuffer);
       }
       catch (Exception e) {
-	throw new IllegalStateException("Failed to create copy of output!", e);
+        throw new IllegalStateException("Failed to create copy of output!", e);
       }
     }
   }
@@ -164,8 +164,10 @@ public abstract class AbstractWekaClassifierEvaluator
    * Cleans up the output buffer.
    */
   protected void cleanOutputBuffer() {
-    m_Output.setBuffer(null);
-    m_OutputBuffer = null;
+    if (m_Output != null) {
+      m_Output.setBuffer(null);
+      m_OutputBuffer = null;
+    }
   }
 
   /**
