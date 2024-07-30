@@ -15,7 +15,7 @@
 
 /*
  * InstanceComparator.java
- * Copyright (C) 2010-2018 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2010-2024 University of Waikato, Hamilton, New Zealand
  */
 package adams.gui.visualization.instance;
 
@@ -49,6 +49,7 @@ import adams.gui.core.MenuBarProvider;
 import adams.gui.core.RecentFilesHandler;
 import adams.gui.event.RecentItemEvent;
 import adams.gui.event.RecentItemListener;
+import adams.gui.visualization.core.CustomColorProvider;
 import adams.gui.visualization.core.plot.Axis;
 import adams.gui.visualization.report.ReportFactory;
 import weka.core.Instances;
@@ -73,6 +74,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -91,7 +93,6 @@ import java.util.TreeMap;
  * A tool for comparing two datasets visually.
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class InstanceComparePanel
   extends BasePanel
@@ -104,7 +105,6 @@ public class InstanceComparePanel
    * Helper class for indexing the rows of a dataset.
    *
    * @author  fracpete (fracpete at waikato dot ac dot nz)
-   * @version $Revision$
    */
   public static class DatasetIndexer
     implements Serializable {
@@ -367,7 +367,6 @@ public class InstanceComparePanel
    * Specialized panel for loading dataset and setting various parameters.
    *
    * @author  fracpete (fracpete at waikato dot ac dot nz)
-   * @version $Revision$
    */
   public static class DatasetPanel
     extends BasePanel {
@@ -448,16 +447,16 @@ public class InstanceComparePanel
       m_PanelDataset.setTextColumns(25);
       m_PanelDataset.setPrefix("File");
       m_PanelDataset.addChangeListener(new ChangeListener() {
-        public void stateChanged(ChangeEvent e) {
-          loadDataset();
-          update();
-        }
+	public void stateChanged(ChangeEvent e) {
+	  loadDataset();
+	  update();
+	}
       });
       m_ButtonDisplay = new BaseButton("Display");
       m_ButtonDisplay.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          displayDataset();
-        }
+	public void actionPerformed(ActionEvent e) {
+	  displayDataset();
+	}
       });
       panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
       panel.add(m_PanelDataset);
@@ -468,21 +467,21 @@ public class InstanceComparePanel
       m_TextAttributeRange = new BaseTextField(10);
       m_TextAttributeRange.setToolTipText(GUIHelper.processTipText(new Range().getExample(), 40));
       m_TextAttributeRange.getDocument().addDocumentListener(new DocumentListener() {
-        public void removeUpdate(DocumentEvent e) {
-          update();
-        }
-        public void insertUpdate(DocumentEvent e) {
-          update();
-        }
-        public void changedUpdate(DocumentEvent e) {
-          update();
-        }
-        protected void update() {
-          String oldRange = m_Indexer.getRange();
-          m_Indexer.setRange(m_TextAttributeRange.getText());
-          if (!oldRange.equals(m_Indexer.getRange()))
-            fireSetupChanged();
-        }
+	public void removeUpdate(DocumentEvent e) {
+	  update();
+	}
+	public void insertUpdate(DocumentEvent e) {
+	  update();
+	}
+	public void changedUpdate(DocumentEvent e) {
+	  update();
+	}
+	protected void update() {
+	  String oldRange = m_Indexer.getRange();
+	  m_Indexer.setRange(m_TextAttributeRange.getText());
+	  if (!oldRange.equals(m_Indexer.getRange()))
+	    fireSetupChanged();
+	}
       });
       m_LabelAttributeRange = new JLabel("Att. range");
       m_LabelAttributeRange.setLabelFor(m_TextAttributeRange);
@@ -492,14 +491,14 @@ public class InstanceComparePanel
       m_ComboBoxRowAttributeModel.addElement("-none-");
       m_ComboBoxRowAttribute = new BaseComboBox(m_ComboBoxRowAttributeModel);
       m_ComboBoxRowAttribute.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          int index = m_ComboBoxRowAttribute.getSelectedIndex();
-          if (index < 1)
-            m_Indexer.setAttributeIndex("");
-          else
-            m_Indexer.setAttributeIndex("" + index);
-          fireSetupChanged();
-        }
+	public void actionPerformed(ActionEvent e) {
+	  int index = m_ComboBoxRowAttribute.getSelectedIndex();
+	  if (index < 1)
+	    m_Indexer.setAttributeIndex("");
+	  else
+	    m_Indexer.setAttributeIndex("" + index);
+	  fireSetupChanged();
+	}
       });
       m_LabelRowAttribute = new JLabel("Row att.");
       m_LabelRowAttribute.setLabelFor(m_ComboBoxRowAttribute);
@@ -688,15 +687,15 @@ public class InstanceComparePanel
 	m_ComboBoxRowAttributeModel.addElement("-none-");
 	for (i = 0; i < dataset.numAttributes(); i++)
 	  m_ComboBoxRowAttributeModel.addElement((i+1) + ": " + dataset.attribute(i).name());
-        m_ComboBoxRowAttribute.setModel(m_ComboBoxRowAttributeModel);
-        m_ComboBoxRowAttribute.setSelectedIndex(0);
+	m_ComboBoxRowAttribute.setModel(m_ComboBoxRowAttributeModel);
+	m_ComboBoxRowAttribute.setSelectedIndex(0);
       }
       catch (Exception e) {
 	dataset = null;
 	e.printStackTrace();
 	GUIHelper.showErrorMessage(
-	    this,
-	    "Error loading dataset from '" + m_PanelDataset.getCurrent().getAbsolutePath() + "':\n" + e);
+	  this,
+	  "Error loading dataset from '" + m_PanelDataset.getCurrent().getAbsolutePath() + "':\n" + e);
       }
 
       m_Indexer.setDataset(dataset);
@@ -727,9 +726,9 @@ public class InstanceComparePanel
 
       buttonClose = new BaseButton("Close", ImageManager.getIcon("exit.png"));
       buttonClose.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          dialog.setVisible(false);
-        }
+	public void actionPerformed(ActionEvent e) {
+	  dialog.setVisible(false);
+	}
       });
       panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
       panel.add(buttonClose);
@@ -896,10 +895,11 @@ public class InstanceComparePanel
    */
   @Override
   protected void initGUI() {
-    JPanel	panel;
-    JPanel	panel2;
-    JPanel	panel3;
-    JPanel	panel4;
+    JPanel			panel;
+    JPanel			panel2;
+    JPanel			panel3;
+    JPanel			panel4;
+    InstanceLinePaintlet	paintlet;
 
     super.initGUI();
 
@@ -938,9 +938,18 @@ public class InstanceComparePanel
     m_PanelComparison = new InstancePanel("Compare");
     m_PanelComparison.setSidePanelVisible(false);
     m_PanelComparison.getPlot().getAxis(Axis.BOTTOM).setAxisName("Attribute index (in selected range)");
+    paintlet = new InstanceLinePaintlet();
+    paintlet.setAlwaysShowMarkers(false);
+    paintlet.setMarkersDisabled(true);
+    m_PanelComparison.setDataPaintlet(paintlet);
+    m_PanelComparison.getContainerManager().setColorProvider(new CustomColorProvider(new Color[]{Color.BLUE, Color.RED}));
     m_PanelDifference = new InstancePanel("Difference");
     m_PanelDifference.setSidePanelVisible(false);
     m_PanelDifference.getPlot().getAxis(Axis.BOTTOM).setAxisName("Attribute index (in selected range)");
+    paintlet = new InstanceLinePaintlet();
+    paintlet.setAlwaysShowMarkers(false);
+    paintlet.setMarkersDisabled(true);
+    m_PanelDifference.setDataPaintlet(paintlet);
     panel2.add(m_PanelComparison);
     panel2.add(m_PanelDifference);
 
@@ -1010,7 +1019,7 @@ public class InstanceComparePanel
       submenu = new JMenu("Load recent (1st file)");
       menu.add(submenu);
       m_RecentFilesHandler1 = new RecentFilesHandler<JMenu>(
-	  SESSION_FILE_1, getProperties().getInteger("MaxRecentFiles", 5), submenu);
+	SESSION_FILE_1, getProperties().getInteger("MaxRecentFiles", 5), submenu);
       m_RecentFilesHandler1.addRecentItemListener(new RecentItemListener<JMenu,File>() {
 	public void recentItemAdded(RecentItemEvent<JMenu,File> e) {
 	  // ignored
@@ -1025,7 +1034,7 @@ public class InstanceComparePanel
       submenu = new JMenu("Load recent (2nd file)");
       menu.add(submenu);
       m_RecentFilesHandler2 = new RecentFilesHandler<JMenu>(
-	  SESSION_FILE_2, getProperties().getInteger("MaxRecentFiles", 5), submenu);
+	SESSION_FILE_2, getProperties().getInteger("MaxRecentFiles", 5), submenu);
       m_RecentFilesHandler2.addRecentItemListener(new RecentItemListener<JMenu,File>() {
 	public void recentItemAdded(RecentItemEvent<JMenu,File> e) {
 	  // ignored
@@ -1141,7 +1150,7 @@ public class InstanceComparePanel
 
     result = new ArrayList<String>();
     for (String row: list)
-	result.add(row.replaceAll("^[0]*", ""));
+      result.add(row.replaceAll("^[0]*", ""));
 
     return result;
   }
