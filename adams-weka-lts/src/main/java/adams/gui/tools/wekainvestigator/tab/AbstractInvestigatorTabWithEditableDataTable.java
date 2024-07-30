@@ -15,7 +15,7 @@
 
 /*
  * AbstractInvestigatorTabWithEditableDataTable.java
- * Copyright (C) 2016-2023 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2016-2024 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekainvestigator.tab;
@@ -91,12 +91,12 @@ public abstract class AbstractInvestigatorTabWithEditableDataTable
     classes          = AbstractEditableDataTableAction.getActions();
     for (Class cls: classes) {
       try {
-        action = (AbstractEditableDataTableAction) cls.getDeclaredConstructor().newInstance();
-        action.setOwner(this);
-        m_Actions.add(action);
+	action = (AbstractEditableDataTableAction) cls.getDeclaredConstructor().newInstance();
+	action.setOwner(this);
+	m_Actions.add(action);
       }
       catch (Exception e) {
-        ConsolePanel.getSingleton().append(LoggingLevel.SEVERE, "Failed to instantiate action: " + cls.getName(), e);
+	ConsolePanel.getSingleton().append(LoggingLevel.SEVERE, "Failed to instantiate action: " + cls.getName(), e);
       }
     }
   }
@@ -134,21 +134,25 @@ public abstract class AbstractInvestigatorTabWithEditableDataTable
     m_ButtonAction.setButtonEnabled(true);
     for (AbstractEditableDataTableAction action: m_Actions) {
       if (action instanceof Save)
-        m_ButtonSave.setAction(action);
+	m_ButtonSave.setAction(action);
       else
-        m_ButtonAction.add(action);
+	m_ButtonAction.add(action);
     }
     m_Table.addToButtonsPanel(m_ButtonAction);
 
     panel = new JPanel(new GridLayout(1, 2));
     m_ButtonUp = new BaseFlatButton(ImageManager.getIcon("arrow_up.gif"));
     m_ButtonUp.addActionListener((ActionEvent e) -> {
+      getData().setNoCleanUp(true);
       ListHelper.moveUp(getData(), getSelectedRows());
+      getData().setNoCleanUp(false);
       fireDataChange(new WekaInvestigatorDataEvent(getOwner(), WekaInvestigatorDataEvent.TABLE_CHANGED));
     });
     m_ButtonDown = new BaseFlatButton(ImageManager.getIcon("arrow_down.gif"));
     m_ButtonDown.addActionListener((ActionEvent e) -> {
+      getData().setNoCleanUp(true);
       ListHelper.moveDown(getData(), getSelectedRows());
+      getData().setNoCleanUp(false);
       fireDataChange(new WekaInvestigatorDataEvent(getOwner(), WekaInvestigatorDataEvent.TABLE_CHANGED));
     });
     panel.add(m_ButtonUp);

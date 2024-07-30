@@ -15,13 +15,14 @@
 
 /*
  * DataContainerList.java
- * Copyright (C) 2023 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2023-2024 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.gui.tools.wekainvestigator.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Predicate;
 
 /**
  * For managing the data containers.
@@ -35,6 +36,9 @@ public class DataContainerList
 
   /** whether undo is enabled. */
   protected boolean m_UndoEnabled;
+
+  /** whether to suppress automatic cleanup. */
+  protected boolean m_NoCleanUp;
 
   /**
    * Sets whether undo is enabled.
@@ -54,6 +58,24 @@ public class DataContainerList
    */
   public boolean isUndoEnabled() {
     return m_UndoEnabled;
+  }
+
+  /**
+   * Sets whether to suppress automatic clean ups.
+   *
+   * @param value	true if to suppress
+   */
+  public synchronized void setNoCleanUp(boolean value) {
+    m_NoCleanUp = value;
+  }
+
+  /**
+   * Returns whether to suppress automatic clean ups.
+   *
+   * @return		true if to suppress
+   */
+  public boolean isNoCleanUp() {
+    return m_NoCleanUp;
   }
 
   /**
@@ -79,5 +101,54 @@ public class DataContainerList
     for (DataContainer cont: c)
       cont.getUndo().setEnabled(isUndoEnabled());
     return super.addAll(c);
+  }
+
+  @Override
+  public DataContainer set(int index, DataContainer element) {
+    if (!m_NoCleanUp)
+      get(index).cleanUp();
+    return super.set(index, element);
+  }
+
+  @Override
+  public boolean remove(Object o) {
+    if (!m_NoCleanUp)
+      ((DataContainer) o).cleanUp();
+    return super.remove(o);
+  }
+
+  @Override
+  public DataContainer remove(int index) {
+    if (!m_NoCleanUp)
+      get(index).cleanUp();
+    return super.remove(index);
+  }
+
+  @Override
+  protected void removeRange(int fromIndex, int toIndex) {
+    if (!m_NoCleanUp) {
+      for (int i = fromIndex; i < toIndex; i++)
+	get(i).cleanUp();
+    }
+    super.removeRange(fromIndex, toIndex);
+  }
+
+  @Override
+  public boolean removeAll(Collection<?> c) {
+    return super.removeAll(c);
+  }
+
+  @Override
+  public boolean removeIf(Predicate<? super DataContainer> filter) {
+    return super.removeIf(filter);
+  }
+
+  @Override
+  public void clear() {
+    if (!m_NoCleanUp) {
+      for (DataContainer c : this)
+	c.cleanUp();
+    }
+    super.clear();
   }
 }
