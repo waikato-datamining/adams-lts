@@ -15,7 +15,7 @@
 
 /*
  * AbstractInvestigatorTabWithDataTable.java
- * Copyright (C) 2016-2020 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2016-2024 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekainvestigator.tab;
@@ -240,7 +240,7 @@ public abstract class AbstractInvestigatorTabWithDataTable
 	break;
       case WekaInvestigatorDataEvent.ATTRIBUTE_NAMES_SORTED:
       case WekaInvestigatorDataEvent.ATTRIBUTES_NAMES_UNSORTED:
-        m_Table.setSortAttributes(e.getType() == WekaInvestigatorDataEvent.ATTRIBUTE_NAMES_SORTED);
+	m_Table.setSortAttributes(e.getType() == WekaInvestigatorDataEvent.ATTRIBUTE_NAMES_SORTED);
 	break;
       case WekaInvestigatorDataEvent.DESERIALIZED:
 	m_Table.setOptimalColumnWidthBounded(DataTable.MAX_COLUMN_WIDTH);
@@ -251,7 +251,7 @@ public abstract class AbstractInvestigatorTabWithDataTable
 	m_Model.addTableModelListener(this);
 	widths = m_Table.getColumnWidths();
 	m_Table.setModel(m_Model);
-        if ((e.getType() == WekaInvestigatorDataEvent.ROWS_ADDED) && (e.getRows().length == getOwner().getData().size()) && m_FirstAdd) {
+	if ((e.getType() == WekaInvestigatorDataEvent.ROWS_ADDED) && (e.getRows().length == getOwner().getData().size()) && m_FirstAdd) {
 	  m_Table.setOptimalColumnWidthBounded(DataTable.MAX_COLUMN_WIDTH);
 	  m_FirstAdd = false;
 	}
@@ -314,9 +314,10 @@ public abstract class AbstractInvestigatorTabWithDataTable
       fireDataChange(new WekaInvestigatorDataEvent(getOwner()));
     }
     else {
+      getTable().setSelectedRows(new int[0]);
       Arrays.sort(rows);
       for (i = rows.length - 1; i >= 0; i--) {
-	logMessage("Removing: " + getData().get(i).getSource());
+	logMessage("Removing: " + getData().get(rows[i]).getSource());
 	cont = getData().remove(rows[i]);
 	list.add(cont);
       }
