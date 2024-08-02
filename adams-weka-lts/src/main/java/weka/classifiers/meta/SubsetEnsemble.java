@@ -13,21 +13,12 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
+/*
  * SubsetEnsemble.java
- * Copyright (C) 2011 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2011-2024 University of Waikato, Hamilton, New Zealand
  */
 
 package weka.classifiers.meta;
-
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Vector;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
@@ -44,7 +35,17 @@ import weka.filters.Filter;
 import weka.filters.MultiFilter;
 import weka.filters.unsupervised.attribute.Remove;
 import weka.filters.unsupervised.instance.RemoveInstancesWithMissingValue;
-import JSci.maths.wavelet.IllegalScalingException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Vector;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  <!-- globalinfo-start -->
@@ -100,7 +101,6 @@ import JSci.maths.wavelet.IllegalScalingException;
  * Options after -- are passed to the designated classifier.
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class SubsetEnsemble
   extends RandomizableSingleClassifierEnhancer {
@@ -244,19 +244,19 @@ public class SubsetEnsemble
     String 	tmpStr;
 
     tmpStr = Utils.getOption("num-slots", options);
-    if (tmpStr.length() != 0)
+    if (!tmpStr.isEmpty())
       setNumExecutionSlots(Integer.parseInt(tmpStr));
     else
       setNumExecutionSlots(1);
 
     tmpStr = Utils.getOption("combination-rule", options);
-    if (tmpStr.length() != 0)
+    if (!tmpStr.isEmpty())
       setCombinationRule(new SelectedTag(tmpStr, Vote.TAGS_RULES));
     else
       setCombinationRule(new SelectedTag(Vote.AVERAGE_RULE, Vote.TAGS_RULES));
 
     tmpStr = Utils.getOption("num-random", options);
-    if (tmpStr.length() != 0)
+    if (!tmpStr.isEmpty())
       setNumRandomFeatures(Integer.parseInt(tmpStr));
     else
       setNumRandomFeatures(0);
@@ -270,9 +270,9 @@ public class SubsetEnsemble
    * @return 		an array of strings suitable for passing to setOptions
    */
   public String [] getOptions() {
-    Vector<String>	result;
+    List<String> result;
 
-    result = new Vector<String>();
+    result = new ArrayList<>();
 
     result.add("-num-slots");
     result.add("" + getNumExecutionSlots());
@@ -285,7 +285,7 @@ public class SubsetEnsemble
 
     result.addAll(Arrays.asList(super.getOptions()));
 
-    return result.toArray(new String[result.size()]);
+    return result.toArray(new String[0]);
   }
 
   /**
@@ -520,7 +520,7 @@ public class SubsetEnsemble
     }
 
     if (result == -1)
-      throw new IllegalScalingException("Actual attribute index for index " + index + " could not be determined!");
+      throw new IllegalStateException("Actual attribute index for index " + index + " could not be determined!");
 
     return result;
   }
@@ -667,7 +667,7 @@ public class SubsetEnsemble
     if (classifiers.size() > 1) {
       result = new Vote();
       ((Vote) result).setCombinationRule(getCombinationRule());
-      ((Vote) result).setClassifiers(classifiers.toArray(new Classifier[classifiers.size()]));
+      ((Vote) result).setClassifiers(classifiers.toArray(new Classifier[0]));
     }
     else if (classifiers.size() == 1) {
       result = classifiers.get(0);
