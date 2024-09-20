@@ -15,7 +15,7 @@
 
 /*
  * AbstractInstanceInfoFrame.java
- * Copyright (C) 2010 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2010-2024 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.gui.visualization.weka;
@@ -25,6 +25,7 @@ import adams.core.Shortening;
 import adams.data.weka.ArffUtils;
 import adams.env.Environment;
 import adams.gui.core.BaseButton;
+import adams.gui.core.BaseComboBox;
 import adams.gui.core.BasePanel;
 import adams.gui.core.BaseScrollPane;
 import adams.gui.core.BaseTabbedPane;
@@ -35,7 +36,6 @@ import weka.core.Instances;
 import weka.gui.arffviewer.ArffSortedTableModel;
 
 import javax.swing.DefaultComboBoxModel;
-import adams.gui.core.BaseComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
@@ -297,7 +297,7 @@ public abstract class AbstractInstanceInfoFrame
    * @return		the ID
    */
   protected int extractDatabaseID(String idStr) {
-    return new Integer(idStr.split(":")[1].trim());
+    return Integer.parseInt(idStr.split(":")[1].trim());
   }
 
   /**
@@ -343,7 +343,7 @@ public abstract class AbstractInstanceInfoFrame
       if (m_TableData.getSelectedRow() > -1) {
 	col = getDatabaseIDColumnIndex();
 	if (col > -1)
-	  result = new Double(m_TableData.getValueAt(m_TableData.getSelectedRow(), col).toString()).intValue();
+	  result = (int) Double.parseDouble(m_TableData.getValueAt(m_TableData.getSelectedRow(), col).toString());
       }
     }
     else {
@@ -380,7 +380,7 @@ public abstract class AbstractInstanceInfoFrame
 	if (col != -1) {
 	  result = new int[rows.length];
 	  for (i = 0; i < rows.length; i++)
-	    result[i] = new Double(m_TableData.getValueAt(rows[i], col).toString()).intValue();
+	    result[i] = (int) Double.parseDouble(m_TableData.getValueAt(rows[i], col).toString());
 	}
       }
     }
@@ -414,7 +414,7 @@ public abstract class AbstractInstanceInfoFrame
       if (col != -1) {
 	result = new int[m_TableData.getRowCount()];
 	for (i = 0; i < result.length; i++)
-	  result[i] = new Double(m_TableData.getValueAt(i, col).toString()).intValue();
+	  result[i] = (int) Double.parseDouble(m_TableData.getValueAt(i, col).toString());
       }
     }
     else {
@@ -475,9 +475,9 @@ public abstract class AbstractInstanceInfoFrame
     m_LabelTextNumPoints.setText(generateNumPointsLabel(list.size()));
 
     m_ComboBoxTextInstances.setModel(new DefaultComboBoxModel(list));
-    m_ComboBoxTextInstances.setEnabled(list.size() > 0);
-    m_ButtonTextGo.setEnabled(list.size() > 0);
-    if (list.size() > 0)
+    m_ComboBoxTextInstances.setEnabled(!list.isEmpty());
+    m_ButtonTextGo.setEnabled(!list.isEmpty());
+    if (!list.isEmpty())
       m_ComboBoxTextInstances.setSelectedIndex(0);
   }
 
