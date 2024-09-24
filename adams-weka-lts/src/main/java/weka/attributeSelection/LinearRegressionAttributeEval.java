@@ -20,7 +20,12 @@
 package weka.attributeSelection;
 
 import weka.classifiers.functions.LinearRegressionJ;
-import weka.core.*;
+import weka.core.Capabilities;
+import weka.core.Instances;
+import weka.core.Option;
+import weka.core.OptionHandler;
+import weka.core.SelectedTag;
+import weka.core.Utils;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -89,7 +94,7 @@ public class LinearRegressionAttributeEval
   public void setOptions(String[] options) throws Exception {
     String ridgeString = Utils.getOption('R', options);
     if (ridgeString.length() != 0) {
-      setRidge(new Double(ridgeString).doubleValue());
+      setRidge(Double.parseDouble(ridgeString));
     } else {
       setRidge(1.0e-8);
     }
