@@ -20,10 +20,6 @@
 
 package adams.flow.standalone;
 
-import java.io.File;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import adams.core.VariableName;
 import adams.core.base.BaseString;
 import adams.env.Environment;
@@ -41,6 +37,10 @@ import adams.flow.transformer.WekaCrossValidationEvaluator;
 import adams.flow.transformer.WekaEvaluationSummary;
 import adams.flow.transformer.WekaFileReader;
 import adams.test.TmpFile;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import java.io.File;
 
 /**
  * Tests the SetProperty actor.
@@ -92,6 +92,7 @@ public class SetPropertyTest
    * @return a suitably configured <code>Actor</code> value
    */
   @Override
+  @SuppressWarnings("deprecation")
   public Actor getActor() {
     CallableActors ga = new CallableActors();
     WekaClassifierSetup cls = new WekaClassifierSetup();
