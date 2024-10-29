@@ -15,7 +15,7 @@
 
 /*
  * WekaInstanceDumper.java
- * Copyright (C) 2009-2018 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2009-2024 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.flow.transformer;
@@ -188,6 +188,9 @@ public class WekaInstanceDumper
   /** the buffer. */
   protected List<Instance> m_Buffer;
 
+  /** whether currently writing to disk. */
+  protected boolean m_Writing;
+
   /**
    * Returns a string describing the object.
    *
@@ -196,10 +199,10 @@ public class WekaInstanceDumper
   @Override
   public String globalInfo() {
     return
-        "Dumps weka.core.Instance objects into an ARFF file. If the headers "
-      + "change and the header-check is enabled, then a new file will be used.\n"
-      + "The actor can also turn double arrays into weka.core.Instance objects "
-      + "(all attributes are assumed to be numeric).";
+      "Dumps weka.core.Instance objects into an ARFF file. If the headers "
+	+ "change and the header-check is enabled, then a new file will be used.\n"
+	+ "The actor can also turn double arrays into weka.core.Instance objects "
+	+ "(all attributes are assumed to be numeric).";
   }
 
   /**
@@ -210,28 +213,28 @@ public class WekaInstanceDumper
     super.defineOptions();
 
     m_OptionManager.add(
-	    "check", "checkHeader",
-	    false);
+      "check", "checkHeader",
+      false);
 
     m_OptionManager.add(
-	    "prefix", "outputPrefix",
-	    new PlaceholderFile("."));
+      "prefix", "outputPrefix",
+      new PlaceholderFile("."));
 
     m_OptionManager.add(
-	    "format", "outputFormat",
-	    OutputFormat.ARFF);
+      "format", "outputFormat",
+      OutputFormat.ARFF);
 
     m_OptionManager.add(
-	    "use-relation", "useRelationNameAsFilename",
-	    false);
+      "use-relation", "useRelationNameAsFilename",
+      false);
 
     m_OptionManager.add(
-	    "keep-existing", "keepExisting",
-	    false);
+      "keep-existing", "keepExisting",
+      false);
 
     m_OptionManager.add(
-	    "buffer-size", "bufferSize",
-	    1, 1, null);
+      "buffer-size", "bufferSize",
+      1, 1, null);
   }
 
   /**
@@ -241,7 +244,8 @@ public class WekaInstanceDumper
   protected void initialize() {
     super.initialize();
 
-    m_Buffer = new ArrayList<Instance>();
+    m_Buffer  = new ArrayList<>();
+    m_Writing = false;
   }
 
   /**
@@ -305,8 +309,8 @@ public class WekaInstanceDumper
    */
   public String checkHeaderTipText() {
     return
-        "Whether to check the headers - if the headers change, the Instance "
-      + "object gets dumped into a new file.";
+      "Whether to check the headers - if the headers change, the Instance "
+	+ "object gets dumped into a new file.";
   }
 
   /**
@@ -349,8 +353,8 @@ public class WekaInstanceDumper
    */
   public String outputPrefixTipText() {
     return
-        "The path and partial filename of the output file; automatically "
-      + "removes 'arff' and 'csv' extensions, as they get added automatically.";
+      "The path and partial filename of the output file; automatically "
+	+ "removes 'arff' and 'csv' extensions, as they get added automatically.";
   }
 
   /**
@@ -409,10 +413,10 @@ public class WekaInstanceDumper
    */
   public String useRelationNameAsFilenameTipText() {
     return
-        "If set to true, then the relation name replaces the name of the output "
-      + "file; eg if the output file is '/some/where/file.arff' and the "
-      + "relation is 'anneal' then the resulting file name will be "
-      + "'/some/where/anneal.arff'.";
+      "If set to true, then the relation name replaces the name of the output "
+	+ "file; eg if the output file is '/some/where/file.arff' and the "
+	+ "relation is 'anneal' then the resulting file name will be "
+	+ "'/some/where/anneal.arff'.";
   }
 
   /**
@@ -442,12 +446,12 @@ public class WekaInstanceDumper
    */
   public String keepExistingTipText() {
     return
-        "If enabled, any output file that exists when the actor is executed "
-      + "for the first time (or variables modify the actor) won't get replaced "
-      + "with the current header; "
-      + "useful when outputting data in multiple locations in the flow, but "
-      + "one needs to be cautious as to not stored mixed content (eg varying "
-      + "number of attributes, etc).";
+      "If enabled, any output file that exists when the actor is executed "
+	+ "for the first time (or variables modify the actor) won't get replaced "
+	+ "with the current header; "
+	+ "useful when outputting data in multiple locations in the flow, but "
+	+ "one needs to be cautious as to not stored mixed content (eg varying "
+	+ "number of attributes, etc).";
   }
 
   /**
@@ -479,7 +483,7 @@ public class WekaInstanceDumper
    */
   public String bufferSizeTipText() {
     return
-        "The number of instances to buffer before writing to disk, in order to "
+      "The number of instances to buffer before writing to disk, in order to "
 	+ "improve I/O performance.";
   }
 
@@ -549,6 +553,7 @@ public class WekaInstanceDumper
     m_Counter = 0;
     m_Header  = null;
     m_Buffer.clear();
+    m_Writing = false;
   }
 
   /**
@@ -604,8 +609,8 @@ public class WekaInstanceDumper
     if (m_UseRelationNameAsFilename) {
       file   = new File(m_OutputPrefix.getAbsolutePath());
       result =   file.getParent()
-               + File.separator
-               + FileUtils.createFilename(header.relationName(), "_");
+		   + File.separator
+		   + FileUtils.createFilename(header.relationName(), "_");
     }
     else {
       result = m_OutputPrefix.getAbsolutePath();
@@ -619,8 +624,6 @@ public class WekaInstanceDumper
 	result += ArffLoader.FILE_EXTENSION;
 	break;
       case CSV:
-	result += CSVLoader.FILE_EXTENSION;
-	break;
       case TAB:
 	result += CSVLoader.FILE_EXTENSION;
 	break;
@@ -724,10 +727,15 @@ public class WekaInstanceDumper
     FileWriter		fwriter;
     BufferedWriter	writer;
 
+    if (m_Buffer.isEmpty())
+      return null;
+
+    m_Writing  = true;
     result     = null;
     outputFile = createFilename(m_Buffer.get(0).dataset());
     if (!outputFile.getParentFile().exists()) {
-      result = "Parent directory does not exist: " + outputFile.getParentFile();
+      result    = "Parent directory does not exist: " + outputFile.getParentFile();
+      m_Writing = false;
       return result;
     }
 
@@ -736,15 +744,14 @@ public class WekaInstanceDumper
       ok = FileUtils.writeToFile(outputFile.getAbsolutePath(), createHeader(m_Buffer.get(0).dataset()), false);
 
     if (ok) {
-      fwriter = null;
-      writer  = null;
+      fwriter   = null;
+      writer    = null;
       try {
 	fwriter = new FileWriter(outputFile.getAbsolutePath(), true);
 	writer  = new BufferedWriter(fwriter);
-	while (m_Buffer.size() > 0) {
-	  writer.append(createRow(m_Buffer.get(0)));
+	while (!m_Buffer.isEmpty()) {
+	  writer.append(createRow(m_Buffer.remove(0)));
 	  writer.newLine();
-	  m_Buffer.remove(0);
 	}
 	writer.flush();
       }
@@ -756,6 +763,8 @@ public class WekaInstanceDumper
 	FileUtils.closeQuietly(writer);
       }
     }
+
+    m_Writing = false;
 
     return result;
   }
@@ -840,7 +849,7 @@ public class WekaInstanceDumper
    */
   @Override
   public void wrapUp() {
-    // write any left over data to disk
+    // write any leftover data to disk
     performFlush();
 
     super.wrapUp();
@@ -852,7 +861,11 @@ public class WekaInstanceDumper
    * Performs the flush.
    */
   public void performFlush() {
-    if (m_Buffer.size() > 0)
+    if (!m_Buffer.isEmpty()) {
+      while (m_Writing) {
+	Utils.wait(this, this, 1000, 50);
+      }
       writeToDisk(true);
+    }
   }
 }
