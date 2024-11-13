@@ -15,7 +15,7 @@
 
 /*
  * WekaClassifierRanker.java
- * Copyright (C) 2010-2020 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2010-2024 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.flow.transformer;
@@ -49,7 +49,7 @@ import adams.multiprocess.AbstractJob;
 import adams.multiprocess.JobList;
 import adams.multiprocess.JobRunner;
 import adams.multiprocess.LocalJobRunner;
-import weka.classifiers.Evaluation;
+import weka.classifiers.StoppableEvaluation;
 import weka.classifiers.meta.GridSearch;
 import weka.classifiers.meta.MultiSearch;
 import weka.classifiers.meta.multisearch.DefaultEvaluationMetrics;
@@ -213,6 +213,9 @@ public class WekaClassifierRanker
     /** the best classifier. */
     protected weka.classifiers.Classifier m_BestClassifier;
 
+    /** the current evaluation. */
+    protected transient StoppableEvaluation m_Evaluation;
+
     /**
      * Initializes the job.
      *
@@ -241,6 +244,7 @@ public class WekaClassifierRanker
       m_EvaluationError = "";
       m_BestClassifier  = (weka.classifiers.Classifier) ClassManager.getSingleton().deepCopy(cls);
       m_OutputBestSetup = best;
+      m_Evaluation      = null;
     }
 
     /**
@@ -392,29 +396,38 @@ public class WekaClassifierRanker
      */
     @Override
     protected void process() throws Exception {
-      Evaluation			eval;
       weka.classifiers.Classifier	cls;
 
-      eval = new Evaluation(m_Train);
-      eval.setDiscardPredictions(true);
+      m_Evaluation = new StoppableEvaluation(m_Train);
+      m_Evaluation.setDiscardPredictions(true);
       if (m_Folds >= 2) {
-	eval.crossValidateModel(m_Classifier, m_Train, m_Folds, new Random(m_Seed));
+	m_Evaluation.crossValidateModel(m_Classifier, m_Train, m_Folds, new Random(m_Seed));
       }
       else {
 	cls = ObjectCopyHelper.copyObject(m_Classifier);
 	cls.buildClassifier(m_Train);
-	eval.evaluateModel(cls, m_Test);
+	m_Evaluation.evaluateModel(cls, m_Test);
 	m_BestClassifier = getBestClassifier(m_Classifier, cls);
 	cls              = null;
       }
       m_ClassLabel.setData(m_Train.classAttribute());
       m_Performance = new Performance(
 	new Point(new Integer[]{m_Index}),
-	new DefaultEvaluationWrapper(eval, new DefaultEvaluationMetrics()),
+	new DefaultEvaluationWrapper(m_Evaluation, new DefaultEvaluationMetrics()),
 	m_Measure.getMeasure(),
 	m_ClassLabel.getIntIndex(),
 	m_Classifier);
-      eval = null;
+      m_Evaluation = null;
+    }
+
+    /**
+     * Stops the execution.
+     */
+    @Override
+    public void stopExecution() {
+      if (m_Evaluation != null)
+	m_Evaluation.stopExecution();
+      super.stopExecution();
     }
 
     /**
@@ -442,6 +455,7 @@ public class WekaClassifierRanker
       m_Performance = null;
       m_Train       = null;
       m_Test        = null;
+      m_Evaluation  = null;
     }
 
     /**

@@ -40,6 +40,7 @@ import weka.classifiers.Classifier;
 import weka.classifiers.CrossValidationFoldGenerator;
 import weka.classifiers.DefaultCrossValidationFoldGenerator;
 import weka.classifiers.Evaluation;
+import weka.classifiers.StoppableEvaluation;
 import weka.classifiers.evaluation.output.prediction.AbstractOutput;
 import weka.core.Instances;
 
@@ -125,6 +126,9 @@ public class WekaCrossValidationExecution
 
   /** the flow context. */
   protected transient Actor m_FlowContext;
+
+  /** the evaluation currently being run. */
+  protected transient StoppableEvaluation m_CurrentEvaluation;
 
   /**
    * Initializes the execution.
@@ -512,7 +516,6 @@ public class WekaCrossValidationExecution
    */
   public String execute() {
     MessageCollection 			result;
-    Evaluation 				eval;
     AggregateEvaluations 		evalAgg;
     CrossValidationFoldGenerator 	generator;
     JobList<WekaCrossValidationJob>	list;
@@ -555,8 +558,8 @@ public class WekaCrossValidationExecution
 	  m_Output.setHeader(m_Data);
 	  m_Output.printHeader();
 	}
-	eval       = new Evaluation(m_Data);
-	eval.setDiscardPredictions(m_DiscardPredictions);
+	m_CurrentEvaluation = new StoppableEvaluation(m_Data);
+	m_CurrentEvaluation.setDiscardPredictions(m_DiscardPredictions);
 	current    = 0;
 	while (generator.hasNext()) {
 	  if (isStopped())
@@ -570,14 +573,14 @@ public class WekaCrossValidationExecution
 	  if (cls instanceof FlowContextHandler)
 	    ((FlowContextHandler) cls).setFlowContext(m_FlowContext);
 	  cls.buildClassifier(train);
-	  eval.setPriors(train);
-	  eval.evaluateModel(cls, test, m_Output);
+	  m_CurrentEvaluation.setPriors(train);
+	  m_CurrentEvaluation.evaluateModel(cls, test, m_Output);
 	  current++;
 	}
 	if (m_Output != null)
 	  m_Output.printFooter();
 	if (!isStopped())
-	  m_Evaluation = eval;
+	  m_Evaluation = m_CurrentEvaluation;
       }
       else {
 	if (m_DiscardPredictions)
@@ -649,7 +652,8 @@ public class WekaCrossValidationExecution
       result.add(LoggingHelper.handleException(this, "Failed to cross-validate classifier: ", e));
     }
 
-    m_OriginalIndices = indices;
+    m_CurrentEvaluation = null;
+    m_OriginalIndices   = indices;
 
     if (result.isEmpty())
       return null;
@@ -674,6 +678,8 @@ public class WekaCrossValidationExecution
     getLogger().severe("Execution stopped");
     if (m_ActualJobRunner != null)
       m_ActualJobRunner.terminate(m_WaitForJobs);
+    if (m_CurrentEvaluation != null)
+      m_CurrentEvaluation.stopExecution();
   }
 
   /**
