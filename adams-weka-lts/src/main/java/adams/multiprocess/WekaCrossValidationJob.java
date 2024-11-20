@@ -23,6 +23,7 @@ package adams.multiprocess;
 import adams.core.ObjectCopyHelper;
 import adams.core.Shortening;
 import adams.core.StatusMessageHandler;
+import adams.core.Stoppable;
 import adams.core.logging.LoggingHelper;
 import adams.core.option.OptionUtils;
 import adams.flow.core.Actor;
@@ -214,11 +215,13 @@ public class WekaCrossValidationJob
 	  + Shortening.shortenEnd(OptionUtils.getCommandLine(m_Classifier), 100));
     try {
       if (m_Classifier instanceof FlowContextHandler)
-        ((FlowContextHandler) m_Classifier).setFlowContext(m_FlowContext);
+	((FlowContextHandler) m_Classifier).setFlowContext(m_FlowContext);
       m_Classifier.buildClassifier(m_Train);
-      m_Evaluation = new StoppableEvaluation(m_Train);
-      m_Evaluation.setDiscardPredictions(m_DiscardPredictions);
-      m_Evaluation.evaluateModel(m_Classifier, m_Test);
+      if (!m_Stopped) {
+	m_Evaluation = new StoppableEvaluation(m_Train);
+	m_Evaluation.setDiscardPredictions(m_DiscardPredictions);
+	m_Evaluation.evaluateModel(m_Classifier, m_Test);
+      }
     }
     catch (Exception e) {
       if (m_StatusMessageHandler != null)
@@ -253,6 +256,8 @@ public class WekaCrossValidationJob
   public void stopExecution() {
     if (m_Evaluation != null)
       m_Evaluation.stopExecution();
+    if (m_Classifier instanceof Stoppable)
+      ((Stoppable) m_Classifier).stopExecution();
     super.stopExecution();
   }
 
