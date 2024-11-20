@@ -25,6 +25,7 @@ import adams.core.ObjectCopyHelper;
 import adams.core.Pausable;
 import adams.core.QuickInfoHelper;
 import adams.core.Randomizable;
+import adams.core.StoppableUtils;
 import adams.core.ThreadLimiter;
 import adams.core.classmanager.ClassManager;
 import adams.core.logging.LoggingHelper;
@@ -93,11 +94,11 @@ import java.util.logging.Level;
  *
  * <pre>-annotation &lt;adams.core.base.BaseText&gt; (property: annotations)
  * &nbsp;&nbsp;&nbsp;The annotations to attach to this actor.
- * &nbsp;&nbsp;&nbsp;default: 
+ * &nbsp;&nbsp;&nbsp;default:
  * </pre>
  *
  * <pre>-skip &lt;boolean&gt; (property: skip)
- * &nbsp;&nbsp;&nbsp;If set to true, transformation is skipped and the input token is just forwarded 
+ * &nbsp;&nbsp;&nbsp;If set to true, transformation is skipped and the input token is just forwarded
  * &nbsp;&nbsp;&nbsp;as it is.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
@@ -109,7 +110,7 @@ import java.util.logging.Level;
  * </pre>
  *
  * <pre>-max &lt;int&gt; (property: max)
- * &nbsp;&nbsp;&nbsp;The maximum number of top-ranked classifiers to forward; use -1 to forward 
+ * &nbsp;&nbsp;&nbsp;The maximum number of top-ranked classifiers to forward; use -1 to forward
  * &nbsp;&nbsp;&nbsp;all of them (ranked array).
  * &nbsp;&nbsp;&nbsp;default: 3
  * &nbsp;&nbsp;&nbsp;minimum: -1
@@ -143,13 +144,13 @@ import java.util.logging.Level;
  * </pre>
  *
  * <pre>-output-best &lt;boolean&gt; (property: outputBestSetup)
- * &nbsp;&nbsp;&nbsp;If true, then for optimizers like GridSearch and MultiSearch the best setup 
+ * &nbsp;&nbsp;&nbsp;If true, then for optimizers like GridSearch and MultiSearch the best setup
  * &nbsp;&nbsp;&nbsp;that was found will be output instead of the optimizer setup.
  * &nbsp;&nbsp;&nbsp;default: false
  * </pre>
  *
  * <pre>-num-threads &lt;int&gt; (property: numThreads)
- * &nbsp;&nbsp;&nbsp;The number of threads to use for evaluating the classifiers in parallel 
+ * &nbsp;&nbsp;&nbsp;The number of threads to use for evaluating the classifiers in parallel
  * &nbsp;&nbsp;&nbsp;(-1 means one for each core&#47;cpu).
  * &nbsp;&nbsp;&nbsp;default: -1
  * &nbsp;&nbsp;&nbsp;minimum: -1
@@ -425,8 +426,8 @@ public class WekaClassifierRanker
      */
     @Override
     public void stopExecution() {
-      if (m_Evaluation != null)
-	m_Evaluation.stopExecution();
+      StoppableUtils.stopExecution(m_Evaluation);
+      StoppableUtils.stopAnyExecution(m_Classifier);
       super.stopExecution();
     }
 
@@ -1080,8 +1081,8 @@ public class WekaClassifierRanker
 
     if (result == null) {
       if (getRoot() instanceof PauseStateHandler) {
-        if (((PauseStateHandler) getRoot()).getPauseStateManager() != null)
-          ((PauseStateHandler) getRoot()).getPauseStateManager().addListener(this);
+	if (((PauseStateHandler) getRoot()).getPauseStateManager() != null)
+	  ((PauseStateHandler) getRoot()).getPauseStateManager().addListener(this);
       }
     }
 
