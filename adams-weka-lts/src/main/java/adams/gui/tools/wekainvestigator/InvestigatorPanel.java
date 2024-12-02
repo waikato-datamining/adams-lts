@@ -149,6 +149,9 @@ public class InvestigatorPanel
   /** the action for copying a tab. */
   protected BaseAction m_ActionTabCopyTab;
 
+  /** the action for renaming a tab. */
+  protected BaseAction m_ActionTabRenameTab;
+
   /** the action for saving parmeters of a tab. */
   protected BaseAction m_ActionTabSaveParameters;
 
@@ -213,7 +216,7 @@ public class InvestigatorPanel
     cmdline = getProperties().getProperty("General.ClassAttributeHeuristic", OptionUtils.getCommandLine(new LastAttribute()));
     try {
       m_ClassAttributeHeuristic = (AbstractClassAttributeHeuristic) OptionUtils.forAnyCommandLine(
-        AbstractClassAttributeHeuristic.class, cmdline);
+	AbstractClassAttributeHeuristic.class, cmdline);
     }
     catch (Exception e) {
       ConsolePanel.getSingleton().append(Level.SEVERE, "Failed to instantiate class attribute heuristic: " + cmdline, e);
@@ -223,7 +226,7 @@ public class InvestigatorPanel
     cmdline = getProperties().getProperty("General.RelationNameHeuristic", OptionUtils.getCommandLine(new NoChange()));
     try {
       m_RelationNameHeuristic = (AbstractRelationNameHeuristic) OptionUtils.forAnyCommandLine(
-        AbstractRelationNameHeuristic.class, cmdline);
+	AbstractRelationNameHeuristic.class, cmdline);
     }
     catch (Exception e) {
       ConsolePanel.getSingleton().append(Level.SEVERE, "Failed to instantiate class attribute heuristic: " + cmdline, e);
@@ -263,11 +266,11 @@ public class InvestigatorPanel
     classes = getProperties().getProperty("General.DefaultTabs", LogTab.class.getName()).split(",");
     for (String cls: classes) {
       try {
-        tab = (AbstractInvestigatorTab) ClassManager.getSingleton().forName(cls).getDeclaredConstructor().newInstance();
-        m_TabbedPane.addTab(tab);
+	tab = (AbstractInvestigatorTab) ClassManager.getSingleton().forName(cls).getDeclaredConstructor().newInstance();
+	m_TabbedPane.addTab(tab);
       }
       catch (Exception e) {
-        ConsolePanel.getSingleton().append(Level.SEVERE, "Failed to instantiate investigator tab: ", e);
+	ConsolePanel.getSingleton().append(Level.SEVERE, "Failed to instantiate investigator tab: ", e);
       }
     }
   }
@@ -281,25 +284,35 @@ public class InvestigatorPanel
       private static final long serialVersionUID = 1028160012672649573L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
-        InvestigatorJob job = new InvestigatorJob(InvestigatorPanel.this, "Copying tab") {
-          protected void doRun() {
-            m_TabbedPane.copySelectedTab();
-          }
-        };
-        startExecution(job);
+	InvestigatorJob job = new InvestigatorJob(InvestigatorPanel.this, "Copying tab") {
+	  protected void doRun() {
+	    m_TabbedPane.copySelectedTab();
+	  }
+	};
+	startExecution(job);
       }
     };
     m_ActionTabCopyTab.setName("Copy tab");
     m_ActionTabCopyTab.setIcon(ImageManager.getIcon("copy.gif"));
 
+    m_ActionTabRenameTab = new AbstractBaseAction() {
+      private static final long serialVersionUID = 1028160012672649573L;
+      @Override
+      protected void doActionPerformed(ActionEvent e) {
+	m_TabbedPane.renameTabAt(m_TabbedPane.getSelectedIndex());
+      }
+    };
+    m_ActionTabRenameTab.setName("Rename tab");
+    m_ActionTabRenameTab.setIcon(ImageManager.getIcon("rename"));
+
     m_ActionTabSaveParameters = new AbstractBaseAction() {
       private static final long serialVersionUID = 1028160012672649573L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
-        int index = m_TabbedPane.getSelectedIndex();
-        if (index > -1)
-          ((AbstractInvestigatorTab) m_TabbedPane.getComponentAt(index)).saveParameters();
-        updateMenu();
+	int index = m_TabbedPane.getSelectedIndex();
+	if (index > -1)
+	  ((AbstractInvestigatorTab) m_TabbedPane.getComponentAt(index)).saveParameters();
+	updateMenu();
       }
     };
     m_ActionTabSaveParameters.setName("Save parameters...");
@@ -309,10 +322,10 @@ public class InvestigatorPanel
       private static final long serialVersionUID = 1028160012672649573L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
-        int index = m_TabbedPane.getSelectedIndex();
-        if (index > -1)
-          ((AbstractInvestigatorTab) m_TabbedPane.getComponentAt(index)).loadParameters();
-        updateMenu();
+	int index = m_TabbedPane.getSelectedIndex();
+	if (index > -1)
+	  ((AbstractInvestigatorTab) m_TabbedPane.getComponentAt(index)).loadParameters();
+	updateMenu();
       }
     };
     m_ActionTabLoadParameters.setName("Load parameters...");
@@ -322,10 +335,10 @@ public class InvestigatorPanel
       private static final long serialVersionUID = 1028160012672649573L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
-        int index = m_TabbedPane.getSelectedIndex();
-        if (index > -1)
-          m_TabbedPane.removeTabAt(index);
-        updateMenu();
+	int index = m_TabbedPane.getSelectedIndex();
+	if (index > -1)
+	  m_TabbedPane.removeTabAt(index);
+	updateMenu();
       }
     };
     m_ActionTabCloseTab.setName("Close tab");
@@ -335,8 +348,8 @@ public class InvestigatorPanel
       private static final long serialVersionUID = 2162739410818834253L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
-        m_TabbedPane.removeAll();
-        updateMenu();
+	m_TabbedPane.removeAll();
+	updateMenu();
       }
     };
     m_ActionTabCloseAllTabs.setName("Close all tabs");
@@ -346,8 +359,8 @@ public class InvestigatorPanel
       private static final long serialVersionUID = 1028160012672649573L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
-        m_TabbedPane.undoTabClose();
-        updateMenu();
+	m_TabbedPane.undoTabClose();
+	updateMenu();
       }
     };
     m_ActionTabUndoCloseTab.setName("Undo close tab");
@@ -357,7 +370,7 @@ public class InvestigatorPanel
       private static final long serialVersionUID = -1104246458353845500L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
-        closeParent();
+	closeParent();
       }
     };
     m_ActionFileClose.setName("Close");
@@ -368,7 +381,7 @@ public class InvestigatorPanel
       private static final long serialVersionUID = -1104246458353845500L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
-        clear();
+	clear();
       }
     };
     m_ActionFileClear.setName("Clear");
@@ -379,7 +392,7 @@ public class InvestigatorPanel
       private static final long serialVersionUID = -1104246458353845500L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
-        openFile();
+	openFile();
       }
     };
     m_ActionFileOpen.setName("Open...");
@@ -390,7 +403,7 @@ public class InvestigatorPanel
       private static final long serialVersionUID = -1104246458353845500L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
-        chooseClassAttributeHeuristic();
+	chooseClassAttributeHeuristic();
       }
     };
     m_ActionFileClassAttribute.setName("Class attribute...");
@@ -400,7 +413,7 @@ public class InvestigatorPanel
       private static final long serialVersionUID = -1104246458353845500L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
-        chooseRelationNameHeuristic();
+	chooseRelationNameHeuristic();
       }
     };
     m_ActionFileRelationName.setName("Relation name...");
@@ -410,7 +423,7 @@ public class InvestigatorPanel
       private static final long serialVersionUID = 429814291989678829L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
-        stopExecution();
+	stopExecution();
       }
     };
     m_ActionFileStopJob.setName("Stop job");
@@ -425,6 +438,7 @@ public class InvestigatorPanel
     m_ActionFileClear.setEnabled(getData().size() > 0);
     m_ActionFileStopJob.setEnabled(isBusy());
     m_ActionTabCopyTab.setEnabled(m_TabbedPane.getSelectedIndex() > -1);
+    m_ActionTabRenameTab.setEnabled(m_TabbedPane.getSelectedIndex() > -1);
     m_ActionTabSaveParameters.setEnabled(m_TabbedPane.getSelectedIndex() > -1);
     m_ActionTabLoadParameters.setEnabled(m_TabbedPane.getSelectedIndex() > -1);
     m_ActionTabCloseTab.setEnabled(m_TabbedPane.getTabCount() > 0);
@@ -467,12 +481,12 @@ public class InvestigatorPanel
       menu.add(submenu);
       m_RecentFilesHandler = new RecentFilesHandlerWithCommandline<>(SESSION_FILE, 10, submenu);
       m_RecentFilesHandler.addRecentItemListener(new RecentItemListener<JMenu,Setup>() {
-        public void recentItemAdded(RecentItemEvent<JMenu,Setup> e) {
-          // ignored
-        }
-        public void recentItemSelected(RecentItemEvent<JMenu,Setup> e) {
-          openRecent(e);
-        }
+	public void recentItemAdded(RecentItemEvent<JMenu,Setup> e) {
+	  // ignored
+	}
+	public void recentItemSelected(RecentItemEvent<JMenu,Setup> e) {
+	  openRecent(e);
+	}
       });
 
       // File/Sources
@@ -481,15 +495,15 @@ public class InvestigatorPanel
       menu.add(m_MenuFileSources);
       classes = ClassLister.getSingleton().getClasses(AbstractSource.class);
       for (final Class cls: classes) {
-        try {
-          source   = (AbstractSource) cls.getDeclaredConstructor().newInstance();
-          source.setOwner(this);
-          menuitem = new JMenuItem(source);
-          m_MenuFileSources.add(menuitem);
-        }
-        catch (Exception e) {
-          ConsolePanel.getSingleton().append("Failed to instantiate source class: " + cls.getName(), e);
-        }
+	try {
+	  source   = (AbstractSource) cls.getDeclaredConstructor().newInstance();
+	  source.setOwner(this);
+	  menuitem = new JMenuItem(source);
+	  m_MenuFileSources.add(menuitem);
+	}
+	catch (Exception e) {
+	  ConsolePanel.getSingleton().append("Failed to instantiate source class: " + cls.getName(), e);
+	}
       }
       m_MenuFileSources.sort();
 
@@ -543,33 +557,34 @@ public class InvestigatorPanel
       menu.add(m_MenuTabNewTab);
       classes = ClassLister.getSingleton().getClasses(AbstractInvestigatorTab.class);
       for (final Class cls: classes) {
-        try {
-          tab      = (AbstractInvestigatorTab) cls.getDeclaredConstructor().newInstance();
-          menuitem = new JMenuItem(tab.getTitle());
-          if (tab.getTabIcon() == null)
-            menuitem.setIcon(ImageManager.getEmptyIcon());
-          else
-            menuitem.setIcon(ImageManager.getIcon(tab.getTabIcon()));
-          // shortcut?
-          if (getShortcutProperties().hasKey("Tab-" + cls.getName()))
-            menuitem.setAccelerator(GUIHelper.getKeyStroke(getShortcutProperties().getProperty("Tab-" + cls.getName())));
-          menuitem.addActionListener((ActionEvent e) -> {
-            try {
-              AbstractInvestigatorTab tabNew = (AbstractInvestigatorTab) cls.getDeclaredConstructor().newInstance();
-              m_TabbedPane.addTab(tabNew, true);
-            }
-            catch (Exception ex) {
-              ConsolePanel.getSingleton().append("Failed to instantiate tab class: " + cls.getName(), ex);
-            }
-          });
-          m_MenuTabNewTab.add(menuitem);
-        }
-        catch (Exception e) {
-          ConsolePanel.getSingleton().append("Failed to instantiate tab class: " + cls.getName(), e);
-        }
+	try {
+	  tab      = (AbstractInvestigatorTab) cls.getDeclaredConstructor().newInstance();
+	  menuitem = new JMenuItem(tab.getTitle());
+	  if (tab.getTabIcon() == null)
+	    menuitem.setIcon(ImageManager.getEmptyIcon());
+	  else
+	    menuitem.setIcon(ImageManager.getIcon(tab.getTabIcon()));
+	  // shortcut?
+	  if (getShortcutProperties().hasKey("Tab-" + cls.getName()))
+	    menuitem.setAccelerator(GUIHelper.getKeyStroke(getShortcutProperties().getProperty("Tab-" + cls.getName())));
+	  menuitem.addActionListener((ActionEvent e) -> {
+	    try {
+	      AbstractInvestigatorTab tabNew = (AbstractInvestigatorTab) cls.getDeclaredConstructor().newInstance();
+	      m_TabbedPane.addTab(tabNew, true);
+	    }
+	    catch (Exception ex) {
+	      ConsolePanel.getSingleton().append("Failed to instantiate tab class: " + cls.getName(), ex);
+	    }
+	  });
+	  m_MenuTabNewTab.add(menuitem);
+	}
+	catch (Exception e) {
+	  ConsolePanel.getSingleton().append("Failed to instantiate tab class: " + cls.getName(), e);
+	}
       }
       m_MenuTabNewTab.sort();
       menu.add(m_ActionTabCopyTab);
+      menu.add(m_ActionTabRenameTab);
       menu.add(m_ActionTabLoadParameters);
       menu.add(m_ActionTabSaveParameters);
       menu.addSeparator();
@@ -725,7 +740,7 @@ public class InvestigatorPanel
 
     for (i = 0; i < m_TabbedPane.getTabCount(); i++) {
       if (m_TabbedPane.getComponentAt(i) instanceof LogTab)
-        ((LogTab) m_TabbedPane.getComponentAt(i)).append(prefix + msg);
+	((LogTab) m_TabbedPane.getComponentAt(i)).append(prefix + msg);
     }
   }
 
@@ -769,7 +784,7 @@ public class InvestigatorPanel
     m_Log.setLength(0);
     for (i = 0; i < m_TabbedPane.getTabCount(); i++) {
       if (m_TabbedPane.getComponentAt(i) instanceof LogTab)
-        ((LogTab) m_TabbedPane.getComponentAt(i)).clearLog();
+	((LogTab) m_TabbedPane.getComponentAt(i)).clearLog();
     }
   }
 
@@ -862,8 +877,8 @@ public class InvestigatorPanel
       getData().clear();
       logAndShowMessage("Removed all datasets");
       fireDataChange(
-        new WekaInvestigatorDataEvent(
-          InvestigatorPanel.this, WekaInvestigatorDataEvent.ROWS_DELETED));
+	new WekaInvestigatorDataEvent(
+	  InvestigatorPanel.this, WekaInvestigatorDataEvent.ROWS_DELETED));
     });
   }
 
@@ -886,21 +901,21 @@ public class InvestigatorPanel
     job = new InvestigatorJob(this, "Loading: " + Utils.arrayToString(files)) {
       @Override
       protected void doRun() {
-        for (final File file: files) {
-          logAndShowMessage("Loading: " + file);
-          final FileContainer cont = new FileContainer(loader, file);
-          cont.getUndo().setEnabled(isUndoEnabled());
-          updateClassAttribute(cont.getData());
-          updateRelationName(file, cont.getData());
-          SwingUtilities.invokeLater(() -> {
-            m_Data.add(cont);
-            addRecentFile(file, loader);
-            logAndShowMessage("Loaded: " + file);
-            fireDataChange(
-              new WekaInvestigatorDataEvent(
-                InvestigatorPanel.this, WekaInvestigatorDataEvent.ROWS_ADDED, m_Data.size() - 1));
-          });
-        }
+	for (final File file: files) {
+	  logAndShowMessage("Loading: " + file);
+	  final FileContainer cont = new FileContainer(loader, file);
+	  cont.getUndo().setEnabled(isUndoEnabled());
+	  updateClassAttribute(cont.getData());
+	  updateRelationName(file, cont.getData());
+	  SwingUtilities.invokeLater(() -> {
+	    m_Data.add(cont);
+	    addRecentFile(file, loader);
+	    logAndShowMessage("Loaded: " + file);
+	    fireDataChange(
+	      new WekaInvestigatorDataEvent(
+		InvestigatorPanel.this, WekaInvestigatorDataEvent.ROWS_ADDED, m_Data.size() - 1));
+	  });
+	}
       }
     };
     startExecution(job);
@@ -922,17 +937,17 @@ public class InvestigatorPanel
     job = new InvestigatorJob(this, "Loading: " + file) {
       @Override
       protected void doRun() {
-        final FileContainer cont = new FileContainer(loader, file);
-        cont.getUndo().setEnabled(isUndoEnabled());
-        updateClassAttribute(cont.getData());
-        updateRelationName(file, cont.getData());
-        SwingUtilities.invokeLater(() -> {
-          m_Data.add(cont);
-          addRecentFile(file, loader);
-          logAndShowMessage("Loaded: " + file);
-          fireDataChange(new WekaInvestigatorDataEvent(
-            InvestigatorPanel.this, WekaInvestigatorDataEvent.ROWS_ADDED, m_Data.size() - 1));
-        });
+	final FileContainer cont = new FileContainer(loader, file);
+	cont.getUndo().setEnabled(isUndoEnabled());
+	updateClassAttribute(cont.getData());
+	updateRelationName(file, cont.getData());
+	SwingUtilities.invokeLater(() -> {
+	  m_Data.add(cont);
+	  addRecentFile(file, loader);
+	  logAndShowMessage("Loaded: " + file);
+	  fireDataChange(new WekaInvestigatorDataEvent(
+	    InvestigatorPanel.this, WekaInvestigatorDataEvent.ROWS_ADDED, m_Data.size() - 1));
+	});
       }
     };
     startExecution(job);
@@ -954,23 +969,23 @@ public class InvestigatorPanel
     }
     job = new InvestigatorJob(this, "Loading: " + e.getItem()) {
       protected void doRun() {
-        try {
-          loader.setFile(e.getItem().getFile());
-          final FileContainer cont = new FileContainer(loader, e.getItem().getFile());
+	try {
+	  loader.setFile(e.getItem().getFile());
+	  final FileContainer cont = new FileContainer(loader, e.getItem().getFile());
           cont.getUndo().setEnabled(isUndoEnabled());
-          updateClassAttribute(cont.getData());
-          updateRelationName(e.getItem().getFile(), cont.getData());
-          SwingUtilities.invokeLater(() -> {
-            m_Data.add(cont);
-            m_FileChooser.setCurrentDirectory(e.getItem().getFile().getParentFile().getAbsoluteFile());
-            logAndShowMessage("Loaded: " + e.getItem());
-            fireDataChange(new WekaInvestigatorDataEvent(
-              InvestigatorPanel.this, WekaInvestigatorDataEvent.ROWS_ADDED, m_Data.size() - 1));
-          });
-        }
-        catch (Exception ex) {
-          logError("Failed to load file:\n" + e.getItem() + "\n" + LoggingHelper.throwableToString(ex), "Error reloading data");
-        }
+	  updateClassAttribute(cont.getData());
+	  updateRelationName(e.getItem().getFile(), cont.getData());
+	  SwingUtilities.invokeLater(() -> {
+	    m_Data.add(cont);
+	    m_FileChooser.setCurrentDirectory(e.getItem().getFile().getParentFile().getAbsoluteFile());
+	    logAndShowMessage("Loaded: " + e.getItem());
+	    fireDataChange(new WekaInvestigatorDataEvent(
+	      InvestigatorPanel.this, WekaInvestigatorDataEvent.ROWS_ADDED, m_Data.size() - 1));
+	  });
+	}
+	catch (Exception ex) {
+	  logError("Failed to load file:\n" + e.getItem() + "\n" + LoggingHelper.throwableToString(ex), "Error reloading data");
+	}
       }
     };
     startExecution(job);
