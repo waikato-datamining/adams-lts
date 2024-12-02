@@ -15,7 +15,7 @@
 
 /*
  * InvestigatorTabbedPane.java
- * Copyright (C) 2016-2021 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2016-2024 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekainvestigator.tab;
@@ -77,6 +77,37 @@ public class InvestigatorTabbedPane
   }
 
   /**
+   * Disambiguates the title, appending " (X)" to it.
+   *
+   * @param title	the base title
+   * @return		the new title
+   */
+  protected String disambiguateTitle(String title) {
+    String	result;
+    int		i;
+    int		count;
+    boolean	found;
+
+    count = 1;
+    while (true) {
+      result = title + ((count > 1) ? " (" + count + ")" : "");
+      found = false;
+      for (i = 0; i < getTabCount(); i++) {
+	if (getTitleAt(i).equals(result)) {
+	  found = true;
+	  break;
+	}
+      }
+      if (found)
+	count++;
+      else
+	break;
+    }
+
+    return result;
+  }
+
+  /**
    * Adds the tab.
    *
    * @param tab		the tab to add
@@ -93,10 +124,13 @@ public class InvestigatorTabbedPane
    */
   public void addTab(final AbstractInvestigatorTab tab, boolean show) {
     final ButtonTabComponent	button;
+    String			title;
 
+    title = disambiguateTitle(tab.getTitle());
+    tab.setActualTitle(title);
     tab.setOwner(getOwner());
-    tab.setFrameTitle(tab.getTitle());
-    addTab(tab.getTitle(), tab);
+    tab.setFrameTitle(title);
+    addTab(title, tab);
 
     // icon
     button = (ButtonTabComponent) getTabComponentAt(getTabCount() - 1);
