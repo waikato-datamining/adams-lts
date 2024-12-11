@@ -15,7 +15,7 @@
 
 /*
  * VotedModels.java
- * Copyright (C) 2019 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2019-2024 University of Waikato, Hamilton, NZ
  */
 
 package adams.flow.transformer.wekaensemblegenerator;

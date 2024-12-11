@@ -15,7 +15,7 @@
 
 /*
  * KernelPLS.java
- * Copyright (C) 2018 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2018-2024 University of Waikato, Hamilton, NZ
  */
 
 package adams.data.instancesanalysis.pls;
@@ -141,7 +141,7 @@ public class KernelPLS
    * @return 		tip text for this property suitable for displaying in the
    *         		explorer/experimenter gui
    */
-  public String kernelipText() {
+  public String kernelTipText() {
     return "The kernel to use";
   }
 
@@ -170,7 +170,7 @@ public class KernelPLS
    * @return 		tip text for this property suitable for displaying in the
    *         		explorer/experimenter gui
    */
-  public String tolipText() {
+  public String tolTipText() {
     return "The inner NIPALS loop maximum number of iterations.";
   }
 
@@ -199,7 +199,7 @@ public class KernelPLS
    * @return 		tip text for this property suitable for displaying in the
    *         		explorer/experimenter gui
    */
-  public String maxIteripText() {
+  public String maxIterTipText() {
     return "The inner NIPALS loop improvement tolerance.";
   }
 
