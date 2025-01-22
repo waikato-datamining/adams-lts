@@ -15,7 +15,7 @@
 
 /*
  * EvaluationHelper.java
- * Copyright (C) 2009-2019 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2009-2025 University of Waikato, Hamilton, New Zealand
  */
 package adams.flow.core;
 
@@ -50,6 +50,8 @@ public class EvaluationHelper {
 	return eval.incorrect();
       case NUMBER_UNCLASSIFIED:
 	return eval.unclassified();
+      case NUMBER_TOTAL:
+	return eval.numInstances();
       case PERCENT_CORRECT:
 	return eval.pctCorrect();
       case PERCENT_INCORRECT:
@@ -139,15 +141,15 @@ public class EvaluationHelper {
       case UNWEIGHTED_MICRO_F_MEASURE:
 	return eval.unweightedMicroFmeasure();
       case BIAS:
-        return eval.getPluginMetric(Bias.class.getName()).getStatistic(Bias.NAME);
+	return eval.getPluginMetric(Bias.class.getName()).getStatistic(Bias.NAME);
       case MSLE:
-        return eval.getPluginMetric(MSLE.class.getName()).getStatistic(MSLE.NAME);
+	return eval.getPluginMetric(MSLE.class.getName()).getStatistic(MSLE.NAME);
       case RSQUARED:
-        return eval.getPluginMetric(RSquared.class.getName()).getStatistic(RSquared.NAME);
+	return eval.getPluginMetric(RSquared.class.getName()).getStatistic(RSquared.NAME);
       case SDR:
-        return eval.getPluginMetric(SDR.class.getName()).getStatistic(SDR.NAME);
+	return eval.getPluginMetric(SDR.class.getName()).getStatistic(SDR.NAME);
       case RPD:
-        return eval.getPluginMetric(RPD.class.getName()).getStatistic(RPD.NAME);
+	return eval.getPluginMetric(RPD.class.getName()).getStatistic(RPD.NAME);
       default:
 	throw new IllegalArgumentException("Unhandled statistic field: " + statistic);
     }

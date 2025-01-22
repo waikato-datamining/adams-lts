@@ -15,7 +15,7 @@
 
 /*
  * EvaluationStatistic.java
- * Copyright (C) 2009-2019 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2009-2025 University of Waikato, Hamilton, New Zealand
  */
 package adams.flow.core;
 
@@ -32,7 +32,8 @@ public enum EvaluationStatistic
 
   NUMBER_CORRECT("Number correct", true),
   NUMBER_INCORRECT("Number incorrect", true),
-  NUMBER_UNCLASSIFIED("Number unclassified", true),
+  NUMBER_UNCLASSIFIED("Number unclassified", null),
+  NUMBER_TOTAL("Number total", true),
   PERCENT_CORRECT("Percent correct", true),
   PERCENT_INCORRECT("Percent incorrect", true),
   PERCENT_UNCLASSIFIED("Percent unclassified", true),
@@ -91,7 +92,7 @@ public enum EvaluationStatistic
 
   /** whether applies only to nominal classes or not. */
   protected Boolean m_OnlyNominal;
-  
+
   /** whether the statistic is per class. */
   private boolean m_PerClass;
 
@@ -120,34 +121,34 @@ public enum EvaluationStatistic
     m_OnlyNominal = onlyNominal;
     m_PerClass    = perClass;
   }
-  
+
   /**
    * Returns whether the statistic is a per-class one.
-   * 
+   *
    * @return		true if per class
    */
   public boolean isPerClass() {
     return m_PerClass;
   }
-  
+
   /**
    * Returns whether the statistic applies to nominal attributes only.
-   * 
+   *
    * @return		true if only for nominal attributes
    */
   public boolean isOnlyNominal() {
     return (m_OnlyNominal != null) && m_OnlyNominal;
   }
-  
+
   /**
    * Returns whether the statistic applies to numeric attributes only.
-   * 
+   *
    * @return		true if only for numeric attributes
    */
   public boolean isOnlyNumeric() {
     return (m_OnlyNominal != null) && !m_OnlyNominal;
   }
-  
+
   /**
    * Returns the display string, including nominal/numeric if it applies.
    *
@@ -155,19 +156,19 @@ public enum EvaluationStatistic
    */
   public String toDisplay() {
     String	result;
-    
+
     result = m_Display;
-    
+
     if (m_OnlyNominal != null) {
       if (m_OnlyNominal)
 	result += " (nominal)";
       else
 	result += " (numeric)";
     }
-    
+
     return result;
   }
-  
+
   /**
    * Returns the display string.
    *
@@ -260,7 +261,7 @@ public enum EvaluationStatistic
 	}
       }
     }
-    
+
     return result;
   }
 }
