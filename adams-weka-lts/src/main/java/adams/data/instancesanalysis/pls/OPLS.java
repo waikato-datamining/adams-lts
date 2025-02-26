@@ -15,7 +15,7 @@
 
 /*
  * OPLS.java
- * Copyright (C) 2018 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2018-2025 University of Waikato, Hamilton, NZ
  */
 
 package adams.data.instancesanalysis.pls;
@@ -24,9 +24,6 @@ import adams.core.TechnicalInformation;
 import adams.core.TechnicalInformation.Field;
 import adams.core.TechnicalInformation.Type;
 import adams.core.option.OptionUtils;
-import com.github.waikatodatamining.matrix.algorithm.pls.AbstractPLS;
-import com.github.waikatodatamining.matrix.algorithm.pls.PLS1;
-import com.github.waikatodatamining.matrix.core.PreprocessingType;
 import weka.core.Instances;
 import weka.core.matrix.Matrix;
 
@@ -34,12 +31,61 @@ import java.util.Map;
 
 /**
  <!-- globalinfo-start -->
+ * Orthogonal Projections to latent structures (O-PLS).<br>
+ * <br>
+ * For more informatio see:<br>
+ * Johan Trygg, Svante Wold (2001). Orthogonal projections to latent structures (O-PLS). JOURNAL OF CHEMOMETRICS. 16:119-128. URL https:&#47;&#47;onlinelibrary.wiley.com&#47;doi&#47;pdf&#47;10.1002&#47;cem.695
+ * <br><br>
  <!-- globalinfo-end -->
  *
  <!-- technical-bibtex-start -->
+ * <pre>
+ * &#64;article{Trygg2001,
+ *    author = {Johan Trygg and Svante Wold},
+ *    journal = {JOURNAL OF CHEMOMETRICS},
+ *    pages = {119-128},
+ *    title = {Orthogonal projections to latent structures (O-PLS)},
+ *    volume = {16},
+ *    year = {2001},
+ *    URL = {https:&#47;&#47;onlinelibrary.wiley.com&#47;doi&#47;pdf&#47;10.1002&#47;cem.695}
+ * }
+ * </pre>
+ * <br><br>
  <!-- technical-bibtex-end -->
  *
  <!-- options-start -->
+ * <pre>-logging-level &lt;OFF|SEVERE|WARNING|INFO|CONFIG|FINE|FINER|FINEST&gt; (property: loggingLevel)
+ * &nbsp;&nbsp;&nbsp;The logging level for outputting errors and debugging output.
+ * &nbsp;&nbsp;&nbsp;default: WARNING
+ * &nbsp;&nbsp;&nbsp;min-user-mode: Expert
+ * </pre>
+ *
+ * <pre>-preprocessing-type &lt;NONE|CENTER|STANDARDIZE&gt; (property: preprocessingType)
+ * &nbsp;&nbsp;&nbsp;The type of preprocessing to perform.
+ * &nbsp;&nbsp;&nbsp;default: CENTER
+ * </pre>
+ *
+ * <pre>-replace-missing &lt;boolean&gt; (property: replaceMissing)
+ * &nbsp;&nbsp;&nbsp;Whether to replace missing values.
+ * &nbsp;&nbsp;&nbsp;default: false
+ * </pre>
+ *
+ * <pre>-num-components &lt;int&gt; (property: numComponents)
+ * &nbsp;&nbsp;&nbsp;The number of components to compute.
+ * &nbsp;&nbsp;&nbsp;default: 20
+ * &nbsp;&nbsp;&nbsp;minimum: 1
+ * </pre>
+ *
+ * <pre>-prediction-type &lt;NONE|ALL|EXCEPT_CLASS&gt; (property: predictionType)
+ * &nbsp;&nbsp;&nbsp;The type of prediction to perform.
+ * &nbsp;&nbsp;&nbsp;default: NONE
+ * </pre>
+ *
+ * <pre>-base &lt;com.github.waikatodatamining.matrix.algorithm.pls.AbstractPLS&gt; (property: base)
+ * &nbsp;&nbsp;&nbsp;The base PLS algorithm to use.
+ * &nbsp;&nbsp;&nbsp;default: com.github.waikatodatamining.matrix.algorithm.pls.PLS1 -debug false -num-components 5 -preprocessing-type NONE
+ * </pre>
+ *
  <!-- options-end -->
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
@@ -50,7 +96,7 @@ public class OPLS
   private static final long serialVersionUID = -1605633160253194760L;
 
   /** the base PLS algorithm. */
-  protected AbstractPLS m_Base;
+  protected com.github.waikatodatamining.matrix.algorithm.pls.AbstractPLS m_Base;
 
   /** the actual algorithm. */
   protected com.github.waikatodatamining.matrix.algorithm.pls.OPLS m_OPLS;
@@ -63,8 +109,8 @@ public class OPLS
   @Override
   public String globalInfo() {
     return "Orthogonal Projections to latent structures (O-PLS).\n\n"
-      + "For more informatio see:\n"
-      + getTechnicalInformation();
+	     + "For more informatio see:\n"
+	     + getTechnicalInformation();
   }
 
   /**
@@ -99,7 +145,7 @@ public class OPLS
 
     m_OptionManager.add(
       "base", "base",
-      new PLS1());
+      new com.github.waikatodatamining.matrix.algorithm.pls.PLS1());
   }
 
   /**
@@ -107,7 +153,7 @@ public class OPLS
    *
    * @param value	the base algorithm
    */
-  public void setBase(AbstractPLS value) {
+  public void setBase(com.github.waikatodatamining.matrix.algorithm.pls.AbstractPLS value) {
     m_Base = value;
     reset();
   }
@@ -117,7 +163,7 @@ public class OPLS
    *
    * @return		the base algorithm
    */
-  public AbstractPLS getBase() {
+  public com.github.waikatodatamining.matrix.algorithm.pls.AbstractPLS getBase() {
     return m_Base;
   }
 
@@ -198,6 +244,7 @@ public class OPLS
     com.github.waikatodatamining.matrix.core.Matrix	X;
     com.github.waikatodatamining.matrix.core.Matrix	y;
     com.github.waikatodatamining.matrix.core.Matrix	X_new;
+    com.github.waikatodatamining.matrix.core.Matrix	y_new;
     String 						error;
 
     X = MatrixHelper.wekaToMatrixAlgo(MatrixHelper.getX(data));
@@ -205,14 +252,19 @@ public class OPLS
     if (!isInitialized()) {
       m_OPLS = new com.github.waikatodatamining.matrix.algorithm.pls.OPLS();
       m_OPLS.setNumComponents(m_NumComponents);
-      m_OPLS.setPreprocessingType(PreprocessingType.NONE);
-      m_OPLS.setBasePLS((AbstractPLS) OptionUtils.shallowCopy(m_Base));
+      m_OPLS.setPreprocessingType(com.github.waikatodatamining.matrix.core.PreprocessingType.NONE);
+      m_OPLS.setBasePLS((com.github.waikatodatamining.matrix.algorithm.pls.AbstractPLS) OptionUtils.shallowCopy(m_Base));
       error = m_OPLS.initialize(X, y);
       if (error != null)
 	throw new Exception(error);
     }
     X_new = m_OPLS.transform(X);
 
-    return MatrixHelper.toInstances(getOutputFormat(), MatrixHelper.matrixAlgoToWeka(X_new), MatrixHelper.matrixAlgoToWeka(y));
+    if (m_PredictionType == PredictionType.ALL)
+      y_new = m_OPLS.predict(X);
+    else
+      y_new = y;
+
+    return MatrixHelper.toInstances(getOutputFormat(), MatrixHelper.matrixAlgoToWeka(X_new), MatrixHelper.matrixAlgoToWeka(y_new));
   }
 }
