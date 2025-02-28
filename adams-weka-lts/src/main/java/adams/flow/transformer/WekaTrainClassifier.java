@@ -15,7 +15,7 @@
 
 /*
  * WekaTrainClassifier.java
- * Copyright (C) 2012-2024 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2012-2025 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.flow.transformer;
@@ -27,6 +27,7 @@ import adams.core.option.OptionUtils;
 import adams.flow.container.WekaModelContainer;
 import adams.flow.core.CallableActorHelper;
 import adams.flow.core.CallableActorReference;
+import adams.flow.core.FlowContextHandler;
 import adams.flow.core.Token;
 import adams.flow.source.WekaClassifierSetup;
 import adams.flow.standalone.JobRunnerInstance;
@@ -229,7 +230,7 @@ public class WekaTrainClassifier
   protected CallableActorReference m_Classifier;
 
   /** the classifier to use when training incrementally. */
-  protected weka.classifiers.Classifier m_IncrementalClassifier;
+  protected Classifier m_IncrementalClassifier;
 
   /** whether to skip the buildClassifier call for incremental classifiers. */
   protected boolean m_SkipBuild;
@@ -416,7 +417,7 @@ public class WekaTrainClassifier
   @Override
   protected void restoreState(Hashtable<String,Object> state) {
     if (state.containsKey(BACKUP_INCREMENTALCLASSIFIER)) {
-      m_IncrementalClassifier = (weka.classifiers.Classifier) state.get(BACKUP_INCREMENTALCLASSIFIER);
+      m_IncrementalClassifier = (Classifier) state.get(BACKUP_INCREMENTALCLASSIFIER);
       state.remove(BACKUP_INCREMENTALCLASSIFIER);
     }
 
@@ -457,17 +458,21 @@ public class WekaTrainClassifier
    * @return		the classifier
    * @throws Exception  if fails to obtain classifier
    */
-  protected weka.classifiers.Classifier getClassifierInstance() throws Exception {
-    weka.classifiers.Classifier	result;
+  protected Classifier getClassifierInstance() throws Exception {
+    Classifier	result;
     MessageCollection		errors;
 
     errors = new MessageCollection();
-    result = (weka.classifiers.Classifier) CallableActorHelper.getSetup(weka.classifiers.Classifier.class, m_Classifier, this, errors);
+    result = (Classifier) CallableActorHelper.getSetup(Classifier.class, m_Classifier, this, errors);
     if (result == null) {
       if (errors.isEmpty())
 	throw new IllegalStateException("Failed to obtain classifier from '" + m_Classifier + "'!");
       else
 	throw new IllegalStateException("Failed to obtain classifier from '" + m_Classifier + "':\n" + errors);
+    }
+    else {
+      if (result instanceof FlowContextHandler)
+	((FlowContextHandler) result).setFlowContext(this);
     }
 
     return result;
@@ -502,7 +507,7 @@ public class WekaTrainClassifier
     String			result;
     Instances			data;
     Instance			inst;
-    weka.classifiers.Classifier	cls;
+    Classifier	cls;
     BatchTrainJob		job;
 
     result = null;

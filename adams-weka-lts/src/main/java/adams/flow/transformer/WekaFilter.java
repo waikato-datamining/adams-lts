@@ -15,7 +15,7 @@
 
 /*
  * WekaFilter.java
- * Copyright (C) 2009-2024 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2009-2025 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.flow.transformer;
@@ -286,10 +286,10 @@ public class WekaFilter
   public final static String BACKUP_INITIALIZED = "initialized";
 
   /** the filter to apply. */
-  protected weka.filters.Filter m_Filter;
+  protected Filter m_Filter;
 
   /** the actual filter used. */
-  protected weka.filters.Filter m_ActualFilter;
+  protected Filter m_ActualFilter;
 
   /** whether to initialize filter only with the first batch. */
   protected boolean m_InitializeOnce;
@@ -400,7 +400,7 @@ public class WekaFilter
    *
    * @param value	the filter
    */
-  public void setFilter(weka.filters.Filter value) {
+  public void setFilter(Filter value) {
     m_Filter = value;
     reset();
   }
@@ -410,7 +410,7 @@ public class WekaFilter
    *
    * @return		the filter
    */
-  public weka.filters.Filter getFilter() {
+  public Filter getFilter() {
     return m_Filter;
   }
 
@@ -688,7 +688,7 @@ public class WekaFilter
     if (m_OutputContainer)
       return new Class[]{WekaFilterContainer.class};
     else
-      return new Class[]{weka.core.Instance.class, weka.core.Instances.class, adams.data.instance.Instance.class};
+      return new Class[]{Instance.class, Instances.class, adams.data.instance.Instance.class};
   }
 
   /**
@@ -775,7 +775,7 @@ public class WekaFilter
    * @return		weka.core.Instance, weka.core.Instances, adams.data.instance.Instance
    */
   public Class[] accepts() {
-    return new Class[]{weka.core.Instance.class, weka.core.Instances.class, adams.data.instance.Instance.class};
+    return new Class[]{Instance.class, Instances.class, adams.data.instance.Instance.class};
   }
 
   /**
@@ -827,6 +827,10 @@ public class WekaFilter
       else
 	return errors.toString();
     }
+    else {
+      if (m_ActualFilter instanceof FlowContextHandler)
+	((FlowContextHandler) m_ActualFilter).setFlowContext(this);
+    }
 
     // configure containers
     result = setUpContainers(m_ActualFilter);
@@ -866,11 +870,11 @@ public class WekaFilter
   @Override
   protected String doExecute() {
     String				result;
-    weka.core.Instances			data;
-    weka.core.Instances			filteredData;
-    weka.core.Instance			inst;
+    Instances			data;
+    Instances			filteredData;
+    Instance			inst;
     adams.data.instance.Instance	instA;
-    weka.core.Instance			filteredInst;
+    Instance			filteredInst;
     String				relation;
     BatchFilterJob			job;
 
@@ -878,12 +882,12 @@ public class WekaFilter
 
     data = null;
     inst = null;
-    if (m_InputToken.hasPayload(weka.core.Instance.class))
-      inst = m_InputToken.getPayload(weka.core.Instance.class);
+    if (m_InputToken.hasPayload(Instance.class))
+      inst = m_InputToken.getPayload(Instance.class);
     else if (m_InputToken.hasPayload(adams.data.instance.Instance.class))
       inst = m_InputToken.getPayload(adams.data.instance.Instance.class).toInstance();
-    else if (m_InputToken.hasPayload(weka.core.Instances.class))
-      data = m_InputToken.getPayload(weka.core.Instances.class);
+    else if (m_InputToken.hasPayload(Instances.class))
+      data = m_InputToken.getPayload(Instances.class);
     else
       result = m_InputToken.unhandledData();
 
@@ -892,7 +896,7 @@ public class WekaFilter
 	// initialize filter?
 	if (!m_Initialized || !m_InitializeOnce) {
 	  if (data == null) {
-	    data = new weka.core.Instances(inst.dataset(), 0);
+	    data = new Instances(inst.dataset(), 0);
 	    data.add(inst);
 	  }
 	  result = initActualFilter(data);
@@ -927,7 +931,7 @@ public class WekaFilter
 		throw new Exception(result);
 	    }
 	    else {
-	      filteredData = weka.filters.Filter.useFilter(data, m_ActualFilter);
+	      filteredData = Filter.useFilter(data, m_ActualFilter);
 	    }
 	    if (m_KeepRelationName) {
 	      filteredData.setRelationName(relation);
@@ -952,7 +956,7 @@ public class WekaFilter
 	// build output token
 	if (inst != null) {
 	  if (filteredInst != null) {
-	    if (m_InputToken.getPayload() instanceof weka.core.Instance) {
+	    if (m_InputToken.getPayload() instanceof Instance) {
 	      m_OutputToken = new Token(filteredInst);
 	    }
 	    else {

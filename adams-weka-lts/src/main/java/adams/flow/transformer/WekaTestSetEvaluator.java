@@ -26,6 +26,7 @@ import adams.core.option.OptionUtils;
 import adams.flow.container.WekaEvaluationContainer;
 import adams.flow.container.WekaModelContainer;
 import adams.flow.core.CallableActorReference;
+import adams.flow.core.FlowContextHandler;
 import adams.flow.core.Token;
 import adams.flow.source.CallableSource;
 import adams.flow.standalone.JobRunnerInstance;
@@ -394,7 +395,7 @@ public class WekaTestSetEvaluator
    * @return		<!-- flow-accepts-start -->weka.classifiers.Classifier.class, adams.flow.container.WekaModelContainer.class<!-- flow-accepts-end -->
    */
   public Class[] accepts() {
-    return new Class[]{weka.classifiers.Classifier.class, WekaModelContainer.class};
+    return new Class[]{Classifier.class, WekaModelContainer.class};
   }
 
   /**
@@ -406,7 +407,7 @@ public class WekaTestSetEvaluator
   protected String doExecute() {
     String			result;
     Instances			test;
-    weka.classifiers.Classifier	cls;
+    Classifier	cls;
     CallableSource		gs;
     Token			output;
     EvaluateJob			job;
@@ -431,10 +432,12 @@ public class WekaTestSetEvaluator
 
       // evaluate classifier
       if (result == null) {
-	if (m_InputToken.getPayload() instanceof weka.classifiers.Classifier)
-	  cls = (weka.classifiers.Classifier) m_InputToken.getPayload();
+	if (m_InputToken.getPayload() instanceof Classifier)
+	  cls = (Classifier) m_InputToken.getPayload();
 	else
-	  cls = (weka.classifiers.Classifier) ((WekaModelContainer) m_InputToken.getPayload()).getValue(WekaModelContainer.VALUE_MODEL);
+	  cls = (Classifier) ((WekaModelContainer) m_InputToken.getPayload()).getValue(WekaModelContainer.VALUE_MODEL);
+	if (cls instanceof FlowContextHandler)
+	  ((FlowContextHandler) cls).setFlowContext(this);
 	initOutputBuffer();
 	m_Output.setHeader(test);
 	m_CurrentEvaluation = new StoppableEvaluation(test);
