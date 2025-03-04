@@ -26,7 +26,7 @@ import adams.core.option.OptionUtils;
 import adams.flow.container.WekaEvaluationContainer;
 import adams.flow.container.WekaModelContainer;
 import adams.flow.core.CallableActorReference;
-import adams.flow.core.FlowContextHandler;
+import adams.flow.core.FlowContextUtils;
 import adams.flow.core.Token;
 import adams.flow.source.CallableSource;
 import adams.flow.standalone.JobRunnerInstance;
@@ -436,8 +436,8 @@ public class WekaTestSetEvaluator
 	  cls = (Classifier) m_InputToken.getPayload();
 	else
 	  cls = (Classifier) ((WekaModelContainer) m_InputToken.getPayload()).getValue(WekaModelContainer.VALUE_MODEL);
-	if (cls instanceof FlowContextHandler)
-	  ((FlowContextHandler) cls).setFlowContext(this);
+	if (FlowContextUtils.isHandler(cls))
+	  FlowContextUtils.update(cls, this);
 	initOutputBuffer();
 	m_Output.setHeader(test);
 	m_CurrentEvaluation = new StoppableEvaluation(test);
