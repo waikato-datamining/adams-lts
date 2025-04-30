@@ -116,6 +116,20 @@
     </dependency>
 
     <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-excel</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-excel</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
+    <dependency>
       <groupId>nz.ac.waikato.cms.weka</groupId>
       <artifactId>weka-dev</artifactId>
       <version>${weka-lts.version}</version>
@@ -278,6 +292,13 @@
     </dependency>
 
     <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>matrix-algorithms</artifactId>
+      <version>${matrix-algorithms.version}</version>
+      <type>jar</type>
+    </dependency>
+
+    <dependency>
       <groupId>com.github.fracpete</groupId>
       <artifactId>matlab-weka-package</artifactId>
       <version>2021.1.13</version>
@@ -301,13 +322,6 @@
           <artifactId>weka-dev</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>matrix-algorithms</artifactId>
-      <version>${matrix-algorithms.version}</version>
-      <type>jar</type>
     </dependency>
 
     <dependency>
