@@ -36,6 +36,7 @@
   </properties>
 
   <modules>
+    <module>adams-djl-weka-lts</module>
     <module>adams-jep-weka-lts</module>
     <module>adams-python-weka-lts</module>
     <module>adams-weka-lts</module>
