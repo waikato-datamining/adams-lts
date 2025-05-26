@@ -15,7 +15,7 @@
 
 /*
  * WekaChooseAttributes.java
- * Copyright (C) 2012-2023 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2012-2025 University of Waikato, Hamilton, New Zealand
  */
 package adams.flow.transformer;
 
@@ -25,6 +25,7 @@ import adams.core.Utils;
 import adams.core.base.BaseRegExp;
 import adams.core.option.OptionUtils;
 import adams.flow.core.AutomatableInteractiveActor;
+import adams.flow.core.HeadlessExecutionSupporter;
 import adams.flow.core.Token;
 import adams.gui.core.BaseCheckBox;
 import adams.gui.core.BaseScrollPane;
@@ -126,7 +127,7 @@ import java.util.List;
  */
 public class WekaChooseAttributes
   extends AbstractInteractiveTransformer
-  implements AutomatableInteractiveActor {
+  implements AutomatableInteractiveActor, HeadlessExecutionSupporter {
 
   /** for serialization. */
   private static final long serialVersionUID = -1483735876005865608L;
@@ -152,8 +153,8 @@ public class WekaChooseAttributes
   public String globalInfo() {
     return
       "Lets the user select attributes interactively to use down the track.\n"
-        + "Internally, a " + Remove.class.getName() + " WEKA filter is constructed "
-        + "from the selection, to remove the attributes that the user didn't select.";
+	+ "Internally, a " + Remove.class.getName() + " WEKA filter is constructed "
+	+ "from the selection, to remove the attributes that the user didn't select.";
   }
 
   /**
@@ -347,7 +348,7 @@ public class WekaChooseAttributes
     n = 0;
     for (i = 0; i < inst.numAttributes(); i++) {
       if (inst.classIndex() == i)
-        continue;
+	continue;
       names[n][0] = inst.attribute(i).name();
       n++;
     }
@@ -412,9 +413,9 @@ public class WekaChooseAttributes
     result = new ArrayList<>();
     for (i = 0; i < inst.numAttributes(); i++) {
       if (inst.classIndex() == i)
-        continue;
+	continue;
       if (m_PreSelection.isMatch(inst.attribute(i).name()))
-        result.add(i);
+	result.add(i);
     }
 
     return result;
@@ -482,17 +483,27 @@ public class WekaChooseAttributes
     if (!m_NonInteractive) {
       selected = selectAttributes(inst, selected);
       if (selected != null)
-        result = null;
+	result = null;
       else
-        result = "Nothing selected!";
+	result = "Nothing selected!";
     }
 
     if (result == null) {
       if (!generateOutput(inst, selected))
-        result = "Failed to generate output!";
+	result = "Failed to generate output!";
     }
 
     return result;
+  }
+
+  /**
+   * Returns whether headless execution is supported.
+   *
+   * @return		true if supported
+   */
+  @Override
+  public boolean supportsHeadlessExecution() {
+    return true;
   }
 
   /**
@@ -510,7 +521,7 @@ public class WekaChooseAttributes
     if (isHeadless()) {
       inst = (Instances) m_InputToken.getPayload();
       if (!generateOutput(inst, getPreSelectedIndices(inst)))
-        result = "Failed to generate subset!";
+	result = "Failed to generate subset!";
     }
     else {
       result = super.doExecute();
