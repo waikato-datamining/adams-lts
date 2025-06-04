@@ -15,7 +15,7 @@
 
 /*
  * RemoveOutliers.java
- * Copyright (C) 2015-2018 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2015-2025 University of Waikato, Hamilton, NZ
  */
 
 package weka.filters.supervised.instance;
@@ -33,8 +33,8 @@ import adams.multiprocess.LocalJobRunner;
 import adams.multiprocess.WekaCrossValidationJob;
 import weka.classifiers.AggregateEvaluations;
 import weka.classifiers.Classifier;
-import weka.classifiers.DefaultCrossValidationFoldGenerator;
 import weka.classifiers.CrossValidationHelper;
+import weka.classifiers.DefaultCrossValidationFoldGenerator;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.LinearRegressionJ;
 import weka.core.Capabilities;
@@ -474,9 +474,10 @@ public class RemoveOutliers
       list.cleanUp();
       jobRunner.cleanUp();
       result = evalAgg.aggregated();
-      if (result != null)
-        throw new IllegalStateException(
-          evalAgg.hasLastError() ? evalAgg.getLastError() : "Failed to aggregate evaluations!");
+      if (result == null)
+	throw new IllegalStateException("Failed to aggregate evaluations!");
+      if (evalAgg.hasLastError())
+        throw new IllegalStateException(evalAgg.getLastError());
       return result;
     }
   }
