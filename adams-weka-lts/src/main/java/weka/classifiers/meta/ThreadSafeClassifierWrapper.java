@@ -79,6 +79,9 @@ public class ThreadSafeClassifierWrapper
   /** the flow context. */
   protected transient Actor m_FlowContext;
 
+  /** whether the flow context has been updated. */
+  protected boolean m_FlowContextUpdated = false;
+
   /**
    * Returns a string describing classifier.
    *
@@ -95,7 +98,8 @@ public class ThreadSafeClassifierWrapper
    * @param value	the context
    */
   public void setFlowContext(Actor value) {
-    m_FlowContext = value;
+    m_FlowContext        = value;
+    m_FlowContextUpdated = false;
   }
 
   /**
@@ -120,8 +124,10 @@ public class ThreadSafeClassifierWrapper
   @Override
   public synchronized void buildClassifier(Instances data) throws Exception {
     getCapabilities().testWithFail(data);
-    if (FlowContextUtils.isHandler(m_Classifier))
+    if (!m_FlowContextUpdated) {
+      m_FlowContextUpdated = true;
       FlowContextUtils.update(m_Classifier, m_FlowContext);
+    }
     m_Classifier.buildClassifier(data);
     m_CanAbstain = (m_Classifier instanceof AbstainingClassifier) && ((AbstainingClassifier) m_Classifier).canAbstain();
   }
@@ -147,8 +153,10 @@ public class ThreadSafeClassifierWrapper
    */
   @Override
   public synchronized double[] distributionForInstance(Instance instance) throws Exception {
-    if (FlowContextUtils.isHandler(m_Classifier))
+    if (!m_FlowContextUpdated) {
+      m_FlowContextUpdated = true;
       FlowContextUtils.update(m_Classifier, m_FlowContext);
+    }
     return m_Classifier.distributionForInstance(instance);
   }
 
@@ -169,8 +177,10 @@ public class ThreadSafeClassifierWrapper
    * @throws Exception	if fails to make prediction
    */
   public synchronized double getAbstentionClassification(Instance inst) throws Exception {
-    if (FlowContextUtils.isHandler(m_Classifier))
+    if (!m_FlowContextUpdated) {
+      m_FlowContextUpdated = true;
       FlowContextUtils.update(m_Classifier, m_FlowContext);
+    }
     if (canAbstain())
       return ((AbstainingClassifier) m_Classifier).getAbstentionClassification(inst);
     else
@@ -185,8 +195,10 @@ public class ThreadSafeClassifierWrapper
    * @throws Exception	if fails to make prediction
    */
   public synchronized double[] getAbstentionDistribution(Instance inst) throws Exception {
-    if (FlowContextUtils.isHandler(m_Classifier))
+    if (!m_FlowContextUpdated) {
+      m_FlowContextUpdated = true;
       FlowContextUtils.update(m_Classifier, m_FlowContext);
+    }
     if (canAbstain())
       return ((AbstainingClassifier) m_Classifier).getAbstentionDistribution(inst);
     else
