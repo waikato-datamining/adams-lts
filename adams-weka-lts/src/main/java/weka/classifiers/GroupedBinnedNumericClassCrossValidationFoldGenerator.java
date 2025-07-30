@@ -15,7 +15,7 @@
 
 /*
  * GroupedBinnedNumericClassCrossValidationFoldGenerator.java
- * Copyright (C) 2019 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2019-2025 University of Waikato, Hamilton, New Zealand
  */
 package weka.classifiers;
 
@@ -107,32 +107,41 @@ public class GroupedBinnedNumericClassCrossValidationFoldGenerator
    * Initializes the generator.
    *
    * @param data	the full dataset
+   * @param algorithm 	the algorithm to use
    * @param numFolds	the number of folds, leave-one-out if less than 2
    * @param seed	the seed for randomization
    * @param stratify	whether to perform stratified CV
+   * @param regExp 	the regular expression to apply to the attribute values
+   * @param group 	the regexp group to use as group
    */
-  public GroupedBinnedNumericClassCrossValidationFoldGenerator(Instances data, int numFolds, long seed, boolean stratify) {
-    this(data, numFolds, seed, true, stratify, null);
+  public GroupedBinnedNumericClassCrossValidationFoldGenerator(Instances data, BinningAlgorithm algorithm, int numFolds, long seed, boolean stratify, BaseRegExp regExp, String group) {
+    this(data, algorithm, numFolds, seed, true, stratify, regExp, group, null);
   }
 
   /**
    * Initializes the generator.
    *
    * @param data	the full dataset
+   * @param algorithm 	the algorithm to use
    * @param numFolds	the number of folds, leave-one-out if less than 2
    * @param seed	the seed value
    * @param randomize 	whether to randomize the data
    * @param stratify	whether to perform stratified CV
+   * @param regExp 	the regular expression to apply to the attribute values
+   * @param group 	the regexp group to use as group
    * @param relName	the relation name template, use null to ignore
    */
-  public GroupedBinnedNumericClassCrossValidationFoldGenerator(Instances data, int numFolds, long seed, boolean randomize, boolean stratify, String relName) {
+  public GroupedBinnedNumericClassCrossValidationFoldGenerator(Instances data, BinningAlgorithm algorithm, int numFolds, long seed, boolean randomize, boolean stratify, BaseRegExp regExp, String group, String relName) {
     super();
     setData(data);
+    setAlgorithm(algorithm);
     setSeed(seed);
     setNumFolds(numFolds);
     setRelationName(relName);
     setStratify(stratify);
     setRandomize(randomize);
+    setRegExp(regExp);
+    setGroup(group);
   }
 
   /**

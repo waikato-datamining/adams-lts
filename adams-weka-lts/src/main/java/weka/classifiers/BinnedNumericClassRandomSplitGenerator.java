@@ -15,7 +15,7 @@
 
 /*
  * BinnedNumericClassRandomSplitGenerator.java
- * Copyright (C) 2019 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2019-2025 University of Waikato, Hamilton, New Zealand
  */
 package weka.classifiers;
 
@@ -73,12 +73,14 @@ public class BinnedNumericClassRandomSplitGenerator
    * Initializes the generator. Does not preserve the order.
    *
    * @param data	the dataset to split
+   * @param algorithm 	the algorithm to use
    * @param seed	the seed value to use for randomization
    * @param percentage	the percentage of the training set (0-1)
    */
-  public BinnedNumericClassRandomSplitGenerator(Instances data, long seed, double percentage) {
+  public BinnedNumericClassRandomSplitGenerator(Instances data, BinningAlgorithm algorithm, long seed, double percentage) {
     super();
     setData(data);
+    setAlgorithm(algorithm);
     setSeed(seed);
     setPercentage(percentage);
     setPreserveOrder(false);
@@ -88,27 +90,31 @@ public class BinnedNumericClassRandomSplitGenerator
    * Initializes the generator. Preserves the order.
    *
    * @param data	the dataset to split
+   * @param algorithm 	the algorithm to use
    * @param percentage	the percentage of the training set (0-1)
    */
-  public BinnedNumericClassRandomSplitGenerator(Instances data, double percentage) {
+  public BinnedNumericClassRandomSplitGenerator(Instances data, BinningAlgorithm algorithm, double percentage) {
     super();
     setData(data);
+    setAlgorithm(algorithm);
     setSeed(-1L);
     setPercentage(percentage);
     setPreserveOrder(true);
   }
 
   /**
-   * Initializes the generator. Does not preserve the order.
+   * Initializes the generator.
    *
-   * @param data	the dataset to split
-   * @param seed	the seed value to use for randomization
-   * @param percentage	the percentage of the training set (0-1)
+   * @param data		the dataset to split
+   * @param algorithm 		the algorithm to use
+   * @param seed		the seed value to use for randomization
+   * @param percentage		the percentage of the training set (0-1)
    * @param preserveOrder 	whether to preserve the order
    */
-  public BinnedNumericClassRandomSplitGenerator(Instances data, long seed, double percentage, boolean preserveOrder) {
+  public BinnedNumericClassRandomSplitGenerator(Instances data, BinningAlgorithm algorithm, long seed, double percentage, boolean preserveOrder) {
     super();
     setData(data);
+    setAlgorithm(algorithm);
     setSeed(seed);
     setPercentage(percentage);
     setPreserveOrder(preserveOrder);

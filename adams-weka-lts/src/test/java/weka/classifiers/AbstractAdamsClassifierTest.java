@@ -20,8 +20,8 @@
 
 package weka.classifiers;
 
-import weka.test.AdamsTestHelper;
 import adams.env.Environment;
+import weka.test.AdamsTestHelper;
 
 /**
  * Abstract test for classifiers within the ADAMS framework.
@@ -31,7 +31,7 @@ import adams.env.Environment;
  */
 public abstract class AbstractAdamsClassifierTest
   extends AbstractClassifierTest {
-
+  
   static {
     AdamsTestHelper.setRegressionRoot();
   }
@@ -50,7 +50,7 @@ public abstract class AbstractAdamsClassifierTest
    * Sets up the environment.
    */
   protected void setUpEnvironment() {
-    Environment.setEnvironmentClass(adams.env.Environment.class);
+    Environment.setEnvironmentClass(Environment.class);
     System.setProperty("weka.test.maventest", "true");
   }
 

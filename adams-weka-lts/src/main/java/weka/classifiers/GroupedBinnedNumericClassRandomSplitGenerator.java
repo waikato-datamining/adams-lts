@@ -15,7 +15,7 @@
 
 /*
  * GroupedBinnedNumericClassRandomSplitGenerator.java
- * Copyright (C) 2019 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2019-2025 University of Waikato, Hamilton, New Zealand
  */
 package weka.classifiers;
 
@@ -88,45 +88,63 @@ public class GroupedBinnedNumericClassRandomSplitGenerator
    * Initializes the generator. Does not preserve the order.
    *
    * @param data	the dataset to split
+   * @param algorithm 	the algorithm to use
    * @param seed	the seed value to use for randomization
    * @param percentage	the percentage of the training set (0-1)
+   * @param regExp 	the regular expression to apply to the attribute values
+   * @param group 	the regexp group to use as group
    */
-  public GroupedBinnedNumericClassRandomSplitGenerator(Instances data, long seed, double percentage) {
+  public GroupedBinnedNumericClassRandomSplitGenerator(Instances data, BinningAlgorithm algorithm, long seed, double percentage, BaseRegExp regExp, String group) {
     super();
     setData(data);
+    setAlgorithm(algorithm);
     setSeed(seed);
     setPercentage(percentage);
     setPreserveOrder(false);
+    setRegExp(regExp);
+    setGroup(group);
   }
 
   /**
    * Initializes the generator. Preserves the order.
    *
    * @param data	the dataset to split
+   * @param algorithm 	the algorithm to use
    * @param percentage	the percentage of the training set (0-1)
+   * @param regExp 	the regular expression to apply to the attribute values
+   * @param group 	the regexp group to use as group
    */
-  public GroupedBinnedNumericClassRandomSplitGenerator(Instances data, double percentage) {
+  public GroupedBinnedNumericClassRandomSplitGenerator(Instances data, BinningAlgorithm algorithm, double percentage, BaseRegExp regExp, String group) {
     super();
     setData(data);
+    setAlgorithm(algorithm);
     setSeed(-1L);
     setPercentage(percentage);
     setPreserveOrder(true);
+    setRegExp(regExp);
+    setGroup(group);
   }
 
   /**
    * Initializes the generator. Does not preserve the order.
    *
    * @param data	the dataset to split
+   * @param algorithm 	the algorithm to use
    * @param seed	the seed value to use for randomization
    * @param percentage	the percentage of the training set (0-1)
    * @param preserveOrder 	whether to preserve the order
+   * @param regExp 	the regular expression to apply to the attribute values
+   * @param group 	the regexp group to use as group
    */
-  public GroupedBinnedNumericClassRandomSplitGenerator(Instances data, long seed, double percentage, boolean preserveOrder) {
+  public GroupedBinnedNumericClassRandomSplitGenerator(Instances data, BinningAlgorithm algorithm, long seed, double percentage, boolean preserveOrder, BaseRegExp regExp, String group) {
     super();
     setData(data);
+    setAlgorithm(algorithm);
     setSeed(seed);
     setPercentage(percentage);
     setPreserveOrder(preserveOrder);
+    setRegExp(regExp);
+    setGroup(group);
   }
 
   /**
