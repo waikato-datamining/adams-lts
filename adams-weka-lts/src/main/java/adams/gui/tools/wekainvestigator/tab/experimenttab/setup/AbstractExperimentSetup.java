@@ -15,7 +15,7 @@
 
 /*
  * AbstractExperimentSetup.java
- * Copyright (C) 2024 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2024-2025 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekainvestigator.tab.experimenttab.setup;
@@ -25,7 +25,7 @@ import adams.core.StoppableWithFeedback;
 import adams.gui.tools.wekainvestigator.evaluation.AbstractEvaluation;
 import adams.gui.tools.wekainvestigator.tab.ExperimentTab;
 import adams.gui.tools.wekainvestigator.tab.experimenttab.ResultItem;
-import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.lang3.time.StopWatch;
 import weka.classifiers.Classifier;
 
 /**
