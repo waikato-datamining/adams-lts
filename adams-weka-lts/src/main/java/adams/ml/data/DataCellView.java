@@ -592,6 +592,17 @@ public class DataCellView
   }
 
   /**
+   * Checks whether the cell is either missing or has no content.
+   *
+   * @return		true if empty
+   */
+  @Override
+  public boolean isEmpty() {
+    return isMissing()
+	     || getContent().isEmpty();
+  }
+
+  /**
    * Checks whether the stored string is numeric.
    *
    * @return		true if the content is numeric
