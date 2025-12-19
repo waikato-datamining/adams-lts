@@ -28,6 +28,7 @@ import adams.core.StoppableWithFeedback;
 import adams.core.Utils;
 import adams.core.io.PlaceholderFile;
 import adams.core.option.OptionUtils;
+import adams.data.instances.Compatibility;
 import adams.data.spreadsheet.MetaData;
 import adams.gui.chooser.FileChooserPanel;
 import adams.gui.chooser.SelectOptionPanel;
@@ -232,6 +233,7 @@ public class ReevaluateModel
     File		file;
     Capabilities 	caps;
     String		msg;
+    String		comp;
 
     if (!isValidDataIndex(m_ComboBoxDatasets))
       return "No data available!";
@@ -252,8 +254,9 @@ public class ReevaluateModel
 
     data = getOwner().getData().get(m_ComboBoxDatasets.getSelectedIndex()).getData();
     if (m_Header != null) {
-      if (!data.equalHeaders(m_Header))
-	return data.equalHeadersMsg(m_Header);
+      comp = Compatibility.isCompatible(data, m_Header, getOwner().getOwner().getStrictCompatibility());
+      if (comp != null)
+	return comp;
     }
 
     caps = m_Model.getCapabilities();

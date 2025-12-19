@@ -27,6 +27,7 @@ import adams.core.StoppableUtils;
 import adams.core.StoppableWithFeedback;
 import adams.core.Utils;
 import adams.core.option.OptionUtils;
+import adams.data.instances.Compatibility;
 import adams.data.spreadsheet.MetaData;
 import adams.gui.chooser.SelectOptionPanel;
 import adams.gui.core.BaseCheckBox;
@@ -170,6 +171,7 @@ public class TrainTestSet
     Instances 		train;
     Instances 		test;
     Capabilities 	caps;
+    String		comp;
 
     if (!isValidDataIndex(m_ComboBoxTrain))
       return "No train data available!";
@@ -205,8 +207,9 @@ public class TrainTestSet
       return "Classifier cannot handle data: " + e;
     }
 
-    if (!train.equalHeaders(test))
-      return train.equalHeadersMsg(test);
+    comp = Compatibility.isCompatible(train, test, getOwner().getOwner().getStrictCompatibility());
+    if (comp != null)
+      return comp;
 
     return null;
   }

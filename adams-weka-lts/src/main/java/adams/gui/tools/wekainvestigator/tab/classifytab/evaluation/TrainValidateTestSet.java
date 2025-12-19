@@ -27,6 +27,7 @@ import adams.core.StoppableUtils;
 import adams.core.StoppableWithFeedback;
 import adams.core.Utils;
 import adams.core.option.OptionUtils;
+import adams.data.instances.Compatibility;
 import adams.data.spreadsheet.MetaData;
 import adams.gui.chooser.SelectOptionPanel;
 import adams.gui.core.BaseCheckBox;
@@ -55,7 +56,6 @@ import java.util.Set;
  * Uses dedicated train/validate/test sets.
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class TrainValidateTestSet
   extends AbstractClassifierEvaluation
@@ -182,6 +182,7 @@ public class TrainValidateTestSet
     Instances 		validate;
     Instances 		test;
     Capabilities 	caps;
+    String		comp;
 
     if (!isValidDataIndex(m_ComboBoxTrain))
       return "No train data available!";
@@ -234,10 +235,12 @@ public class TrainValidateTestSet
       return "Classifier cannot handle data: " + e;
     }
 
-    if (!train.equalHeaders(validate))
-      return train.equalHeadersMsg(validate);
-    if (!train.equalHeaders(test))
-      return train.equalHeadersMsg(test);
+    comp = Compatibility.isCompatible(train, validate, getOwner().getOwner().getStrictCompatibility());
+    if (comp != null)
+      return comp;
+    comp = Compatibility.isCompatible(train, test, getOwner().getOwner().getStrictCompatibility());
+    if (comp != null)
+      return comp;
 
     return null;
   }

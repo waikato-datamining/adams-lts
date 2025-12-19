@@ -15,12 +15,13 @@
 
 /*
  * DatasetCompatibilityPanel.java
- * Copyright (C) 2012-2018 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2012-2025 University of Waikato, Hamilton, New Zealand
  */
 package adams.gui.tools;
 
 import adams.core.Utils;
 import adams.core.logging.LoggingHelper;
+import adams.data.instances.Compatibility;
 import adams.gui.chooser.WekaFileChooser;
 import adams.gui.core.BasePanel;
 import adams.gui.core.BaseScrollPane;
@@ -36,6 +37,7 @@ import weka.core.converters.AbstractFileLoader;
 import weka.core.converters.ConverterUtils;
 import weka.gui.ConverterFileChooser;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -76,6 +78,9 @@ public class DatasetCompatibilityPanel
 
   /** the reload menu item. */
   protected JMenuItem m_MenuItemReload;
+
+  /** the "strict" checkbox. */
+  protected JCheckBoxMenuItem m_MenuItemStrict;
 
   /**
    * Initializes the members.
@@ -172,6 +177,22 @@ public class DatasetCompatibilityPanel
 	}
       });
 
+      // Options
+      menu = new JMenu("Options");
+      result.add(menu);
+      menu.setMnemonic('O');
+      menu.addChangeListener(new ChangeListener() {
+	public void stateChanged(ChangeEvent e) {
+	  updateMenu();
+	}
+      });
+
+      // Options/Strict
+      menuitem = new JCheckBoxMenuItem("Strict", true);
+      menu.add(menuitem);
+      menuitem.setMnemonic('S');
+      m_MenuItemStrict = (JCheckBoxMenuItem) menuitem;
+
       // update menu
       m_MenuBar = result;
       updateMenu();
@@ -214,26 +235,26 @@ public class DatasetCompatibilityPanel
 
   /**
    * Opens the specified files, determines the loader automatically.
-   * 
+   *
    * @param files	the files to open
    * @return		null if successful, otherwise error message
    */
   public String open(File[] files) {
     AbstractFileLoader	loader;
-    
+
     if (files.length < 2)
       return "You must supply at least two files!";
-    
+
     loader = ConverterUtils.getLoaderForFile(files[0].getAbsoluteFile());
     if (loader == null)
       return "Failed to determine loader for files!";
-    
+
     return open(files, loader);
   }
-  
+
   /**
    * Opens the specified files with the given loader.
-   * 
+   *
    * @param files	the files to open
    * @param loader	the loader to use
    * @return		null if successful, otherwise error message
@@ -241,12 +262,12 @@ public class DatasetCompatibilityPanel
   protected String open(File[] files, AbstractFileLoader loader) {
     Instances[]		datasets;
     int			i;
-    
+
     if (files.length < 2)
       return "You must supply at least two files!";
     if (loader == null)
       return "No file loader specified!";
-    
+
     datasets = new Instances[files.length];
     for (i = 0; i < files.length; i++) {
       try {
@@ -258,15 +279,18 @@ public class DatasetCompatibilityPanel
 	return "Failed to load dataset from " + files[i] + ":\n" + LoggingHelper.throwableToString(e);
       }
     }
-    
+
+    m_CurrentFiles  = files;
+    m_CurrentLoader = loader;
+
     compare(files, datasets);
-    
+
     return null;
   }
-  
+
   /**
    * Performs the actual comparison.
-   * 
+   *
    * @param files	the files the data originated from
    * @param datasets	the datasets to compare
    */
@@ -274,26 +298,26 @@ public class DatasetCompatibilityPanel
     int		i;
     int		n;
     String	msg;
-    
+
     m_TextArea.setText("");
     for (i = 0; i < files.length - 1; i++) {
       for (n = i + 1; n < files.length; n++) {
-	msg = datasets[i].equalHeadersMsg(datasets[n]);
+	msg = Compatibility.isCompatible(datasets[i], datasets[n], m_MenuItemStrict.isSelected());
 	m_TextArea.append(
-	    "--> " + files[i].toString() + "\n"
+	  "--> " + files[i].toString() + "\n"
 	    + "and " + files[n].toString() + "\n"
 	    + Utils.indent((msg == null) ? "match" : msg, 4) + "\n");
       }
     }
   }
-  
+
   /**
    * Re-compares the currently loaded files.
    */
   public void reload() {
     open(m_CurrentFiles, m_CurrentLoader);
   }
-  
+
   /**
    * Closes the dialog.
    */
@@ -318,7 +342,7 @@ public class DatasetCompatibilityPanel
    */
   public boolean hasSendToItem(Class[] cls) {
     return    (SendToActionUtils.isAvailable(new Class[]{String.class, JTextComponent.class}, cls))
-           && (m_TextArea.getText().length() > 0);
+		&& (!m_TextArea.getText().isEmpty());
   }
 
   /**
@@ -334,11 +358,11 @@ public class DatasetCompatibilityPanel
 
     if ((SendToActionUtils.isAvailable(String.class, cls))) {
       result = m_TextArea.getText();
-      if (((String) result).length() == 0)
+      if (((String) result).isEmpty())
 	result = null;
     }
     else if (SendToActionUtils.isAvailable(JTextComponent.class, cls)) {
-      if (m_TextArea.getText().length() > 0)
+      if (!m_TextArea.getText().isEmpty())
 	result = m_TextArea;
     }
 
