@@ -15,7 +15,7 @@
 
 /*
  * CompareTab.java
- * Copyright (C) 2018 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2018-2025 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekainvestigator.tab;
@@ -25,6 +25,7 @@ import adams.core.Range;
 import adams.core.Utils;
 import adams.core.io.FileUtils;
 import adams.data.instance.InstancePoint;
+import adams.data.instances.Compatibility;
 import adams.data.report.DataType;
 import adams.data.report.Field;
 import adams.data.report.Report;
@@ -149,7 +150,7 @@ public class CompareTab
 
   /** the tabbed pane for the data. */
   protected BaseTabbedPane m_TabbedPaneData;
-  
+
   /** the IDs only present in the first dataset. */
   protected BaseTextArea m_TextOnlyFirst;
 
@@ -195,7 +196,7 @@ public class CompareTab
   @Override
   protected void initialize() {
     super.initialize();
-    
+
     m_ModelFirstDataset  = new DefaultComboBoxModel<>();
     m_ModelSecondDataset = new DefaultComboBoxModel<>();
     m_FirstAttributes    = new TIntArrayList();
@@ -214,7 +215,7 @@ public class CompareTab
     BaseSplitPane	splitPane;
 
     super.initGUI();
-    
+
     setLayout(new BorderLayout());
 
     // datasets
@@ -314,7 +315,7 @@ public class CompareTab
     label.setLabelFor(m_ComboBoxSecondID);
     panel.add(label);
     panel.add(m_ComboBoxSecondID);
-    
+
     m_ButtonData = new BaseButton("Compare");
     m_ButtonData.addActionListener((ActionEvent e) -> compareData());
     panel.add(m_ButtonData);
@@ -326,7 +327,7 @@ public class CompareTab
     // IDs
     panel = new JPanel(new GridLayout(1, 3));
     m_TabbedPaneData.addTab("IDs", panel);
-    
+
     m_TextOnlyFirst = new BaseTextArea(40, 20);
     m_TextOnlyFirst.setEditable(false);
     m_TextOnlyFirst.setTextFont(Fonts.getMonospacedFont());
@@ -335,7 +336,7 @@ public class CompareTab
     panel2.add(new BaseScrollPane(m_TextOnlyFirst), BorderLayout.CENTER);
     panel2.add(createIDInfoPanel(m_TextOnlyFirst), BorderLayout.SOUTH);
     panel.add(panel2);
-    
+
     m_TextCommon = new BaseTextArea(40, 20);
     m_TextCommon.setEditable(false);
     m_TextCommon.setTextFont(Fonts.getMonospacedFont());
@@ -344,7 +345,7 @@ public class CompareTab
     panel2.add(new BaseScrollPane(m_TextCommon), BorderLayout.CENTER);
     panel2.add(createIDInfoPanel(m_TextCommon), BorderLayout.SOUTH);
     panel.add(panel2);
-    
+
     m_TextOnlySecond = new BaseTextArea(40, 20);
     m_TextOnlySecond.setEditable(false);
     m_TextOnlySecond.setTextFont(Fonts.getMonospacedFont());
@@ -413,13 +414,13 @@ public class CompareTab
     buttonSave.addActionListener((ActionEvent e) -> {
       int retVal = m_FileChooserIDs.showSaveDialog(getOwner());
       if (retVal != TextFileChooser.APPROVE_OPTION)
-        return;
+	return;
       String msg = FileUtils.writeToFileMsg(
-        m_FileChooserIDs.getSelectedFile().getAbsolutePath(), textArea.getText(), false, null);
+	m_FileChooserIDs.getSelectedFile().getAbsolutePath(), textArea.getText(), false, null);
       if (msg != null)
-        GUIHelper.showErrorMessage(getOwner(), "Failed to write IDs to:\n" + m_FileChooserIDs.getSelectedFile() + "\n" + msg);
+	GUIHelper.showErrorMessage(getOwner(), "Failed to write IDs to:\n" + m_FileChooserIDs.getSelectedFile() + "\n" + msg);
       else
-        logMessage("IDs written to: " + m_FileChooserIDs.getSelectedFile());
+	logMessage("IDs written to: " + m_FileChooserIDs.getSelectedFile());
     });
     panelButtons.add(buttonSave);
 
@@ -436,14 +437,14 @@ public class CompareTab
       public void changedUpdate(DocumentEvent e) {
 	update();
       }
-      protected void update() {
-        String text = textArea.getText().trim();
-        int lines = 0;
-        if (text.length() > 0)
-          lines = text.split("\n").length;
-        labelNumItems.setText(lines + " IDs");
-        buttonCopy.setEnabled(lines > 0);
-        buttonSave.setEnabled(lines > 0);
+      private void update() {
+	String text = textArea.getText().trim();
+	int lines = 0;
+	if (!text.isEmpty())
+	  lines = text.split("\n").length;
+	labelNumItems.setText(lines + " IDs");
+	buttonCopy.setEnabled(lines > 0);
+	buttonSave.setEnabled(lines > 0);
       }
     });
 
@@ -502,7 +503,7 @@ public class CompareTab
     range.setData(data);
     indices.clear();
     indices.addAll(range.getIntIndices());
-    if (indices.size() == 0)
+    if (indices.isEmpty())
       return result;
     remove = new Remove();
     remove.setAttributeIndicesArray(indices.toArray());
@@ -533,7 +534,7 @@ public class CompareTab
     firstStructure  = getStructure(m_FirstData, m_TextFirstRange.getText(), m_FirstAttributes);
     secondStructure = getStructure(m_SecondData, m_TextSecondRange.getText(), m_SecondAttributes);
 
-    structure = firstStructure.equalHeadersMsg(secondStructure);
+    structure = Compatibility.isCompatible(firstStructure, secondStructure, getOwner().getStrictCompatibility());
     if (structure == null)
       structure = "Same structure";
     m_TextStructure.setText(structure);
@@ -545,18 +546,18 @@ public class CompareTab
     for (int i: m_FirstAttributes.toArray()) {
       m_ModelFirstID.addElement(m_FirstData.attribute(i).name());
       if ((oldFirst != null) && m_FirstData.attribute(i).name().equals(oldFirst))
-        match = true;
+	match = true;
     }
     if (match)
       m_ComboBoxFirstID.setSelectedItem(oldFirst);
-    
+
     oldSecond = m_ComboBoxSecondDataset.getSelectedItem();
     m_ModelSecondID.removeAllElements();
     match = false;
     for (int i: m_SecondAttributes.toArray()) {
       m_ModelSecondID.addElement(m_SecondData.attribute(i).name());
       if ((oldSecond != null) && m_SecondData.attribute(i).name().equals(oldSecond))
-        match = true;
+	match = true;
     }
     if (match)
       m_ComboBoxSecondID.setSelectedItem(oldSecond);
@@ -585,9 +586,9 @@ public class CompareTab
     nominal = dataset.attribute(index).isNominal() || dataset.attribute(index).isString();
     for (i = 0; i < dataset.numInstances(); i++) {
       if (nominal)
-        result.add(dataset.instance(i).stringValue(index));
+	result.add(dataset.instance(i).stringValue(index));
       else
-        result.add("" + dataset.instance(i).value(index));
+	result.add("" + dataset.instance(i).value(index));
     }
 
     return result;
@@ -617,17 +618,17 @@ public class CompareTab
     nominal = dataset.attribute(index).isNominal() || dataset.attribute(index).isString();
     for (i = 0; i < dataset.numInstances(); i++) {
       if (nominal) {
-        if (id.equals(dataset.instance(i).stringValue(index))) {
-          inst      = dataset.instance(i);
-          instIndex = i;
-          break;
+	if (id.equals(dataset.instance(i).stringValue(index))) {
+	  inst      = dataset.instance(i);
+	  instIndex = i;
+	  break;
 	}
       }
       else {
-        if (id.equals("" + dataset.instance(i).value(index))) {
-          inst      = dataset.instance(i);
-          instIndex = i;
-          break;
+	if (id.equals("" + dataset.instance(i).value(index))) {
+	  inst      = dataset.instance(i);
+	  instIndex = i;
+	  break;
 	}
       }
     }
@@ -811,7 +812,7 @@ public class CompareTab
     changed    = false;
     indexFirst = DatasetHelper.indexOfDataset(getOwner().getData(), m_ComboBoxFirstDataset.getSelectedItem());
     if (DatasetHelper.hasDataChanged(datasets, m_ModelFirstDataset)) {
-      m_ModelFirstDataset = new DefaultComboBoxModel<>(datasets.toArray(new String[datasets.size()]));
+      m_ModelFirstDataset = new DefaultComboBoxModel<>(datasets.toArray(new String[0]));
       m_ComboBoxFirstDataset.setModel(m_ModelFirstDataset);
       if ((indexFirst == -1) && (m_ModelFirstDataset.getSize() > 0)) {
 	m_ComboBoxFirstDataset.setSelectedIndex(0);
@@ -823,7 +824,7 @@ public class CompareTab
     }
     indexSecond = DatasetHelper.indexOfDataset(getOwner().getData(), m_ComboBoxSecondDataset.getSelectedItem());
     if (DatasetHelper.hasDataChanged(datasets, m_ModelSecondDataset)) {
-      m_ModelSecondDataset = new DefaultComboBoxModel<>(datasets.toArray(new String[datasets.size()]));
+      m_ModelSecondDataset = new DefaultComboBoxModel<>(datasets.toArray(new String[0]));
       m_ComboBoxSecondDataset.setModel(m_ModelSecondDataset);
       if ((indexSecond == -1) && (m_ModelSecondDataset.getSize() > 0)) {
 	m_ComboBoxSecondDataset.setSelectedIndex(0);
@@ -869,14 +870,14 @@ public class CompareTab
     boolean	hasIDs;
 
     hasData = (m_ComboBoxFirstDataset.getSelectedIndex() > -1)
-      && (m_ComboBoxSecondDataset.getSelectedIndex() > -1);
+		&& (m_ComboBoxSecondDataset.getSelectedIndex() > -1);
 
     m_ButtonStructure.setEnabled(hasData);
     m_TextStructure.setEnabled(hasData);
 
     hasIDs = hasData
-      && (m_ComboBoxFirstID.getSelectedIndex() > -1)
-      && (m_ComboBoxSecondID.getSelectedIndex() > -1);
+	       && (m_ComboBoxFirstID.getSelectedIndex() > -1)
+	       && (m_ComboBoxSecondID.getSelectedIndex() > -1);
     m_ButtonData.setEnabled(hasIDs);
     m_TextOnlyFirst.setEnabled(hasIDs);
     m_TextCommon.setEnabled(hasIDs);

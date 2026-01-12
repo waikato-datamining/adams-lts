@@ -23,6 +23,7 @@ package adams.gui.tools.wekainvestigator.tab.clustertab.evaluation;
 import adams.core.MessageCollection;
 import adams.core.ObjectCopyHelper;
 import adams.core.option.OptionUtils;
+import adams.data.instances.Compatibility;
 import adams.data.spreadsheet.MetaData;
 import adams.gui.core.BaseComboBox;
 import adams.gui.core.ParameterPanel;
@@ -145,15 +146,15 @@ public class ClassesToClusters
     if (train.classIndex() == -1) {
       caps = clusterer.getCapabilities();
       try {
-        if (!caps.test(train)) {
-          if (caps.getFailReason() != null)
-            return caps.getFailReason().getMessage();
-          else
-            return "Clusterer cannot handle training data!";
-        }
+	if (!caps.test(train)) {
+	  if (caps.getFailReason() != null)
+	    return caps.getFailReason().getMessage();
+	  else
+	    return "Clusterer cannot handle training data!";
+	}
       }
       catch (Exception e) {
-        return "Clusterer cannot handle data: " + e;
+	return "Clusterer cannot handle data: " + e;
       }
     }
 
@@ -161,20 +162,20 @@ public class ClassesToClusters
     if (test.classIndex() == -1) {
       caps = clusterer.getCapabilities();
       try {
-        if (!caps.test(test)) {
-          if (caps.getFailReason() != null)
-            return caps.getFailReason().getMessage();
-          else
-            return "Clusterer cannot handle test data!";
-        }
+	if (!caps.test(test)) {
+	  if (caps.getFailReason() != null)
+	    return caps.getFailReason().getMessage();
+	  else
+	    return "Clusterer cannot handle test data!";
+	}
       }
       catch (Exception e) {
-        return "Clusterer cannot handle data: " + e;
+	return "Clusterer cannot handle data: " + e;
       }
     }
 
-    if (!train.equalHeaders(test))
-      return train.equalHeadersMsg(test);
+    if (Compatibility.isCompatible(train, test, getOwner().getOwner().getStrictCompatibility()) != null)
+      return Compatibility.isCompatible(train, test, getOwner().getOwner().getStrictCompatibility());
 
     return null;
   }
@@ -273,21 +274,21 @@ public class ClassesToClusters
     int maxval = 0;
     for (int i = 0; i < numClusters; i++) {
       for (int j = 0; j < counts[i].length; j++) {
-        if (counts[i][j] > maxval) {
-          maxval = counts[i][j];
-        }
+	if (counts[i][j] > maxval) {
+	  maxval = counts[i][j];
+	}
       }
     }
 
     int Cwidth =
       1 + Math.max((int) (Math.log(maxval) / Math.log(10)),
-        (int) (Math.log(numClusters) / Math.log(10)));
+	(int) (Math.log(numClusters) / Math.log(10)));
 
     result.append("\n");
 
     for (int i = 0; i < numClusters; i++) {
       if (clusterTotals[i] > 0) {
-        result.append(" ").append(Utils.doubleToString(i, Cwidth, 0));
+	result.append(" ").append(Utils.doubleToString(i, Cwidth, 0));
       }
     }
     result.append("  <-- assigned to cluster\n");
@@ -295,9 +296,9 @@ public class ClassesToClusters
     for (int i = 0; i < counts[0].length; i++) {
 
       for (int j = 0; j < numClusters; j++) {
-        if (clusterTotals[j] > 0) {
-          result.append(" ").append(Utils.doubleToString(counts[j][i], Cwidth, 0));
-        }
+	if (clusterTotals[j] > 0) {
+	  result.append(" ").append(Utils.doubleToString(counts[j][i], Cwidth, 0));
+	}
       }
       result.append(" | ").append(inst.classAttribute().value(i)).append("\n");
     }
@@ -372,8 +373,8 @@ public class ClassesToClusters
     for (i = 0; i < data.numInstances(); i++) {
       instance = data.instance(i);
       if (m_clusterAssignments[i] >= 0) {
-        counts[(int) m_clusterAssignments[i]][(int) instance.value(classIndex(data))]++;
-        clusterTotals[(int) m_clusterAssignments[i]]++;
+	counts[(int) m_clusterAssignments[i]][(int) instance.value(classIndex(data))]++;
+	clusterTotals[(int) m_clusterAssignments[i]]++;
       }
     }
 

@@ -23,6 +23,7 @@ package adams.gui.tools.wekainvestigator.tab.clustertab.evaluation;
 import adams.core.MessageCollection;
 import adams.core.ObjectCopyHelper;
 import adams.core.option.OptionUtils;
+import adams.data.instances.Compatibility;
 import adams.data.spreadsheet.MetaData;
 import adams.gui.core.BaseComboBox;
 import adams.gui.core.ParameterPanel;
@@ -131,10 +132,10 @@ public class TrainTestSet
     train = getOwner().getData().get(m_ComboBoxTrain.getSelectedIndex()).getData();
     try {
       if (!caps.test(train)) {
-        if (caps.getFailReason() != null)
-          return caps.getFailReason().getMessage();
-        else
-          return "Clusterer cannot handle tain data!";
+	if (caps.getFailReason() != null)
+	  return caps.getFailReason().getMessage();
+	else
+	  return "Clusterer cannot handle tain data!";
       }
     }
     catch (Exception e) {
@@ -145,18 +146,18 @@ public class TrainTestSet
     test = getOwner().getData().get(m_ComboBoxTest.getSelectedIndex()).getData();
     try {
       if (!caps.test(test)) {
-        if (caps.getFailReason() != null)
-          return caps.getFailReason().getMessage();
-        else
-          return "Clusterer cannot handle test data!";
+	if (caps.getFailReason() != null)
+	  return caps.getFailReason().getMessage();
+	else
+	  return "Clusterer cannot handle test data!";
       }
     }
     catch (Exception e) {
       return "Clusterer cannot handle data: " + e;
     }
 
-    if (!train.equalHeaders(test))
-      return train.equalHeadersMsg(test);
+    if (Compatibility.isCompatible(train, test, getOwner().getOwner().getStrictCompatibility()) != null)
+      return Compatibility.isCompatible(train, test, getOwner().getOwner().getStrictCompatibility());
 
     return null;
   }

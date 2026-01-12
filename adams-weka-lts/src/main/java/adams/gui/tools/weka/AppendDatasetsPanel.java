@@ -15,7 +15,7 @@
 
 /*
  * AppendDatasetsPanel.java
- * Copyright (C) 2019 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2019-2025 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.weka;
@@ -23,12 +23,15 @@ package adams.gui.tools.weka;
 import adams.core.Properties;
 import adams.core.logging.LoggingHelper;
 import adams.core.option.OptionUtils;
+import adams.data.instances.Compatibility;
 import adams.gui.core.BasePanel;
 import adams.gui.core.ConsolePanel;
 import adams.gui.core.GUIHelper;
+import adams.gui.core.PropertiesParameterPanel.PropertyType;
 import adams.gui.wizard.AbstractWizardPage;
 import adams.gui.wizard.FinalPage;
 import adams.gui.wizard.PageCheck;
+import adams.gui.wizard.ParameterPanelPage;
 import adams.gui.wizard.WekaSelectDatasetPage;
 import adams.gui.wizard.WekaSelectMultipleDatasetsPage;
 import adams.gui.wizard.WizardPane;
@@ -56,6 +59,8 @@ public class AppendDatasetsPanel
 
   private static final long serialVersionUID = -1965973872146968486L;
 
+  public static final String LENIENT = "lenient";
+
   /** the wizard pane. */
   protected WizardPane m_Wizard;
 
@@ -77,8 +82,10 @@ public class AppendDatasetsPanel
    */
   @Override
   protected void initGUI() {
-    WekaSelectMultipleDatasetsPage 	infiles;
-    WekaSelectDatasetPage 		outfile;
+    WekaSelectMultipleDatasetsPage 	inFiles;
+    WekaSelectDatasetPage 		outFile;
+    ParameterPanelPage			params;
+    Properties 				propsParams;
     FinalPage 				finalpage;
 
     super.initGUI();
@@ -87,65 +94,80 @@ public class AppendDatasetsPanel
     m_Wizard = new WizardPane();
     add(m_Wizard, BorderLayout.CENTER);
     m_Wizard.setCustomFinishText("Append");
-    infiles = new WekaSelectMultipleDatasetsPage("Input");
-    infiles.setDescription("Select the Weka datasets to append (one-after-the-other).\nYou have to choose at least two.");
-    infiles.setPageCheck(new PageCheck() {
+
+    inFiles = new WekaSelectMultipleDatasetsPage("Input");
+    inFiles.setDescription("Select the Weka datasets to append (one-after-the-other).\nYou have to choose at least two.");
+    inFiles.setPageCheck(new PageCheck() {
       @Override
       public boolean checkPage(AbstractWizardPage page) {
-        Properties props = page.getProperties();
-        try {
-          String[] files = OptionUtils.splitOptions(props.getProperty(WekaSelectMultipleDatasetsPage.KEY_FILES));
-          return (files.length >= 2);
-        }
-        catch (Exception e) {
-          ConsolePanel.getSingleton().append(Level.SEVERE, "Failed to obtain files:", e);
-        }
-        return false;
+	Properties props = page.getProperties();
+	try {
+	  String[] files = OptionUtils.splitOptions(props.getProperty(WekaSelectMultipleDatasetsPage.KEY_FILES));
+	  return (files.length >= 2);
+	}
+	catch (Exception e) {
+	  ConsolePanel.getSingleton().append(Level.SEVERE, "Failed to obtain files:", e);
+	}
+	return false;
       }
     });
-    m_Wizard.addPage(infiles);
-    outfile = new WekaSelectDatasetPage("Output");
-    outfile.setDescription("Select the file to save the combined data to.");
-    outfile.setUseSaveDialog(true);
-    m_Wizard.addPage(outfile);
+    m_Wizard.addPage(inFiles);
+
+    params = new ParameterPanelPage("Parameters");
+    params.getParameterPanel().addPropertyType(LENIENT, PropertyType.BOOLEAN);
+    params.getParameterPanel().setLabel(LENIENT, "Lenient");
+    params.getParameterPanel().setHelp(LENIENT, "If enabled, the attribute names don't have to match.");
+    params.setDescription("Additional parameter settings for appending the datasets.");
+    propsParams = new Properties();
+    propsParams.setBoolean(LENIENT, false);
+    params.setProperties(propsParams);
+    m_Wizard.addPage(params);
+
+    outFile = new WekaSelectDatasetPage("Output");
+    outFile.setDescription("Select the file to save the combined data to.");
+    outFile.setUseSaveDialog(true);
+    m_Wizard.addPage(outFile);
+
     finalpage = new FinalPage();
     finalpage.setLogo(null);
     finalpage.setDescription("<html><h2>Ready</h2>Please click on <b>Append</b> to start the process.</html>");
     m_Wizard.addPage(finalpage);
+
     m_Wizard.addActionListener((ActionEvent e) -> {
       if (!e.getActionCommand().equals(WizardPane.ACTION_FINISH)) {
-        if (m_CloseParent)
-          closeParent();
-        return;
+	if (m_CloseParent)
+	  closeParent();
+	return;
       }
       Properties props = m_Wizard.getProperties(false);
       File[] input = null;
       File output = null;
+      boolean lenient = props.getBoolean(LENIENT, false);
       try {
-        String[] files = OptionUtils.splitOptions(props.getProperty(WekaSelectMultipleDatasetsPage.KEY_FILES));
-        input = new File[files.length];
-        for (int i = 0; i < files.length; i++)
-          input[i] = new File(files[i]);
-        output = new File(props.getProperty(WekaSelectDatasetPage.KEY_FILE));
+	String[] files = OptionUtils.splitOptions(props.getProperty(WekaSelectMultipleDatasetsPage.KEY_FILES));
+	input = new File[files.length];
+	for (int i = 0; i < files.length; i++)
+	  input[i] = new File(files[i]);
+	output = new File(props.getProperty(WekaSelectDatasetPage.KEY_FILE));
       }
       catch (Exception ex) {
-        GUIHelper.showErrorMessage(
-          getParent(), "Failed to get setup from wizard!\n" + LoggingHelper.throwableToString(ex));
-        return;
+	GUIHelper.showErrorMessage(
+	  getParent(), "Failed to get setup from wizard!\n" + LoggingHelper.throwableToString(ex));
+	return;
       }
-      doAppend(input, output);
+      doAppend(input, lenient, output);
     });
-
     m_Wizard.update();
   }
 
   /**
-   * Performs the append.
+   * Performs the append operation.
    *
    * @param input       the files to merge
+   * @param lenient 	whether to be lenient or strict with the header comparison
    * @param output      the output file
    */
-  protected void doAppend(File[] input, File output) {
+  protected void doAppend(File[] input, boolean lenient, File output) {
     Instances[]		data;
     Instances		full;
     int			i;
@@ -168,28 +190,31 @@ public class AppendDatasetsPanel
     transferAtt = new TIntArrayList();
     for (i = 0; i < input.length; i++) {
       try {
-        loader.setFile(input[i]);
-        data[i] = DataSource.read(loader);
-        if (i > 0) {
-          if (!data[0].equalHeaders(data[i])) {
-            GUIHelper.showErrorMessage(
-              getParent(), "Datasets '" + input[0] + "' and '" + input[i] + "' are not compatible!\n"
-                + data[0].equalHeadersMsg(data[i]));
-            return;
-          }
-        }
-        else {
-          for (n = 0; n < data[0].numAttributes(); n++) {
-            if (data[0].attribute(n).isString() || data[0].attribute(n).isRelationValued())
-              transferAtt.add(n);
-          }
-        }
-        count += data[i].numInstances();
+	loader.setFile(input[i]);
+	data[i] = DataSource.read(loader);
+	if (i > 0) {
+	  if (Compatibility.isCompatible(data[0], data[i], !lenient) != null) {
+	    GUIHelper.showErrorMessage(
+	      getParent(),
+	      "Dataset #1/'" + input[0] + "'\n"
+		+ "and #" + (i+1) + "/'" + input[i] + "'\n"
+		+ "are not compatible!\n"
+		+ Compatibility.isCompatible(data[0], data[i], !lenient));
+	    return;
+	  }
+	}
+	else {
+	  for (n = 0; n < data[0].numAttributes(); n++) {
+	    if (data[0].attribute(n).isString() || data[0].attribute(n).isRelationValued())
+	      transferAtt.add(n);
+	  }
+	}
+	count += data[i].numInstances();
       }
       catch (Exception e) {
-        GUIHelper.showErrorMessage(
-          getParent(), "Failed to read '" + input[i] + "'!\n" + LoggingHelper.throwableToString(e));
-        return;
+	GUIHelper.showErrorMessage(
+	  getParent(), "Failed to read '" + input[i] + "'!\n" + LoggingHelper.throwableToString(e));
+	return;
       }
     }
 
@@ -197,19 +222,19 @@ public class AppendDatasetsPanel
     full = new Instances(data[0], count);
     for (i = 0; i < data.length; i++) {
       for (Instance inst: data[i]) {
-        if (transferAtt.size() > 0) {
-          for (n = 0; n < transferAtt.size(); n++) {
-            index = transferAtt.get(n);
-            if (inst.attribute(index).isString())
-              full.attribute(index).addStringValue(inst.stringValue(index));
-            else if (inst.attribute(n).isRelationValued())
-              full.attribute(index).addRelation(inst.relationalValue(index));
-            else
-              throw new IllegalStateException(
-                "Unhandled attribute type: " + Attribute.typeToString(inst.attribute(index)));
-          }
-        }
-        full.add(inst);
+	if (!transferAtt.isEmpty()) {
+	  for (n = 0; n < transferAtt.size(); n++) {
+	    index = transferAtt.get(n);
+	    if (inst.attribute(index).isString())
+	      full.attribute(index).addStringValue(inst.stringValue(index));
+	    else if (inst.attribute(n).isRelationValued())
+	      full.attribute(index).addRelation(inst.relationalValue(index));
+	    else
+	      throw new IllegalStateException(
+		"Unhandled attribute type: " + Attribute.typeToString(inst.attribute(index)));
+	  }
+	}
+	full.add(inst);
       }
     }
 
@@ -220,7 +245,7 @@ public class AppendDatasetsPanel
     }
     catch (Exception e) {
       GUIHelper.showErrorMessage(
-        getParent(), "Failed to save data to '" + output + "'!\n" + LoggingHelper.throwableToString(e));
+	getParent(), "Failed to save data to '" + output + "'!\n" + LoggingHelper.throwableToString(e));
       return;
     }
 

@@ -15,7 +15,7 @@
 
 /*
  * PreprocessTab.java
- * Copyright (C) 2016-2023 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2016-2025 University of Waikato, Hamilton, NZ
  */
 
 package adams.gui.tools.wekainvestigator.tab;
@@ -27,6 +27,7 @@ import adams.core.SerializationHelper;
 import adams.core.io.PlaceholderFile;
 import adams.core.logging.LoggingLevel;
 import adams.core.option.OptionUtils;
+import adams.data.instances.Compatibility;
 import adams.gui.chooser.FileChooserPanel;
 import adams.gui.core.BaseButton;
 import adams.gui.core.BaseCheckBox;
@@ -172,12 +173,12 @@ public class PreprocessTab
     classes   = AbstractSelectedAttributesAction.getActions();
     for (Class cls: classes) {
       try {
-        action = (AbstractSelectedAttributesAction) cls.getDeclaredConstructor().newInstance();
-        action.setOwner(this);
-        m_Actions.add(action);
+	action = (AbstractSelectedAttributesAction) cls.getDeclaredConstructor().newInstance();
+	action.setOwner(this);
+	m_Actions.add(action);
       }
       catch (Exception e) {
-        ConsolePanel.getSingleton().append(LoggingLevel.SEVERE, "Failed to instantiate action: " + cls.getName(), e);
+	ConsolePanel.getSingleton().append(LoggingLevel.SEVERE, "Failed to instantiate action: " + cls.getName(), e);
       }
     }
 
@@ -209,9 +210,9 @@ public class PreprocessTab
 
     try {
       filter = (Filter) OptionUtils.forAnyCommandLine(
-        Filter.class,
-        InvestigatorPanel.getProperties().getProperty(
-          "Preprocess.Filter", AllFilter.class.getName()));
+	Filter.class,
+	InvestigatorPanel.getProperties().getProperty(
+	  "Preprocess.Filter", AllFilter.class.getName()));
     }
     catch (Exception e) {
       filter = new AllFilter();
@@ -288,13 +289,13 @@ public class PreprocessTab
     m_ButtonSelectedAttributesAction.setButtonEnabled(true);
     m_ButtonSelectedAttributesAction.addChangeListener((ChangeEvent e) -> {
       for (AbstractSelectedAttributesAction action: m_Actions)
-        action.update();
+	action.update();
     });
     for (AbstractSelectedAttributesAction action: m_Actions) {
       if (action instanceof Remove)
-        m_ButtonSelectedAttributesAction.setAction(action);
+	m_ButtonSelectedAttributesAction.setAction(action);
       else
-        m_ButtonSelectedAttributesAction.add(action);
+	m_ButtonSelectedAttributesAction.add(action);
     }
     panel2.add(m_ButtonSelectedAttributesAction);
     panelAtts.add(panel2, BorderLayout.EAST);
@@ -306,26 +307,26 @@ public class PreprocessTab
       updateAttributeSelection();
       // update actions
       for (AbstractSelectedAttributesAction action: m_Actions)
-        action.update();
+	action.update();
       // update other panels
       int[] indices = m_PanelAttSelection.getSelectedRows();
       if (indices.length > m_MaxAttributesToVisualize) {
-        int[] newIndices = new int[m_MaxAttributesToVisualize];
-        System.arraycopy(indices, 0, newIndices, 0, m_MaxAttributesToVisualize);
-        indices = newIndices;
+	int[] newIndices = new int[m_MaxAttributesToVisualize];
+	System.arraycopy(indices, 0, newIndices, 0, m_MaxAttributesToVisualize);
+	indices = newIndices;
       }
       // did they change?
       boolean changed = (indices.length != m_LastAttributesToVisualize.length);
       if (!changed) {
-        for (int i = 0; i < indices.length; i++) {
-          if (indices[i] != m_LastAttributesToVisualize[i]) {
-            changed = true;
-            break;
-          }
-        }
+	for (int i = 0; i < indices.length; i++) {
+	  if (indices[i] != m_LastAttributesToVisualize[i]) {
+	    changed = true;
+	    break;
+	  }
+	}
       }
       if (!changed)
-        return;
+	return;
       // update
       m_PanelAttSummary.setAttributes(indices);
       m_PanelAttVisualization.setAttributes(indices);
@@ -390,9 +391,9 @@ public class PreprocessTab
     errors = new MessageCollection();
     for (int i = 1; i < indices.length; i++) {
       other = getData().get(indices[i]);
-      msg   = first.getData().equalHeadersMsg(other.getData());
+      msg   = Compatibility.isCompatible(first.getData(), other.getData(), getOwner().getStrictCompatibility());
       if (msg != null)
-        errors.add("Dataset " + other.getID() + " is not compatible:\n" + msg);
+	errors.add("Dataset " + other.getID() + " is not compatible:\n" + msg);
     }
 
     if (errors.isEmpty())
@@ -428,44 +429,44 @@ public class PreprocessTab
     if (batch && (indices.length > 1)) {
       msg = isCompatible(indices);
       if (msg != null) {
-        logError("The datasets are not compatible and cannot be batch-filtered:\n" + msg, "Batch-filtering");
-        return;
+	logError("The datasets are not compatible and cannot be batch-filtered:\n" + msg, "Batch-filtering");
+	return;
       }
     }
 
     startExecution(new InvestigatorTabJob(this, "Filtering") {
       @Override
       protected void doRun() {
-        for (int i = 0; i < indices.length; i++) {
-          DataContainer cont = getData().get(indices[i]);
-          logMessage("Starting filtering " + (i+1) + "/" + indices.length + " '" + cont.getID() + "/" + cont.getData().relationName() + "' using " + OptionUtils.getCommandLine(m_CurrentFilter));
-          try {
-            String oldName = cont.getData().relationName();
-            if ((batch && (i == 0)) || !batch)
-              m_CurrentFilter.setInputFormat(cont.getData());
-            Instances filtered = Filter.useFilter(cont.getData(), m_CurrentFilter);
-            if (keep)
-              filtered.setRelationName(oldName);
-            logMessage("Finished filtering " + (i+1) + "/" + indices.length + " '" + cont.getID() + "/" + cont.getData().relationName() + "' using " + OptionUtils.getCommandLine(m_CurrentFilter));
-            if (replace) {
-              cont.setData(filtered);
-              fireDataChange(new WekaInvestigatorDataEvent(owner, WekaInvestigatorDataEvent.ROWS_MODIFIED, indices[i]));
-            }
-            else {
-              cont = new MemoryContainer(filtered);
-              getData().add(cont);
-              fireDataChange(new WekaInvestigatorDataEvent(owner, WekaInvestigatorDataEvent.ROWS_ADDED, getData().size() - 1));
-            }
-            if ((i == 0) && (serialize != null)) {
-              SerializationHelper.write(serialize.getAbsolutePath(), m_CurrentFilter);
-              logMessage("Serialized filter to: " + serialize);
-            }
-          }
-          catch (Exception e) {
-            logError("Failed to filter data" + (i+1) + "/" + indices.length, e, "Filter");
-            break;
-          }
-        }
+	for (int i = 0; i < indices.length; i++) {
+	  DataContainer cont = getData().get(indices[i]);
+	  logMessage("Starting filtering " + (i+1) + "/" + indices.length + " '" + cont.getID() + "/" + cont.getData().relationName() + "' using " + OptionUtils.getCommandLine(m_CurrentFilter));
+	  try {
+	    String oldName = cont.getData().relationName();
+	    if ((batch && (i == 0)) || !batch)
+	      m_CurrentFilter.setInputFormat(cont.getData());
+	    Instances filtered = Filter.useFilter(cont.getData(), m_CurrentFilter);
+	    if (keep)
+	      filtered.setRelationName(oldName);
+	    logMessage("Finished filtering " + (i+1) + "/" + indices.length + " '" + cont.getID() + "/" + cont.getData().relationName() + "' using " + OptionUtils.getCommandLine(m_CurrentFilter));
+	    if (replace) {
+	      cont.setData(filtered);
+	      fireDataChange(new WekaInvestigatorDataEvent(owner, WekaInvestigatorDataEvent.ROWS_MODIFIED, indices[i]));
+	    }
+	    else {
+	      cont = new MemoryContainer(filtered);
+	      getData().add(cont);
+	      fireDataChange(new WekaInvestigatorDataEvent(owner, WekaInvestigatorDataEvent.ROWS_ADDED, getData().size() - 1));
+	    }
+	    if ((i == 0) && (serialize != null)) {
+	      SerializationHelper.write(serialize.getAbsolutePath(), m_CurrentFilter);
+	      logMessage("Serialized filter to: " + serialize);
+	    }
+	  }
+	  catch (Exception e) {
+	    logError("Failed to filter data" + (i+1) + "/" + indices.length, e, "Filter");
+	    break;
+	  }
+	}
       }
     });
   }
@@ -600,7 +601,7 @@ public class PreprocessTab
     super.dataChanged(e);
     if (e.getType() == WekaInvestigatorDataEvent.ROWS_ADDED) {
       if (e.getRows().length == 1)
-        m_Table.setSelectedRow(e.getRows()[0]);
+	m_Table.setSelectedRow(e.getRows()[0]);
     }
     displayData();
   }
@@ -698,11 +699,11 @@ public class PreprocessTab
     super.doDeserialize(data, errors);
     if (data.containsKey(KEY_FILTER)) {
       try {
-        m_CurrentFilter = (Filter) OptionUtils.forAnyCommandLine(Filter.class, (String) data.get(KEY_FILTER));
-        m_PanelGOE.setCurrent(m_CurrentFilter);
+	m_CurrentFilter = (Filter) OptionUtils.forAnyCommandLine(Filter.class, (String) data.get(KEY_FILTER));
+	m_PanelGOE.setCurrent(m_CurrentFilter);
       }
       catch (Exception e) {
-        errors.add("Failed to restore filter: " + data.get(KEY_FILTER), e);
+	errors.add("Failed to restore filter: " + data.get(KEY_FILTER), e);
       }
     }
     if (data.containsKey(KEY_BATCHFILTER))
