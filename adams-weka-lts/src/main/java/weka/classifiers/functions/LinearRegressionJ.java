@@ -149,8 +149,10 @@ public class LinearRegressionJ extends StoppableClassifier implements
   protected int m_AttributeSelection;
   /** Try to eliminate correlated attributes? */
   protected boolean m_EliminateColinearAttributes = true;
-  /** Turn off all checks and conversions? */
-  protected boolean m_checksTurnedOff = false;
+  /** whether to perform preprocessing. */
+  protected boolean m_EnablePreprocessing = true;
+  /** whether to scale the input. */
+  protected boolean m_EnableInputScaling = true;
   /** The ridge parameter */
   protected double m_Ridge = 1.0e-8;
   /** Conserve memory? */
@@ -206,10 +208,12 @@ public class LinearRegressionJ extends StoppableClassifier implements
     result.disableAll();
 
     // attributes
-    result.enable(Capability.NOMINAL_ATTRIBUTES);
+    if (m_EnablePreprocessing) {
+      result.enable(Capability.NOMINAL_ATTRIBUTES);
+      result.enable(Capability.MISSING_VALUES);
+    }
     result.enable(Capability.NUMERIC_ATTRIBUTES);
     result.enable(Capability.DATE_ATTRIBUTES);
-    result.enable(Capability.MISSING_VALUES);
 
     // class
     result.enable(Capability.NUMERIC_CLASS);
@@ -231,39 +235,41 @@ public class LinearRegressionJ extends StoppableClassifier implements
     m_Stopped    = false;
     m_ModelBuilt = false;
 
-    if (!m_checksTurnedOff) {
-      // can classifier handle the data?
-      getCapabilities().testWithFail(data);
+    // can classifier handle the data?
+    getCapabilities().testWithFail(data);
 
-      if (m_outputAdditionalStats) {
-	// check that the instances weights are all 1
-	// because the RegressionAnalysis class does
-	// not handle weights
-	boolean ok = true;
-	for (int i = 0; i < data.numInstances(); i++) {
-	  if (data.instance(i).weight() != 1) {
-	    ok = false;
-	    break;
-	  }
-	}
-	if (!ok) {
-	  throw new Exception(
-	    "Can only compute additional statistics on unweighted data");
+    if (m_outputAdditionalStats) {
+      // check that the instances weights are all 1
+      // because the RegressionAnalysis class does
+      // not handle weights
+      boolean ok = true;
+      for (int i = 0; i < data.numInstances(); i++) {
+	if (data.instance(i).weight() != 1) {
+	  ok = false;
+	  break;
 	}
       }
+      if (!ok) {
+	throw new Exception(
+	  "Can only compute additional statistics on unweighted data");
+      }
+    }
 
-      // remove instances with missing class
-      data = new Instances(data);
-      data.deleteWithMissingClass();
+    // remove instances with missing class
+    data = new Instances(data);
+    data.deleteWithMissingClass();
 
+    if (m_EnablePreprocessing) {
       m_TransformFilter = new NominalToBinary();
       m_TransformFilter.setInputFormat(data);
       data = Filter.useFilter(data, m_TransformFilter);
+
       m_MissingFilter = new ReplaceMissingValues();
       m_MissingFilter.setInputFormat(data);
       data = Filter.useFilter(data, m_MissingFilter);
       data.deleteWithMissingClass();
-    } else {
+    }
+    else {
       m_TransformFilter = null;
       m_MissingFilter = null;
     }
@@ -351,18 +357,18 @@ public class LinearRegressionJ extends StoppableClassifier implements
 
     // Transform the input instance
     Instance transformedInstance = instance;
-    if (!m_checksTurnedOff) {
+    if (m_EnablePreprocessing) {
       m_TransformFilter.input(transformedInstance);
       m_TransformFilter.batchFinished();
       transformedInstance = m_TransformFilter.output();
+
       m_MissingFilter.input(transformedInstance);
       m_MissingFilter.batchFinished();
       transformedInstance = m_MissingFilter.output();
     }
 
     // Calculate the dependent variable from the regression model
-    return regressionPrediction(transformedInstance, m_SelectedAttributes,
-      m_Coefficients);
+    return regressionPrediction(transformedInstance, m_SelectedAttributes, m_Coefficients);
   }
 
   /**
@@ -468,33 +474,42 @@ public class LinearRegressionJ extends StoppableClassifier implements
    */
   @Override
   public Enumeration<Option> listOptions() {
-    Vector<Option> newVector = new Vector<Option>();
+    Vector<Option> result = new Vector<>();
 
-    newVector.addElement(new Option("\tSet the attribute selection method"
-				      + " to use. 1 = None, 2 = Greedy.\n" + "\t(default 0 = M5' method)", "S",
-      1, "-S <number of selection method>"));
+    result.addElement(new Option(
+      "\tSet the attribute selection method to use. 1 = None, 2 = Greedy.\n"
+	+ "\t(default 0 = M5' method)",
+      "S", 1, "-S <number of selection method>"));
 
-    newVector.addElement(new Option("\tDo not try to eliminate colinear"
-				      + " attributes.\n", "C", 0, "-C"));
+    result.addElement(new Option(
+      "\tDo not try to eliminate colinear attributes.",
+      "C", 0, "-C"));
 
-    newVector.addElement(new Option("\tSet the attribute selection method"
-				      + " to use. 1 = None, 2 = Greedy.\n" + "\t(default 0 = M5' method)", "S",
-      1, "-S <number of selection method>"));
+    result.addElement(new Option(
+      "\tSet ridge parameter (default 1.0e-8).\n",
+      "R", 1, "-R <double>"));
 
-    newVector.addElement(new Option(
-      "\tSet ridge parameter (default 1.0e-8).\n", "R", 1, "-R <double>"));
-
-    newVector.addElement(new Option(
+    result.addElement(new Option(
       "\tConserve memory, don't keep dataset header and means/stdevs.\n"
 	+ "\tModel cannot be printed out if this option is enabled."
-	+ "\t(default: keep data)", "minimal", 0, "-minimal"));
+	+ "\t(default: keep data)",
+      "minimal", 0, "-minimal"));
 
-    newVector.addElement(new Option("\tOutput additional statistics.",
+    result.addElement(new Option(
+      "\tOutput additional statistics.",
       "additional-stats", 0, "-additional-stats"));
 
-    newVector.addAll(Collections.list(super.listOptions()));
+    result.addElement(new Option(
+      "\tDisable preprocessing.",
+      "disable-preprocessing", 0, "-disable-preprocessing"));
 
-    return newVector.elements();
+    result.addElement(new Option(
+      "\tDisable input scaling.",
+      "disable-input-scaling", 0, "-disable-input-scaling"));
+
+    result.addAll(Collections.list(super.listOptions()));
+
+    return result.elements();
   }
 
   /**
@@ -522,103 +537,63 @@ public class LinearRegressionJ extends StoppableClassifier implements
    */
   @Override
   public String[] getOptions() {
-    Vector<String> result = new Vector<String>();
+    Vector<String> result = new Vector<>();
 
     result.add("-S");
     result.add("" + getAttributeSelectionMethod().getSelectedTag().getID());
 
-    if (!getEliminateColinearAttributes()) {
+    if (!getEliminateColinearAttributes())
       result.add("-C");
-    }
 
     result.add("-R");
     result.add("" + getRidge());
 
-    if (getMinimal()) {
+    if (getMinimal())
       result.add("-minimal");
-    }
 
-    if (getOutputAdditionalStats()) {
+    if (getOutputAdditionalStats())
       result.add("-additional-stats");
-    }
+
+    if (!getEnablePreprocessing())
+      result.add("-disable-preprocessing");
+
+    if (!getEnableInputScaling())
+      result.add("-disable-input-scaling");
 
     Collections.addAll(result, super.getOptions());
 
-    return result.toArray(new String[result.size()]);
+    return result.toArray(new String[0]);
   }
 
   /**
    * Parses a given list of options.
-   * <p/>
-   *
-   <!-- options-start -->
-   * Valid options are:
-   * <p/>
-   *
-   * <pre>
-   * -S &lt;number of selection method&gt;
-   *  Set the attribute selection method to use. 1 = None, 2 = Greedy.
-   *  (default 0 = M5' method)
-   * </pre>
-   *
-   * <pre>
-   * -C
-   *  Do not try to eliminate colinear attributes.
-   * </pre>
-   *
-   * <pre>
-   * -R &lt;double&gt;
-   *  Set ridge parameter (default 1.0e-8).
-   * </pre>
-   *
-   * <pre>
-   * -minimal
-   *  Conserve memory, don't keep dataset header and means/stdevs.
-   *  Model cannot be printed out if this option is enabled. (default: keep data)
-   * </pre>
-   *
-   * <pre>
-   * -additional-stats
-   *  Output additional statistics.
-   * </pre>
-   *
-   * <pre>
-   * -output-debug-info
-   *  If set, classifier is run in debug mode and
-   *  may output additional info to the console
-   * </pre>
-   *
-   * <pre>
-   * -do-not-check-capabilities
-   *  If set, classifier capabilities are not checked before classifier is built
-   *  (use with caution).
-   * </pre>
-   *
-   <!-- options-end -->
    *
    * @param options the list of options as an array of strings
    * @throws Exception if an option is not supported
    */
   @Override
   public void setOptions(String[] options) throws Exception {
-
     String selectionString = Utils.getOption('S', options);
-    if (!selectionString.isEmpty()) {
-      setAttributeSelectionMethod(new SelectedTag(
-	Integer.parseInt(selectionString), TAGS_SELECTION));
-    } else {
+    if (!selectionString.isEmpty())
+      setAttributeSelectionMethod(new SelectedTag(Integer.parseInt(selectionString), TAGS_SELECTION));
+    else
       setAttributeSelectionMethod(new SelectedTag(SELECTION_M5, TAGS_SELECTION));
-    }
+
     String ridgeString = Utils.getOption('R', options);
-    if (!ridgeString.isEmpty()) {
+    if (!ridgeString.isEmpty())
       setRidge(Double.parseDouble(ridgeString));
-    } else {
+    else
       setRidge(1.0e-8);
-    }
+
     setEliminateColinearAttributes(!Utils.getFlag('C', options));
+
     setMinimal(Utils.getFlag("minimal", options));
 
     setOutputAdditionalStats(Utils.getFlag("additional-stats", options));
+
+    setEnablePreprocessing(!Utils.getFlag("disable-preprocessing", options));
+
+    setEnableInputScaling(!Utils.getFlag("disable-input-scaling", options));
 
     super.setOptions(options);
   }
@@ -795,18 +770,89 @@ public class LinearRegressionJ extends StoppableClassifier implements
   }
 
   /**
-   * Turns off checks for missing values, etc. Use with caution. Also turns off
-   * scaling.
+   * Returns the tip text for this property.
+   *
+   * @return tip text for this property suitable for displaying in the
+   *         explorer/experimenter gui
    */
-  public void turnChecksOff() {
-    m_checksTurnedOff = true;
+  public String enablePreprocessingTipText() {
+    return "If enabled, the input data is preprocessed using " + NominalToBinary.class.getName()
+	     + " and " + ReplaceMissingValues.class.getName();
   }
 
   /**
-   * Turns on checks for missing values, etc. Also turns on scaling.
+   * Get whether to enable preprocessing.
+   *
+   * @return 		true if enabled
+   * @see		#m_TransformFilter
+   * @see		#m_MissingFilter
    */
+  public boolean getEnablePreprocessing() {
+    return m_EnablePreprocessing;
+  }
+
+  /**
+   * Set whether to enable preprocessing.
+   *
+   * @param value 	true if to enable
+   * @see		#m_TransformFilter
+   * @see		#m_MissingFilter
+   */
+  public void setEnablePreprocessing(boolean value) {
+    m_EnablePreprocessing = value;
+  }
+
+  /**
+   * Returns the tip text for this property.
+   *
+   * @return tip text for this property suitable for displaying in the
+   *         explorer/experimenter gui
+   */
+  public String enableInputScalingTipText() {
+    return "If enabled, scales the input by the standard deviation.";
+  }
+
+  /**
+   * Get whether to scale the input
+   *
+   * @return true if to scale
+   */
+  public boolean getEnableInputScaling() {
+    return m_EnableInputScaling;
+  }
+
+  /**
+   * Set whether to scale the input.
+   *
+   * @param value true if to scale the input
+   */
+  public void setEnableInputScaling(boolean value) {
+    m_EnableInputScaling = value;
+  }
+
+  /**
+   * Turns off preprocessing (NominalToBinary, ReplaceMissingValues). Use with caution. Also turns off
+   * scaling.
+   *
+   * @see #setEnablePreprocessing(boolean)
+   * @see #setEnableInputScaling(boolean)
+   */
+  @Deprecated
+  public void turnChecksOff() {
+    m_EnablePreprocessing = false;
+    m_EnableInputScaling = false;
+  }
+
+  /**
+   * Turns on preprocessing (NominalToBinary, ReplaceMissingValues). Also turns on scaling.
+   *
+   * @see #setEnablePreprocessing(boolean)
+   * @see #setEnableInputScaling(boolean)
+   */
+  @Deprecated
   public void turnChecksOn() {
-    m_checksTurnedOff = false;
+    m_EnablePreprocessing = true;
+    m_EnableInputScaling = true;
   }
 
   /**
@@ -1087,7 +1133,7 @@ public class LinearRegressionJ extends StoppableClassifier implements
 
 	      // We only need to do this if we want to
 	      // scale the input
-	      if (!m_checksTurnedOff) {
+	      if (m_EnableInputScaling) {
 		value /= m_StdDevs[j];
 	      }
 	      independent.set(i, column, value * sqrt_weight);
@@ -1117,7 +1163,7 @@ public class LinearRegressionJ extends StoppableClassifier implements
 
 	// We only need to do this if we have scaled the
 	// input.
-	if (!m_checksTurnedOff) {
+	if (m_EnableInputScaling) {
 	  coefficients[column] /= m_StdDevs[i];
 	}
 
