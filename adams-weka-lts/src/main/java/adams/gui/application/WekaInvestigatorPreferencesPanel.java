@@ -15,7 +15,7 @@
 
 /*
  * WekaInvestigatorPreferencesPanel.java
- * Copyright (C) 2016-2024 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2016-2026 University of Waikato, Hamilton, New Zealand
  */
 package adams.gui.application;
 
@@ -68,6 +68,7 @@ public class WekaInvestigatorPreferencesPanel
     addPropertyType("General.CalculateModelSize", PropertyType.BOOLEAN);
     addPropertyType("General.TestingUpdateInterval", PropertyType.INTEGER);
     addPropertyType("General.SortAttributeNames", PropertyType.BOOLEAN);
+    addPropertyType("General.StrictCompatibility", PropertyType.BOOLEAN);
     addPropertyType("General.ResultHistoryToolTips", PropertyType.BOOLEAN);
 
     // general
@@ -220,10 +221,10 @@ public class WekaInvestigatorPreferencesPanel
 
     setPreferences(Environment.getInstance().read(WekaInvestigatorDefinition.KEY));
   }
-  
+
   /**
    * The title of the preferences.
-   * 
+   *
    * @return		the title
    */
   @Override
@@ -233,7 +234,7 @@ public class WekaInvestigatorPreferencesPanel
 
   /**
    * Returns whether the panel requires a wrapper scrollpane/panel for display.
-   * 
+   *
    * @return		true if wrapper required
    */
   @Override
@@ -243,7 +244,7 @@ public class WekaInvestigatorPreferencesPanel
 
   /**
    * Activates the settings.
-   * 
+   *
    * @return		null if successfully activated, otherwise error message
    */
   @Override

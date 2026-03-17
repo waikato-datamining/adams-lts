@@ -13,9 +13,9 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
+/*
  * WekaExplorerPreferencesPanel.java
- * Copyright (C) 2013-2014 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2013-2026 University of Waikato, Hamilton, New Zealand
  */
 package adams.gui.application;
 
@@ -32,7 +32,6 @@ import java.io.File;
  * Preferences for the WEKA Explorer.
  * 
  * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
  */
 public class WekaExplorerPreferencesPanel
   extends AbstractPropertiesPreferencesPanel {
@@ -48,6 +47,7 @@ public class WekaExplorerPreferencesPanel
     addPropertyType("InitialDirectory", PropertyType.DIRECTORY_ABSOLUTE);
     addPropertyType("enableUndo", PropertyType.BOOLEAN);
     addPropertyType("undoDirectory", PropertyType.DIRECTORY_ABSOLUTE);
+    addPropertyType("InitGenericObjectEditorFilter", PropertyType.BOOLEAN);
     addPropertyType("Filter", PropertyType.OBJECT_EDITOR);
     setChooser("Filter", new GenericObjectEditorPanel(weka.filters.Filter.class, new weka.filters.AllFilter(), true));
     addPropertyType("Classifier", PropertyType.OBJECT_EDITOR);
