@@ -15,11 +15,12 @@
 
 /*
  * SimpleArffLoader.java
- * Copyright (C) 2017-2021 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2017-2026 University of Waikato, Hamilton, NZ
  */
 
 package weka.core.converters;
 
+import adams.core.StoppableWithFeedback;
 import adams.core.Utils;
 import adams.core.base.BaseCharset;
 import adams.core.io.EncodingSupporter;
@@ -59,7 +60,7 @@ import java.util.zip.GZIPInputStream;
  */
 public class SimpleArffLoader
   extends AbstractFileLoader
-  implements WeightedInstancesHandler, OptionHandler, EncodingSupporter {
+  implements WeightedInstancesHandler, OptionHandler, EncodingSupporter, StoppableWithFeedback {
 
   private static final long serialVersionUID = 8692708185900983930L;
 
@@ -77,6 +78,9 @@ public class SimpleArffLoader
 
   /** the encoding to use. */
   protected BaseCharset m_Encoding = new BaseCharset();
+
+  /** whether the loading was stopped. */
+  protected boolean m_Stopped;
 
   /**
    * Initializes the loader.
@@ -626,6 +630,9 @@ public class SimpleArffLoader
       while ((line = reader.readLine()) != null) {
 	lineIndex++;
 
+	if (m_Stopped)
+	  return null;
+
 	line = line.trim();
 	if (line.isEmpty())
 	  continue;
@@ -746,6 +753,24 @@ public class SimpleArffLoader
   @Override
   public Instance getNextInstance(Instances structure) throws IOException {
     throw new IOException("Incremental mode not supported!");
+  }
+
+  /**
+   * Stops the execution.
+   */
+  @Override
+  public void stopExecution() {
+    m_Stopped = true;
+  }
+
+  /**
+   * Whether the execution has been stopped.
+   *
+   * @return		true if stopped
+   */
+  @Override
+  public boolean isStopped() {
+    return m_Stopped;
   }
 
   /**
